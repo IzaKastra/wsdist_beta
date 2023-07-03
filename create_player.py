@@ -570,9 +570,12 @@ class create_player:
 
             # Empyrean Aftermath is entirely handled in the main code when calculating damage.
 
-            # Add WHM Auspice checkbox here.
-            if self.abilities.get("Auspice",False):
-                self.stats["Subtle Blow"] = self.stats.get("Subtle Blow",0) + 29
+        # Add WHM Auspice checkbox here. TODO
+        if self.abilities.get("Auspice",False):
+            self.stats["Subtle Blow"] = self.stats.get("Subtle Blow",0) + 29
+
+        if self.abilities.get("Shell V",False):
+            self.stats["MDT"] = self.stats.get("MDT",0) - 29
 
 
     # def add_gear_stats(self, stats, gearset):

@@ -35,6 +35,9 @@ def load_defaults(app,defaults):
     app.tp2.set(int(defaults.get("maxtp",1000)))
     app.tp0.set(int(defaults.get("initialtp",0)))
 
+    app.pdt_req.set(int(defaults.get("pdtreq",100)))
+    app.mdt_req.set(int(defaults.get("mdtreq",100)))
+
     app.whm_on.set(True if defaults.get("whm","False")=="True" else True); app.update_buff_cboxes("whm")
     app.brd_on.set(True if defaults.get("brd","False")=="True" else False); app.update_buff_cboxes("brd")
     app.cor_on.set(True if defaults.get("cor","False")=="True" else False); app.update_buff_cboxes("cor")
@@ -141,7 +144,8 @@ def save_defaults():
         ofile.write(f"spellmetric={app.spellmetric.get()}\n")
         ofile.write(f"wsmetric={app.wsmetric.get()}\n")
 
-
+        ofile.write(f"pdtreq={app.pdt_req.get()}\n")
+        ofile.write(f"mdtreq={app.mdt_req.get()}\n")
 
         ofile.write("\n# WHM inputs\n")
         ofile.write(f"whm={app.whm_on.get()}\n")
@@ -2961,6 +2965,7 @@ class App(tk.Tk):
                      "Hover Shot":self.hover_shot_value.get(),
                      "Hasso":self.hasso_value.get(),
                      "Sange":self.sange_value.get(),
+                     "Shell V":self.shell5_on.get(),
                      "Innin":self.innin_value.get(),
                      "Futae":self.futae_value.get(),
                      "Nature's Medidation":self.natures_meditation_value.get(),

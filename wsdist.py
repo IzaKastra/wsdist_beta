@@ -284,22 +284,24 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                             
                             # At this point, the code should have a valid gear set to play with.
 
-                            # Don't even test the set if the DT requirement is not met in both PDT and MDT
-                            pdt,mdt = 0,0
-                            for slot in test_set:
-                                pdt += test_set[slot].get("PDT",0) + test_set[slot].get("DT",0)
-                                mdt += test_set[slot].get("MDT",0) + test_set[slot].get("DT",0)
-                            pdt = -50 if pdt < -50 else pdt # Apply the 50% cap.
-                            mdt = -50 if mdt < -50 else mdt
-                            for slot in test_set:
-                                pdt += test_set[slot].get("PDT2",0) # PDT2 breaks the cap.
-                                mdt += test_set[slot].get("MDT2",0)
-                            if pdt > pdt_thresh_temp or mdt > mdt_thresh_temp:
-                                continue
 
 
                             # Sets thats survive this long are valid and satisfy the temporary PDT/MDT requirements. We can now test the set.
                             player = create_player(main_job, sub_job, master_level, test_set, buffs, abilities)
+
+                            # Don't even test the set if the DT requirement is not met in both PDT and MDT
+                            pdt = player.stats.get("PDT",0) + player.stats.get("DT",0)
+                            mdt = player.stats.get("MDT",0) + player.stats.get("DT",0)
+                            pdt = -50 if pdt < -50 else pdt # Apply the 50% cap.
+                            mdt = -50 if mdt < -50 else mdt
+                            pdt += player.stats.get("PDT2",0) + player.stats.get("DT2",0)
+                            mdt += player.stats.get("MDT2",0) + player.stats.get("DT2",0)
+                            # for slot in test_set:
+                            #     pdt += test_set[slot].get("PDT2",0) # PDT2 breaks the cap.
+                            #     mdt += test_set[slot].get("MDT2",0)
+                            if pdt > pdt_thresh_temp or mdt > mdt_thresh_temp:
+                                continue
+
 
                             # Prepare to test the set.
                             effective_tp = (max_tp + min_tp)/2 + player.stats.get("TP Bonus",0)
@@ -350,18 +352,18 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                 # print(best_output)
                 break # Break out of the main loop and check PDT/MDT conditions.
 
+        best_player0 = create_player(main_job, sub_job, master_level, best_set, buffs, abilities)
 
-        pdt = 0
-        mdt = 0
-        for slot in best_set:
-            pdt += best_set[slot].get("PDT",0) + best_set[slot].get("DT",0)
-            mdt += best_set[slot].get("MDT",0) + best_set[slot].get("DT",0)
-
+        pdt = best_player0.stats.get("PDT",0) + best_player0.stats.get("DT",0)
+        mdt = best_player0.stats.get("MDT",0) + best_player0.stats.get("DT",0)
         pdt = -50 if pdt < -50 else pdt
         mdt = -50 if mdt < -50 else mdt
-        for slot in best_set:
-            pdt += best_set[slot].get("PDT2",0)
-            mdt += best_set[slot].get("MDT2",0)
+        pdt += best_player0.stats.get("PDT2",0) + best_player0.stats.get("DT2",0)
+        mdt += best_player0.stats.get("MDT2",0) + best_player0.stats.get("DT2",0)
+
+        # for slot in best_set:
+        #     pdt += best_set[slot].get("PDT2",0)
+        #     mdt += best_set[slot].get("MDT2",0)
 
 
         # Compare the pdt and mdt values from this iteration with the previous iteration.
