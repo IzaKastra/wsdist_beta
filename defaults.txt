@@ -13,13 +13,13 @@ tvrring=Lehko Habhoka's
 tpmetric=Time to WS
 spellmetric=Damage dealt
 wsmetric=Damage dealt
-pdtreq=-30
-mdtreq=-30
+pdtreq=-1
+mdtreq=-1
 
 # WHM inputs
 whm=True
 shell5=True
-dia=Dia III
+dia=Dia II
 haste=Haste II
 boost=None
 storm=None
@@ -49,7 +49,7 @@ lightshot=False
 # GEO inputs
 geo=False
 nbubble=Geomancy +10
-geopotency=100
+geopotency=25
 indi=Indi-Fury
 geo=Geo-Frailty
 entrust=None
@@ -78,13 +78,13 @@ head=Malignance Chapeau
 neck=Ninja Nodowa +2 R25
 ear1=Dedition Earring
 ear2=Telos Earring
-body=Mpaca's Doublet R30
-hands=Adhemar Wristbands +1 C
+body=Tatenashi Haramaki +1 R15
+hands=Malignance Gloves
 ring1=Gere Ring
-ring2=Lehko Habhoka's ring
-back=Andartia's Mantle AGI DA
-waist=Windbuffet Belt +1
-legs=Ryuo Hakama +1 D
+ring2=Epona's Ring
+back=Andartia's Mantle DEX Store TP
+waist=Sailfi Belt +1 R15
+legs=Samnuha Tights
 feet=Malignance Boots
 
 # Window size:  widthxheight
