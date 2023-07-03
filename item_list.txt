@@ -11729,7 +11729,7 @@
 23625;lethargy fuseau +3;Leth. Fuseau +3
 23626;skulker's culottes +3;Skulk. Culottes +3
 23627;chevalier's cuisses +3;Chev. Cuisses +3
-23628;heathen's flanchards +3;Heath. Flanchard +3
+23628;heathen's flanchard +3;Heath. Flanchard +3
 23629;nukumi quijotes +3;Nukumi Quijotes +3
 23630;fili rhingrave +3;Fili Rhingrave +3
 23631;amini bragues +3;Amini Bragues +3
