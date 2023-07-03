@@ -6,7 +6,13 @@ from tkinter import filedialog
 from PIL import Image
 import numpy as np
 
+# Use an external gear.py file
+# https://stackoverflow.com/questions/47350078/importing-external-module-in-single-file-exe-created-with-pyinstaller
+import sys
+import os
+sys.path.append(os.path.dirname(sys.executable))
 from gear import *
+
 from enemies import *
 
 from idlelib.tooltip import Hovertip # https://stackoverflow.com/questions/3221956/how-do-i-display-tooltips-in-tkinter
@@ -246,7 +252,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (beta 2023 July 7)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 July 3)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -739,7 +745,7 @@ class App(tk.Tk):
         self.haste_samba_toggle = ttk.Checkbutton(self.ja_frame,variable=self.haste_samba_value, text="Haste Samba",width=-25, command=lambda event="haste_samba": self.update_special_checkboxes(event))
         self.hastesamba_tip = Hovertip(self.hover_shot_toggle,"JA Haste: +5%\nDNC mainjob: JA Haste +5%",hover_delay=500)
         self.haste_samba_toggle.state(["!alternate"])
-        self.haste_samba_toggle.grid(row=39,column=0,sticky="n")
+        self.haste_samba_toggle.grid(row=40,column=0,sticky="n")
 
 
         self.ja_canvas.create_window((0,0),window=self.ja_frame, anchor="nw")
@@ -3047,13 +3053,14 @@ class App(tk.Tk):
             s = ["STR","DEX","VIT","AGI","INT","MND","CHR","Accuracy1","Accuracy2","Attack1","Attack2","Ranged Accuracy","Ranged Attack","DA","TA","QA","Store TP","Weapon Skill Damage","Double Shot","Triple Shot","Quad Shot","Gear Haste","Magic Haste","JA Haste","Dual Wield","Delay Reduction"]
             # for stat in s:
             #     print(stat+":",player.stats.get(stat,0))
-            print(player.stats)
+            print("============================================================")
+            for stat in player.stats:
+                print(f"{stat:>30s}  =  {player.stats[stat]}")
+            print("============================================================")
 
         if "run" in trigger:
             # Run the set optimizer.
             
-            
-
             conditions = {"PDT":int(self.pdt_req.get()) if int(self.pdt_req.get()) <= 100 else 100,"MDT":int(self.mdt_req.get()) if int(self.mdt_req.get()) <= 100 else 100}
             # conditions["PDT"] = conditions["PDT"] * -1 if conditions["PDT"] > 0 else conditions["PDT"] # Allow the user to input positive or negative values to avoid confusion.
             # conditions["MDT"] = conditions["MDT"] * -1 if conditions["MDT"] > 0 else conditions["MDT"]
