@@ -1,0 +1,73 @@
+name: Build
+
+on:
+  # On a push to a branch.
+  push:
+    branches: [ 'main' ]
+
+  # On a pull request to a branch.
+  pull_request:
+    branches: [ 'main' ]
+
+env:
+  # System
+  TERM: xterm
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8.x' 
+
+    - name: Setup PIP
+      run: | 
+        pip install numpy
+        pip install matplotlib
+        pip install numba
+        pip install pillow
+        pip install pyinstaller
+
+    - name: Create Installer
+      run: pyinstaller --exclude-module gear --clean --onefile gui_wsdist.py
+
+    - name: Upload Installer
+      uses: actions/upload-artifact@v3
+      with: 
+        name: wsdist-executable-only
+        path: ./dist/gui_wsdist.exe
+
+  publish-artifacts:
+    name: Publish Artifacts
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Download Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: wsdist-executable-only
+        path: ./  
+
+    - name: Zip Artifacts
+      run: |
+        zip -r ./wsdist.zip ./gui_wsdist.exe
+        zip -r ./wsdist.zip ./gear.py
+        zip -r ./wsdist.zip ./item_list.txt
+        zip -r ./wsdist.zip ./icons32
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with: 
+        name: wsdist-full
+        path: ./wsdist.zip
