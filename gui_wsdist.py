@@ -2960,7 +2960,7 @@ class App(tk.Tk):
                      "Endark II":self.endark_value.get(),
                      "Sharpshot":self.sharpshot_value.get(),
                      "Barrage":self.barrage_value.get(),
-                     "velocity Shot":self.velocity_shot_value.get(),
+                     "Velocity Shot":self.velocity_shot_value.get(),
                      "Double Shot":self.double_shot_value.get(),
                      "Hover Shot":self.hover_shot_value.get(),
                      "Hasso":self.hasso_value.get(),
