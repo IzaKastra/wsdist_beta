@@ -186,15 +186,15 @@ class create_player:
             self.stats["Attack2"] = self.stats["Attack1"] - 0.5*self.stats["STR"]*(1+self.stats.get("Attack%",0))*0 # The off-hand H2H Attack might use STR/2 like normal weapons. This is ignored in the main code where I simply set attack1 = attack2 before calculating H2H damage.
             self.stats["Accuracy2"] = self.stats["Accuracy1"]
             self.gearset["sub"]["Skill Type"] = self.gearset["main"]["Skill Type"]
-            base_dmg = 3 + int((self.stats["Hand-to-Hand Skill"] + self.stats["main Hand-to-Hand Skill"])*0.11)
+            base_dmg = 3 + int((self.stats.get("Hand-to-Hand Skill",0) + self.stats.get("main Hand-to-Hand Skill",0))*0.11)
             self.stats["DMG1"] = base_dmg + self.stats["DMG1"]
             self.stats["DMG2"] = self.stats["DMG1"]
             if self.abilities.get("Footwork",False):
                 self.stats["Kick DMG"] = self.stats["DMG1"] + self.stats.get("Kick Attacks DMG",0) # Main-hand DMG adds to Kick DMG during Footwork. See [https://www.ffxiah.com/forum/topic/55864/new-monk-questions/#3600604] [https://www.ffxiah.com/forum/topic/36705/iipunch-monk-guide/213/#3368961] and [https://forum.square-enix.com/ffxi/threads/52969-August.-3-2017-%28JST%29-Version-Update]
             else:
                 self.stats["Kick DMG"] = base_dmg + self.stats.get("Kick Attacks DMG",0) # Without Footwork, Kick DMG is your base damage (from Skill) and any gear with "Kick Attacks Attack" on it.
-            base_delay = 480
-            self.stats["Delay1"] += base_delay
+            base_delay0 = 480
+            self.stats["Delay1"] += base_delay0
             self.stats["Delay2"] = self.stats["Delay1"]
             base_delay = self.stats["Delay1"]
             reduced_delay = (base_delay - self.stats.get("Martial Arts",0)) * (1 - total_haste)
@@ -446,7 +446,7 @@ class create_player:
         if self.gearset["main"]["Skill Type"] in (two_handed+["Hand-to-Hand"]):
             smite_level = self.stats.get("Smite",0)
             self.stats["Attack%"] = self.stats.get("Attack%",0) + {5:304./1024, 4:256./1024, 3:204./1024, 2:152./1024, 1:100./1024, 0:0.}[smite_level]
-        if self.gearset["sub"]["Type"] in ["Shield","None"] and self.gearset["main"]["Skill Type"]!="Hand-to-Hand":
+        if (self.gearset["sub"]["Type"] in ["Shield","None"]) and (self.gearset["main"]["Skill Type"]!="Hand-to-Hand") and (self.gearset["main"]["Skill Type"] not in two_handed):
             fencer_level = 8 if self.stats.get("Fencer",0) > 8 else self.stats.get("Fencer",0)
             fencer_bonuses = {0:[0,0], 1:[200,3], 2:[300,5], 3:[400,7], 4:[450,9], 5:[500,10], 6:[550,11], 7:[600,12], 8:[630,13]}[fencer_level]
             self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + fencer_bonuses[0]
