@@ -190,7 +190,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.8*player_dex 
         nhits = 2 
     elif ws_name == "Imperator":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -327,7 +327,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.8*player_agi
         nhits = 1
     elif ws_name == "Jijin Kaimetsu":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -428,7 +428,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.4*(player_str + player_dex)
         nhits = 4
     elif ws_name == "Merciless Strike":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -529,7 +529,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         player_attack1 *= (1+player.stats.get("Attack%",0) + ws_atk_modifier) / (1+player.stats.get("Attack%",0))
         player_attack1 += player.stats.get("Food Attack",0)
     elif ws_name == "Diarmuid":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -638,7 +638,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.5*player_str
         nhits = 3
     elif ws_name == "Tachi: Mumei":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -818,7 +818,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.8*player_dex
         nhits = 2
     elif ws_name == "Fimbulvetr":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -920,7 +920,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.5*(player_mnd + player_int)
         nhits = 1
     elif ws_name == "Dagda":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -992,7 +992,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.5*player_str
         nhits = 3
     elif ws_name == "Disaster":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -1094,7 +1094,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         element = "Light"
         dSTAT = 651 if (player_chr - enemy_int)*1.5 > 651 else (player_chr - enemy_int)*1.5
     elif ws_name == "Blitz":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -1174,7 +1174,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.8*player_dex
         nhits = 3
     elif ws_name == "Sarv":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -1261,7 +1261,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         element = "Dark"
         dSTAT = (player_agi - enemy_int)*2 # No known cap.
     elif ws_name == "Terminus":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -1362,7 +1362,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.8*player_int
         nhits = 1
     elif ws_name == "Oshala":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
@@ -1524,7 +1524,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.32*(player_str + player_vit)
         nhits = 6-1
     elif ws_name == "Maru Kala":
-        base_ftp = [0, 0, 0] 
+        base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
