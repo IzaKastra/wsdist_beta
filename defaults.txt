@@ -1,18 +1,20 @@
 # Basic inputs
-ml=40
-mainjob=DRK
-subjob=SAM
+ml=35
+mainjob=NIN
+subjob=WAR
 aftermath=0
-mintp=3000
-maxtp=3000
-spell=Impact
-ws=Quietus
+mintp=1500
+maxtp=1500
+spell=Doton: Ichi
+ws=Blade: Ten
 initialtp=0
 odyrank=30
 tvrring=Lehko Habhoka's
 tpmetric=Time to WS
-spellmetric=TP return
+spellmetric=Damage dealt
 wsmetric=Damage dealt
+pdtreq=-30
+mdtreq=-30
 
 # WHM inputs
 whm=True
@@ -68,22 +70,22 @@ emnd=284
 
 # Equipment and food inputs
 food=Grape Daifuku
-main=Redemption R15
-sub=Utu Grip
+main=Heishi Shorinken R15
+sub=Crepuscular Knife
 ranged=Empty
-ammo=Seraphic Ampulla
-head=Empty
-neck=Vim Torque +1 R15
+ammo=Seki Shuriken
+head=Malignance Chapeau
+neck=Ninja Nodowa +2 R25
 ear1=Dedition Earring
-ear2=Crepuscular Earring
-body=Crepuscular Cloak
-hands=Sakpata's Gauntlets R30
-ring1=Chirich Ring +1 B
+ear2=Telos Earring
+body=Mpaca's Doublet R30
+hands=Adhemar Wristbands +1 C
+ring1=Gere Ring
 ring2=Lehko Habhoka's ring
-back=Ankou's Mantle INT Store TP
-waist=Oneiros Rope
-legs=Ratri Cuisses +1
-feet=Heathen's Sollerets +3
+back=Andartia's Mantle AGI DA
+waist=Windbuffet Belt +1
+legs=Ryuo Hakama +1 D
+feet=Malignance Boots
 
 # Window size:  widthxheight
 dimensions=700x885
