@@ -1,9 +1,15 @@
 from create_player import *
 import numpy as np
-from gear import * 
 import numpy as np
 from actions import *
 import sys
+
+# Use an external gear.py file
+# https://stackoverflow.com/questions/47350078/importing-external-module-in-single-file-exe-created-with-pyinstaller
+import sys
+import os
+sys.path.append(os.path.dirname(sys.executable))
+from gear import *
 
 def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name, spell_name, action_type, starting_tp, min_tp, max_tp, check_gear, starting_gearset, pdt_requirement, mdt_requirement, input_metric, print_swaps, next_best_percent, ):
     #
