@@ -115,15 +115,16 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric)
     kickattacks = player.stats.get("Kick Attacks",0)/100
 
     zanshin = player.stats.get("Zanshin",0)/100
+    zanshin = 1.0 if zanshin > 1.0 else zanshin
     zanhasso = player.stats.get("Zanhasso",0)/100
     zanshin_hit_rate = get_hit_rate(accuracy1+34, enemy_evasion, 0.95)
     zanshin_oa2 = player.stats.get("Zanshin OA2",0)/100
 
     # Use multi-attack values to estimate the number of hits per weapon. This must include Flourishes, which can force multi-attacks.
-    main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits = get_ma_rate3(player.main_job, nhits, qa, ta, da, oa_list, dual_wield, hit_rate_matrix, hit_rate_ranged, daken, kickattacks, zanshin, zanhasso, zanshin_hit_rate, zanshin_oa2, striking_flourish, ternary_flourish, True) # Zero for ranged hit rate, daken, and kick attacks since this is the melee WS check
+    main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits = get_ma_rate3(player.main_job, nhits, qa, ta, da, oa_list, dual_wield, hit_rate_matrix, hit_rate_ranged, daken, kickattacks, zanshin, zanhasso, zanshin_hit_rate, zanshin_oa2, striking_flourish, ternary_flourish, True)
 
     tp_per_attack_round = 0
-    tp_per_attack_round += get_tp(main_hits + sub_hits + kickattack_hits - zanshin_hits, mdelay, stp)  # Non-zanshin hits get normal TP
+    tp_per_attack_round += get_tp(main_hits + sub_hits + kickattack_hits, mdelay, stp)  # Non-zanshin hits get normal TP
     tp_per_attack_round += get_tp(zanshin_hits, mdelay, stp, player.main_job=="sam") # Zanshin hits get bonus TP if SAM is your main job and you have Ikishoten merits, which I assume you do.
     tp_per_attack_round += get_tp(daken_hits, ammo_delay, stp)
 
@@ -201,7 +202,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric)
     offhand_damage = get_avg_phys_damage(sub_dmg, fstr_sub, 0, offhand_pdif, 1.0, crit_rate, crit_dmg, 0, 0, 0)
     physical_damage += offhand_damage*sub_hits
 
-    physical_damage *= (1 + da_dmg*da)*(1+ta_dmg*ta) # Main-hand and off-hand hits from a multi-attack are fully boosted by "DA Damage" and "TA Damage" stats.
+    physical_damage *= (1 + da_dmg*da)*(1 + ta_dmg*ta) # Main-hand and off-hand hits from a multi-attack are fully boosted by "DA Damage" and "TA Damage" stats.
 
     # Now add Kick Attacks damage. Again, nothing fancy here except we use the MNK-specific "Kick Attacks Attack" stat.
     kickattacks_pdif = get_avg_pdif_melee(attack1 + player.stats.get("Kick Attacks Attack",0), main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)

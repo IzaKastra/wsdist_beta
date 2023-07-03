@@ -2,7 +2,7 @@
 # Created by Kastra on Asura.
 # Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
 #
-# Version date: 2023 March 09
+# Version date: 2023 July 3
 
 # This code contains the function used to estimate the average number of attacks per attack round given multi-attack stats and accuracy.
 #
@@ -244,10 +244,11 @@ def get_ma_rate3(main_job, nhits, qa, ta, da, oa_list, dual_wield, hitrate_matri
 
     # Zanshin can proc on successful melee swings for SAM main with Hasso up.
     zanshin_sam_bonus = ((1-qa_main)*(1-ta_main)*(1-da_main)*(1-oa3_main)*(1-oa2_main)*hitrate12*zanhasso*zanshin_oa2*2 + \
-                         (1-qa_main)*(1-ta_main)*(1-da_main)*(1-oa3_main)*(1-oa2_main)*hitrate12*zanhasso*(1-zanshin_oa2))*zanshin_hitrate*(main_job=="SAM")
+                         (1-qa_main)*(1-ta_main)*(1-da_main)*(1-oa3_main)*(1-oa2_main)*hitrate12*zanhasso*(1-zanshin_oa2))*zanshin_hitrate*(main_job.lower()=="sam")
 
     zanshin_hits = zanshin_bonus + zanshin_sam_bonus
-    main_hits += zanshin_hits
+    # main_hits += zanshin_hits  # Keep main_hits and Zanshin_hits separate to avoid confusion when adding TP and damage from each later.
+
 
     if dual_wield==True:
         # Add off-hand multi-hits to the first sub hit.
@@ -283,10 +284,10 @@ def get_ma_rate3(main_job, nhits, qa, ta, da, oa_list, dual_wield, hitrate_matri
 
 if __name__ == "__main__":
 
-    nhits = 5
+    nhits = 1
     qa = 0.03
-    ta = 0.06
-    da = 0.64
+    ta = 0.05
+    da = 0.04
     oa3_main = 0
     oa2_main = 0
     oa8_sub = 0
@@ -300,11 +301,19 @@ if __name__ == "__main__":
 
     hitrate_matrix = np.array([[0.95,0.], [0.95,0.]])
     # hitrate_matrix = np.ones_like(hitrate_matrix)
-    dual_wield = True
+    dual_wield = False
+
+    daken=0
+    kickattacks=0
+    zanshin=1.0
+    zanhasso=0.35
+    zanshin_hitrate=0.95
+    zanshin_oa2=0.11
 
     # main_hits, sub_hits = get_ma_rate(nhits, qa, ta, da, oa3, oa2, dual_wield_type, hitrate_matrix)
     # print(main_hits, sub_hits, main_hits+sub_hits)
-    main_hits, sub_hits = get_ma_rate2(nhits, qa, ta, da, oa3_main, oa2_main, dual_wield, hitrate_matrix,)
-    print(main_hits, sub_hits, main_hits+sub_hits)
-    main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits  = get_ma_rate3("nin", nhits, qa, ta, da, oa_list, dual_wield, hitrate_matrix, 0, 0, 0, 0, 0, 0, 0, False, False, False)
-    print(main_hits, sub_hits, main_hits+sub_hits)
+    # main_hits, sub_hits = get_ma_rate2(nhits, qa, ta, da, oa3_main, oa2_main, dual_wield, hitrate_matrix,)
+    # print(main_hits, sub_hits, main_hits+sub_hits)
+    main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits  = get_ma_rate3("SAM", nhits, qa, ta, da, oa_list, dual_wield, hitrate_matrix, 0, daken, kickattacks, zanshin, zanhasso, zanshin_hitrate, zanshin_oa2, False, False, True)
+    print(main_hits, sub_hits, main_hits+sub_hits, zanshin_hits)
+
