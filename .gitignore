@@ -1,0 +1,10 @@
+build/*
+*.toc
+*.manifest
+*.pkg
+*.pyc
+*.pyz
+*.html
+*.jpg
+*.jpeg
+*.spec
