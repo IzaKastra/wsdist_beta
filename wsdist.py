@@ -97,8 +97,8 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
         if (starting_gearset[slot]["Name2"] not in check_gear[slot]) and len(check_gear[slot])>0:
             best_set[slot] = Empty
             
-        # If testing a melee WS, do not find the best ranged weapon unless it is an instrument.
-        if ws_type=="melee":
+        # If testing a melee WS, do not find the best ranged weapon unless it is an instrument. This does not apply to RNG or COR who might want savage blade sets to test gun/bow options
+        if ws_type=="melee" and main_job not in ["rng","cor"]:
             check_gear["ranged"] = [k for k in check_gear["ranged"] if k["Type"]=="Instrument"]
 
     # Define JSE earrings now. We'll use them later to prevent Balder's Earring+1 and a JSE+2 being equipped at the same time since we ignore right_ear requirement for testing.
@@ -175,6 +175,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                             # Equip the items and check that the test_set is valid.
                             test_set[slot1] = item1
                             test_set[slot2] = item2
+
 
                             if (test_set["ring1"]==test_set["ring2"]) and (test_set["ring1"]["Name"]!="Empty"): # Do not try to equip a second unique ring (unless the item is "Empty").
                                 continue
@@ -296,7 +297,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                             mdt = -50 if mdt < -50 else mdt
                             pdt += player.stats.get("PDT2",0) + player.stats.get("DT2",0)
                             mdt += player.stats.get("MDT2",0) + player.stats.get("DT2",0)
-                            # for slot in test_set:
+                            # for slot in test_set:   # TODO: Loop through gear and add MDT/PDT instead of creating a player class
                             #     pdt += test_set[slot].get("PDT2",0) # PDT2 breaks the cap.
                             #     mdt += test_set[slot].get("MDT2",0)
                             if pdt > pdt_thresh_temp or mdt > mdt_thresh_temp:
@@ -352,7 +353,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                 # print(best_output)
                 break # Break out of the main loop and check PDT/MDT conditions.
 
-        best_player0 = create_player(main_job, sub_job, master_level, best_set, buffs, abilities)
+        best_player0 = create_player(main_job, sub_job, master_level, best_set, buffs, abilities) # TODO: Loop through gear and add MDT/PDT instead of creating a player class
 
         pdt = best_player0.stats.get("PDT",0) + best_player0.stats.get("DT",0)
         mdt = best_player0.stats.get("MDT",0) + best_player0.stats.get("DT",0)
