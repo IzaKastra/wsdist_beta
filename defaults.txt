@@ -1,0 +1,89 @@
+# Basic inputs
+ml=40
+mainjob=DRK
+subjob=SAM
+aftermath=0
+mintp=3000
+maxtp=3000
+spell=Impact
+ws=Quietus
+initialtp=0
+odyrank=30
+tvrring=Lehko Habhoka's
+tpmetric=Time to WS
+spellmetric=TP return
+wsmetric=Damage dealt
+
+# WHM inputs
+whm=True
+shell5=True
+dia=Dia III
+haste=Haste II
+boost=None
+storm=None
+
+# BRD inputs
+brd=True
+nsongs=Songs +7
+song1=Honor March
+song2=Victory March
+song3=Minuet V
+song4=Minuet IV
+song5=None
+marcato=False
+soulvoice=False
+
+# COR inputs
+cor=True
+nrolls=Rolls +7
+roll1value=X
+roll1=Chaos
+roll2v=IX
+roll2=Samurai
+crookedcards=True
+jobbonus=True
+lightshot=False
+
+# GEO inputs
+geo=False
+nbubble=Geomancy +10
+geopotency=100
+indi=Indi-Fury
+geo=Geo-Frailty
+entrust=None
+blaze=False
+bolster=False
+
+# Enemy inputs
+ename=Lugcrawler Hunter
+elevel=138
+eevasion=1314
+edevense=1338
+emagicevasion=0
+emagicdefense=0
+eagi=346
+evit=325
+eint=284
+emnd=284
+
+# Equipment and food inputs
+food=Grape Daifuku
+main=Redemption R15
+sub=Utu Grip
+ranged=Empty
+ammo=Seraphic Ampulla
+head=Empty
+neck=Vim Torque +1 R15
+ear1=Dedition Earring
+ear2=Crepuscular Earring
+body=Crepuscular Cloak
+hands=Sakpata's Gauntlets R30
+ring1=Chirich Ring +1 B
+ring2=Lehko Habhoka's ring
+back=Ankou's Mantle INT Store TP
+waist=Oneiros Rope
+legs=Ratri Cuisses +1
+feet=Heathen's Sollerets +3
+
+# Window size:  widthxheight
+dimensions=700x885
