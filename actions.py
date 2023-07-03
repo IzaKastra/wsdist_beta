@@ -124,8 +124,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric)
     main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits = get_ma_rate3(player.main_job, nhits, qa, ta, da, oa_list, dual_wield, hit_rate_matrix, hit_rate_ranged, daken, kickattacks, zanshin, zanhasso, zanshin_hit_rate, zanshin_oa2, striking_flourish, ternary_flourish, True)
 
     tp_per_attack_round = 0
-    tp_per_attack_round += get_tp(main_hits + sub_hits + kickattack_hits, mdelay, stp)  # Non-zanshin hits get normal TP
-    tp_per_attack_round += get_tp(zanshin_hits, mdelay, stp, player.main_job=="sam") # Zanshin hits get bonus TP if SAM is your main job and you have Ikishoten merits, which I assume you do.
+    tp_per_attack_round += get_tp(main_hits + sub_hits + kickattack_hits, (mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay), stp)  # Non-zanshin hits get normal TP. Note that H2H use half of today mdelay for each hand
+    tp_per_attack_round += get_tp(zanshin_hits, (mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay), stp, player.main_job=="sam") # Zanshin hits get bonus TP if SAM is your main job and you have Ikishoten merits, which I assume you do.
     tp_per_attack_round += get_tp(daken_hits, ammo_delay, stp)
 
     # This next line's function call can probably be brought into this main code instead of being its own function/file. TODO
@@ -842,14 +842,12 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     
         # Calculate melee WS TP return.
         tp_return = 0
-
-        tp_return += get_tp(hit_rate11,mdelay,stp) # Calculate TP return from the first main hit, which gains full TP
-        tp_return += get_tp(hit_rate21,mdelay,stp) # Add TP return from the first off-hand hit, which also gains the full TP amount
+        tp_return += get_tp(hit_rate11,mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay,stp) # Calculate TP return from the first main hit, which gains full TP. H2H hits each use half of the total mdelay for TP return, but time between attack rounds is still the same full mdelay.
+        tp_return += get_tp(hit_rate21,mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay,stp) # Add TP return from the first off-hand hit, which also gains the full TP amount
 
         # Add TP return from the remaining main+off-hand hits together. All of these hits simply gain 10*(1+stp) TP
         tp_return += 10*(1+stp)*(main_hits+sub_hits - hit_rate11 - hit_rate21) # main_hits and sub_hits already account for hit rates, so we only subtract off the number of first main+sub hits.
         tp_return += (tp-player.stats.get("TP Bonus",0))*(0.01*(player.gearset["neck"]["Name"]=="Fotia Gorget"))*(0.01*(player.gearset["waist"]["Name"]=="Fotia Belt")) # Fotia gorget/belt each include +1% chance to retain TP on WS (before TP bonus)
-
 
     elif ws_type == "ranged" and not magical:
 
@@ -915,7 +913,7 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
             base_magical_damage = int(((152 + int((weapon_level-99)*2.45)+wsc)*ftp)*(1+crocea) + ws_dSTAT + magic_damage_stat)
 
             # Calculate TP return for purely magical weapon skills. This is treated as a single hit (even for dual wielding) with normal TP gain from delay and Store TP.
-            magic_delay = mdelay if ws_type=="melee" else ranged_delay+ammo_delay
+            magic_delay = (mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay) if ws_type=="melee" else ranged_delay+ammo_delay
             tp_return = get_tp(magic_hit_rate, mdelay, stp)
 
         # Calculate the magical damage multiplier.
