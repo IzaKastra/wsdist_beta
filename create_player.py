@@ -113,9 +113,9 @@ class create_player:
         ranged_skill = self.gearset["ranged"].get("Skill Type","None") + " Skill"
         ammo_skill = self.gearset["ammo"].get("Skill Type","None") + " Skill"
         if ammo_skill=="Throwing Skill": # For Shuriken
-            self.stats["Ranged Attack"] += 8 + self.stats.get(ammo_skill,0) + self.stats["STR"]
+            self.stats["Ranged Attack"] += 8 + self.stats.get(ammo_skill,0) + self.stats.get("STR",0)
         elif ranged_skill in ["Marksmanship Skill","Archery Skill"]:
-            self.stats["Ranged Attack"] += 8 + self.stats.get(ranged_skill,0) + self.stats["STR"]
+            self.stats["Ranged Attack"] += 8 + self.stats.get(ranged_skill,0) + self.stats.get("STR",0)
 
         # Additive buffs to Attack and Accuracy from things like BRD have already been added.
         # We still need to add percent-based buffs such as Chaos Roll and Berserk. These have already been conveniently summed into the "Attack%" stat.
@@ -135,12 +135,12 @@ class create_player:
         ranged_skill_level = self.stats.get(ranged_skill,0)
         ammo_skill_level = self.stats.get(ammo_skill,0)
 
-        self.stats["Accuracy1"] = int(0.75*(self.stats["DEX"])) + self.stats["Accuracy"] + self.get_skill_accuracy(main_skill_level)
-        self.stats["Accuracy2"] = int(0.75*(self.stats["DEX"])) + self.stats["Accuracy"] + self.get_skill_accuracy(sub_skill_level)
+        self.stats["Accuracy1"] = int(0.75*(self.stats.get("DEX",0))) + self.stats.get("Accuracy",0) + self.get_skill_accuracy(main_skill_level)
+        self.stats["Accuracy2"] = int(0.75*(self.stats.get("DEX",0))) + self.stats.get("Accuracy",0) + self.get_skill_accuracy(sub_skill_level)
         if ammo_skill=="Throwing Skill": # For Shuriken
-            self.stats["Ranged Accuracy"] += int(0.75*(self.stats["AGI"])) + self.get_skill_accuracy(ammo_skill_level)
+            self.stats["Ranged Accuracy"] += int(0.75*(self.stats.get("AGI",0))) + self.get_skill_accuracy(ammo_skill_level)
         elif ranged_skill in ["Marksmanship Skill","Archery Skill"]:
-            self.stats["Ranged Accuracy"] += int(0.75*(self.stats["AGI"])) + self.get_skill_accuracy(ranged_skill_level)
+            self.stats["Ranged Accuracy"] += int(0.75*(self.stats.get("AGI",0))) + self.get_skill_accuracy(ranged_skill_level)
 
 
         self.stats["Delay1"] = self.gearset["main"].get("Delay",480-self.stats.get("Martial Arts",0)) # Use base hand-to-hand delay if main-hand item does not have a Delay stat 
@@ -159,7 +159,7 @@ class create_player:
             self.stats["Daken"] = 0
         if self.gearset["main"].get("Skill Type","None")!="Hand-to-Hand":
             self.stats["Kick Attacks"] = 0
-            self.stats["Martial Arts"] = 0 # Technically we can fight with H2H while empty-handed, but my "Empty" gear uses "None" skill-type, which means no attack/accuracy from "Hand-to-Hand Skill"
+            self.stats["Martial Arts"] = 0 # Technically we can fight with H2H while empty-handed, but my "Empty" gear uses "None" skill-type, which means no attack/accuracy from "Hand-to-Hand Skill" TODO-
         if self.gearset["main"]["Skill Type"] not in two_handed:
             self.stats["Zanshin"] = 0
         if (self.gearset["ranged"].get("Type") not in ["Gun","Bow","Crossbow"]) and (self.gearset["ammo"].get("Type","None") not in ["Bullet","Arrow","Bolt","Shuriken"]):
@@ -205,17 +205,6 @@ class create_player:
             self.stats["Kick DMG"] = 0
 
         self.stats["Delay Reduction"] = (1 - reduced_delay/base_delay) if (1 - reduced_delay/base_delay) < 0.8 else 0.8
-
-
-        # You can manually assign stats at this point if you really wanted to. For example:
-        # self.stats["Store TP"] = 3000000
-        # self.stats["QA"] = 100
-
-        # # Integerize the values now.
-        # self.stats["Attack1"] = int(self.stats.get("Attack1",0))
-        # self.stats["Attack2"] = int(self.stats.get("Attack2",0))
-        # self.stats["Ranged Attack"] = int(self.stats.get("Ranged Attack",0))
-        # self.stats["Evasion"] = int(self.stats.get("Evasion",0))
 
         # We'll apply caps to certain stats in the main code.
 
@@ -424,7 +413,7 @@ class create_player:
                 self.stats["Weapon Skill Damage"] = self.stats.get("Weapon Skill Damage",0) + 20
             # We deal with Climactic, Striking, and Ternary Flourish in the main code since they are special cases that apply some stuff only to the first hit.
             if self.abilities.get("Saber Dance",False):
-                self.stats["DA"] = self.stats.get("DA",0) + 25 # Assume minimum potency Saber Dance since it decays so quickly.
+                self.stats["DA"] = self.stats.get("DA",0) + 25 # Assume minimum potency Saber Dance since it decays quickly.
         # ===========================================================================
         # ===========================================================================
         # Scholar abilities.
@@ -534,8 +523,8 @@ class create_player:
             }
             if main_wpn_name in mythic_am_dict and aftermath_level>0: # Melee Mythic aftermath check. We add other forms of OAX later with similar formats.
                 if aftermath_level==3:
-                    self.stats["OA2 main"] = self.stats.get("OA2 main",0) + 0.4
-                    self.stats["OA3 main"] = self.stats.get("OA3 main",0) + 0.2
+                    self.stats["OA2 main"] = self.stats.get("OA2 main",0) + 40
+                    self.stats["OA3 main"] = self.stats.get("OA3 main",0) + 20
                 else:
                     self.stats[mythic_am_dict[main_wpn_name][aftermath_level-1][0]] = self.stats.get(mythic_am_dict[main_wpn_name][aftermath_level-1][0],0) + mythic_am_dict[main_wpn_name][aftermath_level-1][1]
             if ranged_wpn_name in mythic_am_dict and aftermath_level in [1,2]: # Ranged Mythic aftermath check. We deal with Lv2 later in the main code when calculating damage.

@@ -285,11 +285,11 @@ def get_ma_rate3(main_job, nhits, qa, ta, da, oa_list, dual_wield, hitrate_matri
 if __name__ == "__main__":
 
     nhits = 1
-    qa = 0.03
-    ta = 0.05
-    da = 0.04
-    oa3_main = 0
-    oa2_main = 0
+    qa = 0.05
+    ta = 0.12
+    da = 0.41
+    oa3_main = 0.2
+    oa2_main = 0.4
     oa8_sub = 0
     oa7_sub = 0
     oa6_sub = 0
@@ -305,15 +305,15 @@ if __name__ == "__main__":
 
     daken=0
     kickattacks=0
-    zanshin=1.0
-    zanhasso=0.35
     zanshin_hitrate=0.95
-    zanshin_oa2=0.11
+    zanshin=0.35
+    zanhasso=0.0
+    zanshin_oa2=0.0
 
     # main_hits, sub_hits = get_ma_rate(nhits, qa, ta, da, oa3, oa2, dual_wield_type, hitrate_matrix)
     # print(main_hits, sub_hits, main_hits+sub_hits)
     # main_hits, sub_hits = get_ma_rate2(nhits, qa, ta, da, oa3_main, oa2_main, dual_wield, hitrate_matrix,)
     # print(main_hits, sub_hits, main_hits+sub_hits)
-    main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits  = get_ma_rate3("SAM", nhits, qa, ta, da, oa_list, dual_wield, hitrate_matrix, 0, daken, kickattacks, zanshin, zanhasso, zanshin_hitrate, zanshin_oa2, False, False, True)
+    main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits  = get_ma_rate3("DRK", nhits, qa, ta, da, oa_list, dual_wield, hitrate_matrix, 0, daken, kickattacks, zanshin, zanhasso, zanshin_hitrate, zanshin_oa2, False, False, True)
     print(main_hits, sub_hits, main_hits+sub_hits, zanshin_hits)
 
