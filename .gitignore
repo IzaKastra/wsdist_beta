@@ -1,4 +1,5 @@
 build/*
+defaults.txt
 *.toc
 *.manifest
 *.pkg
