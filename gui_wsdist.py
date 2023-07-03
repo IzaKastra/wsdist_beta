@@ -369,7 +369,7 @@ class App(tk.Tk):
                                 "Fire","Fire II","Fire III","Fire IV","Fire V","Pyrohelix II",
                                 "Blizzard","Blizzard II","Blizzard III","Blizzard IV","Blizzard V","Cryohelix II",
                                 "Thunder","Thunder II","Thunder III","Thunder IV","Thunder V","Ionohelix II",
-                                "Luminohelix II", "Noctohelix II","Kaustra""Impact",],
+                                "Luminohelix II", "Noctohelix II","Kaustra","Impact",],
                         "DRK":["Stone","Stone II","Stone III",
                                 "Water","Water II","Water III",
                                 "Aero","Aero II","Aero III",
@@ -747,9 +747,15 @@ class App(tk.Tk):
 
         self.haste_samba_value = tk.BooleanVar()
         self.haste_samba_toggle = ttk.Checkbutton(self.ja_frame,variable=self.haste_samba_value, text="Haste Samba",width=-25, command=lambda event="haste_samba": self.update_special_checkboxes(event))
-        self.hastesamba_tip = Hovertip(self.hover_shot_toggle,"JA Haste: +5%\nDNC mainjob: JA Haste +5%",hover_delay=500)
+        self.hastesamba_tip = Hovertip(self.haste_samba_toggle,"JA Haste: +5%\nDNC mainjob: JA Haste +5%",hover_delay=500)
         self.haste_samba_toggle.state(["!alternate"])
         self.haste_samba_toggle.grid(row=40,column=0,sticky="n")
+
+        self.klimaform_value = tk.BooleanVar()
+        self.klimaform_toggle = ttk.Checkbutton(self.ja_frame,variable=self.klimaform_value, text="Klimaform",width=-25, command=lambda event="klimaform": self.update_special_checkboxes(event))
+        self.klimaform_tip = Hovertip(self.klimaform_toggle,"Magic Accuracy +15",hover_delay=500)
+        self.klimaform_toggle.state(["!alternate"])
+        self.klimaform_toggle.grid(row=41,column=0,sticky="n")
 
 
         self.ja_canvas.create_window((0,0),window=self.ja_frame, anchor="nw")
@@ -2968,13 +2974,14 @@ class App(tk.Tk):
                      "Shell V":self.shell5_on.get(),
                      "Innin":self.innin_value.get(),
                      "Futae":self.futae_value.get(),
-                     "Nature's Medidation":self.natures_meditation_value.get(),
+                     "Nature's Meditation":self.natures_meditation_value.get(),
                      "Triple Shot":self.triple_shot_value.get(),
                      "Building Flourish":self.building_flourish_value.get(),
                      "Climactic Flourish":self.climactic_flourish_value.get(),
                      "Striking Flourish":self.striking_flourish_value.get(),
                      "Ternary Flourish":self.ternary_flourish_value.get(),
                      "Saber Dance":self.saber_dance_value.get(),
+                     "Storm spell":self.whm_spell4.get(),
                      "Ebullience":self.ebullience_value.get(),
                      "Enlightenment":self.enlightenment_value.get(),
                      "Swordplay":self.swordplay_value.get(),
@@ -2984,6 +2991,7 @@ class App(tk.Tk):
                      "Blood Rage":self.blood_rage_value.get(),
                      "Aftermath":self.am_level.get(),
                      "Haste Samba":self.haste_samba_value.get(),
+                     "Klimaform":self.klimaform_value.get(),
                      "Distract III":self.distract3_value.get()}
 
 
@@ -3558,6 +3566,7 @@ class App(tk.Tk):
                                     [self.focus_toggle, self.focus_value,"mnk",0], [self.footwork_toggle, self.footwork_value,"mnk",999], [self.futae_toggle, self.futae_value,"nin",999],
                                     [self.hasso_toggle, self.hasso_value,"sam",0],[self.haste_samba_toggle, self.haste_samba_value,"dnc",0],[self.hover_shot_toggle, self.hover_shot_value,"rng",999],
                                     [self.impetus_toggle, self.impetus_value,"mnk",999],[self.innin_toggle, self.innin_value,"nin",999],
+                                    [self.klimaform_toggle, self.klimaform_value,"sch",0],
                                     [self.last_resort_toggle, self.last_resort_value,"drk",0],
                                     [self.manafont_toggle, self.manafont_value,"blm",999], [self.manawell_toggle, self.manawell_value,"blm",999],[self.mighty_strikes_toggle, self.mighty_strikes_value,"war",999],
                                     [self.natures_meditation_toggle, self.natures_meditation_value,"blu",0],

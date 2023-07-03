@@ -423,6 +423,10 @@ class create_player:
             if self.abilities.get("Enlightenment",False):
                 self.stats["INT"] = self.stats.get("INT",0) + 20
                 self.stats["MND"] = self.stats.get("MND",0) + 20
+        if "sch" in [self.main_job, self.sub_job]:
+            if self.abilities.get("Klimaform",False): 
+                self.stats["Magic Accuracy"] = self.stats.get("Magic Accuracy",0) + 15 # SCH Empy+3 feet provide damage+ with klimaform active. We deal with that in the main code.
+
         # ===========================================================================
         # ===========================================================================
         # Geomancer abilities.
@@ -891,7 +895,6 @@ class create_player:
             self.stats["DA"] = self.stats.get("DA",0) + 17 # Temper1
         
         if "sch" in [self.main_job, self.sub_job]:
-            self.stats["Magic Accuracy"] = self.stats.get("Magic Accuracy",0) + 15 # Klimaform. SCH's Klimaform Damage bonus from Empyrean feet is added in the main code when calculating elemental magic damage
             self.stats["Elemental Magic Skill"] = max(self.stats.get("Elemental Magic Skill",0), 404+16) # Dark Arts enhances elemental magic skill to B+ rank, plus 16 from merits
             self.stats["Dark Magic Skill"] = max(self.stats.get("Dark Magic Skill",0), 404+16) # Dark Arts enhances dark magic skill to B+ rank, plus 16 from merits
             self.stats["Divine Magic Skill"] = max(self.stats.get("Divine Magic Skill",0), 404+16) # Light Arts enhances divine magic skill to B+ rank, plus 16 from merits

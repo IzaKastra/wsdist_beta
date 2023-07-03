@@ -274,10 +274,9 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
     enemy_mdt = enemy.stats.get("MDT",1.0) # Enemy MDT is usually 1.0 (-0%) unless the enemy casts shell or a similar spell/ability.
 
     dayweather = 1.0 # We increase this later
-    storm_elements = {"Sandstorm II":"Earth","Rainstorm II":"Water","Windstorm II":"Wind","Firestorm II":"Fire","Hailstorm II":"Ice","Thunderstorm II":"Thunder","Aurorastorm II":"Light","Voidstorm II":"Dark",
-                      "Sandstorm":"Earth","Rainstorm":"Water","Windstorm":"Wind","Firestorm":"Fire","Hailstorm":"Ice","Thunderstorm":"Thunder","Aurorastorm":"Light","Voidstorm":"Dark"}
-    active_storm =  player.abilities.get("storm spell",False)
-
+    storm_elements = {"Sandstorm II":"earth","Rainstorm II":"water","Windstorm II":"wind","Firestorm II":"fire","Hailstorm II":"ice","Thunderstorm II":"thunder","Aurorastorm II":"light","Voidstorm II":"dark",
+                      "Sandstorm":"earth","Rainstorm":"water","Windstorm":"wind","Firestorm":"fire","Hailstorm":"ice","Thunderstorm":"thunder","Aurorastorm":"light","Voidstorm":"dark"}
+    active_storm =  player.abilities.get("Storm spell",False)
 
     skillchain_step = 2
     magic_burst_multiplier = 1.0 # Standard +35% damage for magic bursting
@@ -313,7 +312,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         magic_attack_ratio = (100 + magic_attack) / (100 + enemy_magic_defense)
 
         if player.gearset["waist"]["Name"]=="Hachirin-no-Obi" and active_storm:
-            if element == storm_spells.get(active_storm,False):
+            if element.lower() == storm_elements.get(active_storm,False):
                 dayweather = 1.25 if "II" in active_storm else 1.1
 
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
@@ -362,7 +361,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         magic_attack_ratio = (100 + magic_attack) / (100 + enemy_magic_defense)
 
         if player.gearset["waist"]["Name"]=="Hachirin-no-Obi" and active_storm:
-            if element == storm_spells.get(active_storm,False):
+            if element.lower() == storm_elements.get(active_storm,False):
                 dayweather = 1.25 if "II" in active_storm else 1.1
 
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
@@ -416,35 +415,35 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
                 "Firaja":[358,"Fire"],
                 "Blizzaja":[378,"Ice"],
                 "Thundaja":[398,"Thunder"],
-                "Geohelix II":"Earth",
-                "Hydrohelix II":"Water",
-                "Anemohelix II":"Wind",
-                "Pyrohelix II":"Fire",
-                "Cryohelix II":"Ice",
-                "Ionohelix II":"Thunder",
-                "Luminohelix II":"Light",
-                "Noctohelix II":"Dark",
-                "Kaustra":"Dark",
-                "Impact":"Dark"
+                "Geohelix II":[78,"Earth"],
+                "Hydrohelix II":[78,"Water"],
+                "Anemohelix II":[78,"Wind"],
+                "Pyrohelix II":[78,"Fire"],
+                "Cryohelix II":[78,"Ice"],
+                "Ionohelix II":[78,"Thunder"],
+                "Luminohelix II":[78,"Light"],
+                "Noctohelix II":[78,"Dark"],
+                "Kaustra":[0,"Dark"],
+                "Impact":[666,"Dark"]
         }
 
 
-        if spell_name.split()[0] in spells:
+        if spell_name in spells:
             element = spells[spell_name][1].lower()
             if spell_name[-2:]=="ja":
                 tier = "ja"
                 mp_cost = spells[spell_name][0]
             elif "helix" in spell_name:
                 tier="helix"
-                mp_cost = 78
+                mp_cost = spells[spell_name][0]
                 magic_attack += player.stats.get("Helix Magic Attack",0)
                 magic_accuracy += player.stats.get("Helix Magic Accuracy",0)
             elif spell_name=="Kaustra":
                 tier=None
-                mp_cost = 0
+                mp_cost = spells[spell_name][0]
             elif spell_name=="Impact":
+                mp_cost = spells[spell_name][0]
                 tier=None
-                mp_cost = 666
             elif spell_name.split()[-1] in ["II","III","IV","V","VI"]:
                 tier = spell_name.split()[-1]
                 mp_cost = spells[spell_name][0]
@@ -458,7 +457,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
             ebullience_multiplier += 0.2 + player.stats.get("Ebullience Bonus",0)/100
             # We've already added +40 magic damage from Ebullience in the setup code. We do add +40 magic damage to Kaustra manually below, though.
 
-        klimaform_multiplier = 1.0 + player.stats.get("Klimaform Damage%",0)/100
+        klimaform_multiplier = 1.0 + player.abilities.get("Klimaform",False)*player.stats.get("Klimaform Damage%",0)/100
 
         if spell_name == "Kaustra":
             player_level = 99
@@ -481,7 +480,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         magic_attack_ratio = (100 + magic_attack) / (100 + enemy_magic_defense)
 
         if player.gearset["waist"]["Name"]=="Hachirin-no-Obi" and active_storm:
-            if element == storm_spells.get(active_storm,False):
+            if element.lower() == storm_elements.get(active_storm,False):
                 dayweather = 1.25 if "II" in active_storm else 1.1
 
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
@@ -743,6 +742,9 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     magical_damage = 0
     total_damage = 0
 
+    main_skill_type = player.gearset["main"]["Skill Type"]
+    sub_skill_type = player.gearset["sub"].get("Skill Type",None) if not main_skill_type=="Hand-to-Hand" else "Hand-to-Hand"
+
     if ws_type == "melee" and not magical: # Melee WSs get multi-attacks, so we separate them from ranged weapon skills when calculating damage.
 
         main_dmg = player.stats["DMG1"]
@@ -763,9 +765,6 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
 
         two_handed_skills = ["Great Sword", "Great Katana", "Great Axe", "Polearm", "Scythe", "Staff",] # I treat Hand-to-Hand separately where needed. Search for "Hand-to-Hand" to find these locations.
         one_handed_skills = ["Axe", "Club", "Dagger", "Sword", "Katana",]
-
-        main_skill_type = player.gearset["main"]["Skill Type"]
-        sub_skill_type = player.gearset["sub"].get("Skill Type",None) if not main_skill_type=="Hand-to-Hand" else "Hand-to-Hand"
 
         # Calculate hit rates.
         accuracy1 = player_accuracy1 + player.stats.get("Weapon Skill Accuracy",0)
@@ -925,16 +924,14 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
         element_magic_attack_bonus = 1 + (player.stats.get(f"{element} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100)
 
         dayweather = 1.0
-        storm_elements = {"Sandstorm II":"Earth","Rainstorm II":"Water","Windstorm II":"Wind","Firestorm II":"Fire","Hailstorm II":"Ice","Thunderstorm II":"Thunder","Aurorastorm II":"Light","Voidstorm II":"Dark",
-                          "Sandstorm":"Earth","Rainstorm":"Water","Windstorm":"Wind","Firestorm":"Fire","Hailstorm":"Ice","Thunderstorm":"Thunder","Aurorastorm":"Light","Voidstorm":"Dark"}
-        active_storm =  player.abilities.get("storm spell",False)
+        storm_elements = {"Sandstorm II":"earth","Rainstorm II":"water","Windstorm II":"wind","Firestorm II":"fire","Hailstorm II":"ice","Thunderstorm II":"thunder","Aurorastorm II":"light","Voidstorm II":"dark",
+                          "Sandstorm":"earth","Rainstorm":"water","Windstorm":"wind","Firestorm":"fire","Hailstorm":"ice","Thunderstorm":"thunder","Aurorastorm":"light","Voidstorm":"dark"}
+        active_storm =  player.abilities.get("Storm spell",False)
         if player.gearset["waist"]["Name"]=="Hachirin-no-Obi" and active_storm:
-            if element == storm_spells.get(active_storm,False):
+            if element.lower() == storm_elements.get(active_storm,False):
                 dayweather = 1.25 if "II" in active_storm else 1.1
 
-        klimaform_bonus = 1.0 # Klimaform with Empy+3 feet boosts magical WS damage by 25%
-        if player.gearset["feet"]["Name"] == "Arbatel Loafers +3": # Only SCH can use these feet, so only SCH will see this bonus.
-            klimaform_bonus += 0.25
+        klimaform_bonus = 1.0 + player.abilities.get("Klimaform",False)*player.stats.get("Klimaform Damage%",0)/100 # Klimaform with Empy+3 feet boosts magical WS damage by 25%
 
         enemy_mdt = 1.0 # Enemy MDT is usually 1.0 (-0%) unless the enemy casts shell or a similar spell/ability.
 
