@@ -256,7 +256,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 July 3)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 July 4)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -391,20 +391,20 @@ class App(tk.Tk):
             self.spell_box.grid(row=4, column=1, padx=0, pady=1,sticky='e')
 
 
-            self.ws_dict = {"Katana": ["Blade: Retsu", "Blade: Teki", "Blade: To", "Blade: Chi", "Blade: Ei", "Blade: Jin", "Blade: Ten", "Blade: Ku", "Blade: Yu", "Blade: Metsu", "Blade: Kamu", "Blade: Hi", "Blade: Shun", "Jijin Kaimetsu",],
-                        "Great Katana": ["Tachi: Enpi","Tachi: Goten","Tachi: Kagero","Tachi: Jinpu","Tachi: Koki","Tachi: Yukikaze","Tachi: Gekko","Tachi: Kasha","Tachi: Kaiten","Tachi: Rana","Tachi: Fudo","Tachi: Shoha","Tachi: Mumei",],
-                        "Dagger": ["Merciless Strike","Evisceration", "Exenterator", "Mercy Stroke", "Aeolian Edge", "Rudra's Storm", "Shark Bite", "Dancing Edge", "Mordant Rime","Mandalic Stab","Pyrrhic Kleos", "Viper Bite"],
-                        "Sword": ["Imperator","Savage Blade", "Expiacion", "Death Blossom", "Chant du Cygne", "Knights of Round", "Sanguine Blade", "Seraph Blade","Red Lotus Blade","Requiescat","Circle Blade","Swift Blade","Fast Blade","Burning Blade","Fast Blade II"],
-                        "Scythe": ["Origin","Insurgency", "Cross Reaper", "Entropy", "Quietus", "Catastrophe","Infernal Scythe","Shadow of Death","Dark Harvest","Spiral Hell","Slice","Spinning Scythe","Guillotine"],
-                        "Great Sword":["Fimbulvetr","Torcleaver","Scourge","Resolution","Freezebite", "Herculean Slash","Ground Strike","Dimidiation","Shockwave","Sickle Moon","Spinning Slash","Hard Slash"],
-                        "Club":["Dagda","Hexa Strike","Realmrazer","Seraph Strike","Randgrith","Black Halo","Judgment","Exudation","Shining Strike","True Strike","Mystic Boon"],
-                        "Polearm":["Diarmuid","Stardiver", "Impulse Drive", "Penta Thrust", "Geirskogul", "Drakesbane", "Camlann's Torment","Raiden Thrust","Thunder Thrust","Wheeling Thrust", "Sonic Thrust","Double Thrust"],
-                        "Staff":["Oshala","Cataclysm","Shattersoul","Earth Crusher","Vidohunir","Retribution","Full Swing","Sunburst","Heavy Swing","Starburst","Gate of Tartarus","Rock Crusher","Omniscience"],
-                        "Great Axe":["Disaster","Ukko's Fury", "Upheaval", "Metatron Torment", "King's Justice","Raging Rush","Fell Cleave","Steel Cyclone","Iron Tempest"],
-                        "Axe":["Blitz","Cloudsplitter","Ruinator","Decimation","Rampage","Primal Rend","Mistral Axe","Onslaught","Calamity","Bora Axe","Spinning Axe","Raging Axe"],
-                        "Archery":["Sarv","Empyreal Arrow", "Flaming Arrow", "Namas Arrow","Jishnu's Radiance","Apex Arrow","Refulgent Arrow","Sidewinder","Blast Arrow","Piercing Arrow"],
-                        "Marksmanship":["Terminus","Last Stand","Hot Shot","Leaden Salute","Wildfire","Coronach","Trueflight", "Detonator","Blast Shot","Slug Shot","Split Shot"],
-                        "Hand-to-Hand":["Maru Kala","Raging Fists","Howling Fist","Dragon Kick","Asuran Fists","Tornado Kick","Shijin Spiral","Final Heaven","Victory Smite","Ascetic's Fury","Stringing Pummel","Spinning Attack","Combo","One Inch Punch"],
+            self.ws_dict = {"Katana": ["Blade: Retsu", "Blade: Teki", "Blade: To", "Blade: Chi", "Blade: Ei", "Blade: Jin", "Blade: Ten", "Blade: Ku", "Blade: Yu", "Blade: Metsu", "Blade: Kamu", "Blade: Hi", "Blade: Shun", "Zesho Meppo",],
+                        "Great Katana": ["Tachi: Enpi", "Tachi: Goten", "Tachi: Kagero", "Tachi: Jinpu", "Tachi: Koki","Tachi: Yukikaze", "Tachi: Gekko", "Tachi: Kasha", "Tachi: Ageha","Tachi: Kaiten", "Tachi: Rana", "Tachi: Fudo", "Tachi: Shoha", "Tachi: Mumei"],
+                        "Dagger": [ "Viper Bite", "Dancing Edge", "Shark Bite", "Evisceration", "Aeolian Edge", "Mercy Stroke", "Mandalic Stab", "Mordant Rime", "Pyrrhic Kleos", "Rudra's Storm", "Exenterator", "Merciless Strike"],
+                        "Sword": ["Fast Blade", "Fast Blade II", "Burning Blade", "Red Lotus Blade", "Seraph Blade", "Circle Blade", "Swift Blade", "Savage Blade", "Sanguine Blade", "Knights of Round", "Death Blossom", "Expiacion", "Chant du Cygne", "Requiescat", "Imperator"],
+                        "Scythe": ["Slice", "Dark Harvest", "Shadow of Death", "Nightmare Scythe", "Spinning Scythe", "Guillotine", "Cross Reaper", "Spiral Hell", "Infernal Scythe", "Catastrophe", "Quietus", "Insurgency", "Entropy", "Origin", ], 
+                        "Great Sword":["Hard Slash", "Freezebite", "Shockwave", "Sickle Moon", "Spinning Slash", "Ground Strike", "Herculean Slash", "Resolution", "Scourge", "Dimidiation", "Torcleaver", "Fimbulvetr", ], 
+                        "Club":["Shining Strike", "Seraph Strike", "Skullbreaker", "True Strike", "Judgment", "Hexa Strike", "Black Halo", "Randgrith", "Exudation", "Mystic Boon", "Realmrazer", "Dagda"], 
+                        "Polearm":["Double Thrust", "Thunder Thrust", "Raiden Thrust", "Penta Thrust", "Wheeling Thrust", "Impulse Drive", "Sonic Thrust", "Geirskogul", "Drakesbane", "Camlann's Torment", "Stardiver", "Diarmuid", ], 
+                        "Staff":["Heavy Swing", "Rock Crusher", "Earth Crusher", "Starburst", "Sunburst", "Shell Crusher", "Full Swing", "Cataclysm", "Retribution", "Gate of Tartarus", "Omniscience", "Vidohunir", "Shattersoul", "Oshala"], 
+                        "Great Axe":["Iron Tempest", "Shield Break", "Armor Break", "Weapon Break", "Raging Rush", "Full Break", "Steel Cyclone", "Fell Cleave", "Metatron Torment", "King's Justice", "Ukko's Fury", "Upheaval", "Disaster"], 
+                        "Axe":["Raging Axe", "Spinning Axe", "Rampage", "Calamity", "Mistral Axe", "Decimation", "Bora Axe", "Onslaught", "Primal Rend", "Cloudsplitter", "Ruinator", "Blitz", ], 
+                        "Archery":["Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow", "Empyreal Arrow", "Refulgent Arrow", "Namas Arrow", "Jishnu's Radiance", "Apex Arrow", "Sarv"], 
+                        "Marksmanship":["Hot Shot", "Split Shot", "Sniper Shot", "Slug Shot", "Blast Shot", "Detonator", "Coronach", "Leaden Salute", "Trueflight", "Wildfire", "Last Stand", "Terminus", ], 
+                        "Hand-to-Hand":["Combo","One Inch Punch","Raging Fists","Spinning Attack","Howling Fist","Dragon Kick","Asuran Fists","Tornado Kick","Ascetic's Fury","Stringing Pummel","Final Heaven","Victory Smite","Shijin Spiral","Maru Kala",],
                         }
 
             self.ranged_ws = self.ws_dict["Archery"] + self.ws_dict["Marksmanship"]
@@ -504,6 +504,8 @@ class App(tk.Tk):
 
         self.ja_frame = ttk.Frame(self.ja_canvas)
 
+
+        # Note: the order and row number of these toggles (at this moment) does not matter at all. They get reorganized when swapping jobs and a job swap is trigged when the code starts.
         self.magic_burst_value = tk.BooleanVar()
         self.magic_burst_toggle = ttk.Checkbutton(self.ja_frame,variable=self.magic_burst_value, text="Magic Burst",width=-25, command=lambda event="magic_burst": self.update_special_checkboxes(event))
         self.magic_burst_toggle.state(["!alternate"])
@@ -517,7 +519,7 @@ class App(tk.Tk):
 
         self.berserk_value = tk.BooleanVar()
         self.berserk_toggle = ttk.Checkbutton(self.ja_frame,variable=self.berserk_value, text="Berserk",width=-25, command=lambda event="berserk": self.update_special_checkboxes(event))
-        self.berserk_tip = Hovertip(self.berserk_toggle,"Attack +25% (256/1024)\nWAR mainjob: Attack +40\nConqueror equipped: Attack +8.5%\nConqueror equipped: Crit Rate +14%",hover_delay=500)
+        self.berserk_tip = Hovertip(self.berserk_toggle,"Attack +25% (256/1024)\nWAR mainjob: Attack +10% (100/1024)\nWAR mainjob: Attack +40\nConqueror equipped: Attack +8.5%\nConqueror equipped: Crit Rate +14%",hover_delay=500)
         self.berserk_toggle.state(["!alternate"])
         self.berserk_toggle.grid(row=2,column=0,sticky="n")
 
@@ -756,6 +758,12 @@ class App(tk.Tk):
         self.divine_emblem_tip = Hovertip(self.divine_emblem_toggle,"Magic Damage +40",hover_delay=500)
         self.divine_emblem_toggle.state(["!alternate"])
         self.divine_emblem_toggle.grid(row=42,column=0,sticky="n")
+
+        self.angon_value = tk.BooleanVar()
+        self.angon_toggle = ttk.Checkbutton(self.ja_frame,variable=self.angon_value, text="Angon",width=-25, command=lambda event="angon": self.update_special_checkboxes(event))
+        self.angon_tip = Hovertip(self.divine_emblem_toggle,"Enemy Defense -20%",hover_delay=500)
+        self.angon_toggle.state(["!alternate"])
+        self.angon_toggle.grid(row=43,column=0,sticky="n")
 
         self.ja_canvas.create_window((0,0),window=self.ja_frame, anchor="nw")
         # ===========================================================================
@@ -1790,21 +1798,24 @@ class App(tk.Tk):
         self.conditions_frame = ttk.Frame(self.frame4,)
         self.conditions_frame.grid(row=1,column=0,padx=0,pady=0)
 
+        self.dt_label = ttk.Label(self.conditions_frame,text="Note: Use negative values for DT sets")
+        self.dt_label.grid(row=0,column=0,padx=0,pady=1,sticky='w',columnspan=2)
+
         self.pdt_label = ttk.Label(self.conditions_frame,text="PDT requirement:")
-        self.pdt_label.grid(row=0, column=0, sticky="w", padx=0, pady=1)
+        self.pdt_label.grid(row=1, column=0, sticky="w", padx=0, pady=1)
         self.pdt_req = tk.StringVar(value="100")
         self.pdt_entry = ttk.Entry(self.conditions_frame,textvariable=self.pdt_req,justify="right")
         self.pdt_tip = Hovertip(self.pdt_entry,f"The automated set finder will try to find the best set that has no more PDT than this value.\nNegative values are good, positive values are bad.\nCaps at +100 to allow the set finder to function.",hover_delay=500)
         self.pdt_entry.configure(width=6)
-        self.pdt_entry.grid(row=0,column=1,padx=0,pady=1,sticky='w')
+        self.pdt_entry.grid(row=1,column=1,padx=0,pady=1,sticky='w')
 
         self.mdt_label = ttk.Label(self.conditions_frame,text="MDT requirement:")
-        self.mdt_label.grid(row=1, column=0, sticky="w", padx=0, pady=1)
+        self.mdt_label.grid(row=2, column=0, sticky="w", padx=0, pady=1)
         self.mdt_req = tk.StringVar(value="100")
         self.mdt_entry = ttk.Entry(self.conditions_frame,textvariable=self.mdt_req,justify="right")
         self.mdt_tip = Hovertip(self.mdt_entry,f"The automated set finder will try to find the best set that has no more MDT than this value.\nNegative values are good, positive values are bad.\nCaps at +100 to allow the set finder to function.",hover_delay=500)
         self.mdt_entry.configure(width=6)
-        self.mdt_entry.grid(row=1,column=1,padx=0,pady=1,sticky='w')
+        self.mdt_entry.grid(row=2,column=1,padx=0,pady=1,sticky='w')
 
         # self.sb_label = ttk.Label(self.conditions_frame,text="Subtle Blow requirement:")
         # self.sb_label.grid(row=2, column=0, sticky="w", padx=0, pady=1)
@@ -1814,25 +1825,25 @@ class App(tk.Tk):
         # self.sb_entry.grid(row=2,column=1,padx=0,pady=1,sticky='w')
 
         self.tpmetric_label = ttk.Label(self.conditions_frame,text="TP Metric:")
-        self.tpmetric_label.grid(row=2, column=0, sticky="w", padx=0, pady=1)
+        self.tpmetric_label.grid(row=3, column=0, sticky="w", padx=0, pady=1)
         self.tpmetric = tk.StringVar(value="Time to WS")
         self.tpmetric_combo = ttk.Combobox(self.conditions_frame, values=["Time to WS","TP return","Damage dealt","DPS",], textvariable=self.tpmetric,state="readonly",width=15)
         self.tpmetric_combo_tip = Hovertip(self.tpmetric_combo,f"Choose what the algorithm prioritizes when building melee TP sets.\nTime to WS: Minimize real-world time to reach min. TP\nTP return: Maximize TP return per attack round; ignores damage dealt\nDamage dealt: Maximize damage dealt per attack round; ignores TP return\nDPS: Maximize damage per second during TP phase\n\nI personally do not trust the DPS metric since it ignores the WS phase.\nYou may get more total DPS from a faster TP set that let's you WS more often.",hover_delay=500)
-        self.tpmetric_combo.grid(row=2,column=1,sticky="nw",padx=0,pady=2)
+        self.tpmetric_combo.grid(row=3,column=1,sticky="nw",padx=0,pady=2)
 
         self.spellmetric_label = ttk.Label(self.conditions_frame,text="Spell Metric:")
-        self.spellmetric_label.grid(row=3, column=0, sticky="w", padx=0, pady=1)
+        self.spellmetric_label.grid(row=4, column=0, sticky="w", padx=0, pady=1)
         self.spellmetric = tk.StringVar(value="Damage dealt")
         self.spellmetric_combo = ttk.Combobox(self.conditions_frame, values=["Damage dealt","TP return","Damage > TP", "TP > Damage"], textvariable=self.spellmetric,state="readonly",width=15)
         self.spellmetric_combo_tip = Hovertip(self.spellmetric_combo,f"Choose what the algorithm prioritizes when building spellcasting and ranged attack sets.\nTP Return: Maximize TP return per attack; ignores damage dealt\nDamage dealt: Maximize damage dealt per attack; ignores TP return\Damage > TP: Maximize Damage*Damage*TP\nTP > Damage: Maximize Damage*TP*TP",hover_delay=500)
-        self.spellmetric_combo.grid(row=3,column=1,sticky="nw",padx=0,pady=2)
+        self.spellmetric_combo.grid(row=4,column=1,sticky="nw",padx=0,pady=2)
 
         self.wsmetric_label = ttk.Label(self.conditions_frame,text="WS Metric:")
-        self.wsmetric_label.grid(row=4, column=0, sticky="w", padx=0, pady=1)
+        self.wsmetric_label.grid(row=5, column=0, sticky="w", padx=0, pady=1)
         self.wsmetric = tk.StringVar(value="Damage dealt")
-        self.wsmetric_combo = ttk.Combobox(self.conditions_frame, values=["Damage dealt","TP return"], textvariable=self.wsmetric,state="readonly",width=15)
-        self.wsmetric_combo_tip = Hovertip(self.wsmetric_combo,f"Choose what the algorithm prioritizes when building WS sets.\nTP Return: Maximize TP return; ignores damage dealt.\nDamage Dealt: Maximize damage dealt; ignores TP return",hover_delay=500)
-        self.wsmetric_combo.grid(row=4,column=1,sticky="nw",padx=0,pady=2)
+        self.wsmetric_combo = ttk.Combobox(self.conditions_frame, values=["Damage dealt","TP return","Magic accuracy"], textvariable=self.wsmetric,state="readonly",width=15)
+        self.wsmetric_combo_tip = Hovertip(self.wsmetric_combo,f"Choose what the algorithm prioritizes when building WS sets.\nTP Return: Maximize TP return; ignores damage dealt.\nDamage Dealt: Maximize damage dealt; ignores TP return\nMagic accuracy: Maximize magic_accuracy*hitrate. Useful for things like Ageha, Full Break, Guillotine, Sniper Shot, etc",hover_delay=500)
+        self.wsmetric_combo.grid(row=5,column=1,sticky="nw",padx=0,pady=2)
 
 
         # self.next_best_entry = ttk.Entry(self.self.conditions_frame,textvariable=self.next_best_value,justify="right")
@@ -2931,13 +2942,14 @@ class App(tk.Tk):
             "Magic Evasion":self.enemy_magic_evasion.get(),
             })
 
-
         # Decrease enemy stats based on debuffs selected.
-        enemy.stats["Defense"] *= (1-(dia_potency + frailty_potency)) if (1-(dia_potency + frailty_potency)) > 0.01 else 0.01
+        # TODO: Box Step, DEF/EVA- weapon skills.
+        enemy_reduced_defense = enemy.stats["Defense"] * (1-dia_potency) * (1-frailty_potency) * (1 - 0.2*self.angon_value.get())
+        enemy.stats["Defense"] = enemy_reduced_defense if enemy_reduced_defense > 1 else 1 # Minimum enemy defense value is 1 for the purposes of this code.
         enemy.stats["Magic Defense"] = (enemy.stats["Magic Defense"] - malaise_potency) if (enemy.stats["Magic Defense"]- malaise_potency) > -50 else -50
         enemy.stats["Evasion"] -= (torpor_potency + 280*self.distract3_value.get())
         enemy.stats["Magic Evasion"] -= languor_potency
-        
+
         # TODO: update tooltip for enemy stats when changing Dia and Geomany comboboxes
 
         return(buffs, enemy)
@@ -3065,9 +3077,13 @@ class App(tk.Tk):
             s = ["STR","DEX","VIT","AGI","INT","MND","CHR","Accuracy1","Accuracy2","Attack1","Attack2","Ranged Accuracy","Ranged Attack","DA","TA","QA","Store TP","Weapon Skill Damage","Double Shot","Triple Shot","Quad Shot","Gear Haste","Magic Haste","JA Haste","Dual Wield","Delay Reduction"]
             # for stat in s:
             #     print(stat+":",player.stats.get(stat,0))
-            print("============================================================")
+            print("======================= Player stats =======================")
             for stat in player.stats:
                 print(f"{stat:>30s}  =  {player.stats[stat]}")
+            print("============================================================")
+            print("======================= Enemy  stats =======================")
+            for stat in enemy.stats:
+                print(f"{stat:>15s}  =  {enemy.stats[stat]}")
             print("============================================================")
 
         if "run" in trigger:
@@ -3585,18 +3601,22 @@ class App(tk.Tk):
                 k[1].set(False)
                 k[0].grid_forget()
 
-                mb_jobs = ["whm","blm","rdm","pld","drk","nin","blu","sch","geo"]
-                ts_jobs = ["rng","cor"]
+                mb_jobs = ["whm","blm","rdm","pld","drk","nin","blu","sch","geo"] # Magic Burst jobs
+                ts_jobs = ["rng","cor"] # True Shot jobs
                 if self.mainjob.get().lower() in mb_jobs or self.subjob.get().lower() in mb_jobs:
-                    self.magic_burst_toggle.grid(row=0,column=0,sticky="n")
+                    self.magic_burst_toggle.grid(row=1,column=0,sticky="n")
                 else:
                     self.magic_burst_toggle.grid_forget()
                     self.magic_burst_value.set(False)
                 if self.mainjob.get().lower() in ts_jobs or self.subjob.get().lower() in ts_jobs:
-                    self.true_shot_toggle.grid(row=1,column=0,sticky="n")
+                    self.true_shot_toggle.grid(row=2,column=0,sticky="n")
                 else:
                     self.true_shot_toggle.grid_forget()
                     self.true_shot_value.set(False)
+
+                self.angon_value.set(False) # All jobs can use Angon, but disable it when swapping jobs just to be consistent.
+                self.angon_toggle.grid(row=0,column=0,sticky="n")
+
 
                 # Re-display checkboxes that can be used by the selected main/subjob combination
                 if (k[2].upper()==self.mainjob.get()) or (k[2].upper()==self.subjob.get() and int(self.masterlevel.get())>=k[3]):

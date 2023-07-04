@@ -237,7 +237,7 @@ class create_player:
                 elif self.sub_job=="war":
                     self.stats["Attack%"] = self.stats.get("Attack%",0) + int(((self.sub_job_level)/4+4.75))/256.
             if self.abilities.get("Berserk",False):
-                self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.25 + 0.085*(self.gearset["main"]["Name"]=="Conqueror")
+                self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.25 + 0.085*(self.gearset["main"]["Name"]=="Conqueror") + (100./1024)*(self.main_job=="war") # Warrior main gets +10% more attack with berserk.
                 self.stats["Attack"] = self.stats.get("Attack",0) + 40*(self.main_job=="war")
                 self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 14*(self.gearset["main"]["Name"]=="Conqueror")
             if self.abilities.get("Aggressor",False):

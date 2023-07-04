@@ -745,6 +745,10 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     main_skill_type = player.gearset["main"]["Skill Type"]
     sub_skill_type = player.gearset["sub"].get("Skill Type",None) if not main_skill_type=="Hand-to-Hand" else "Hand-to-Hand"
 
+    # We add dSTAT magic accuracy in the magical/hybrid section later.
+    magic_accuracy = player.stats.get("Magic Accuracy",0) + player.stats.get("Magic Accuracy Skill",0) + 100*player.abilities.get("Hover Shot",False)*(ws_type=="ranged")
+
+
     if ws_type == "melee" and not magical: # Melee WSs get multi-attacks, so we separate them from ranged weapon skills when calculating damage.
 
         main_dmg = player.stats["DMG1"]
@@ -869,7 +873,7 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
 
         hit_rate_ranged1 = get_hit_rate(ranged_accuracy + 100*hover_shot +100, enemy_evasion, hit_rate_cap_ranged) # Assume first ranged hit gets +100 accuracy.
         hit_rate_ranged2 = get_hit_rate(ranged_accuracy + 100*hover_shot, enemy_evasion, hit_rate_cap_ranged) 
-
+        
         # Calculate average ranged damage
         avg_pdif_rng = get_avg_pdif_ranged(player_rangedattack, ranged_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
 
@@ -898,7 +902,7 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
         enemy_magic_defense = enemy.stats.get("Magic Defense",0)
         enemy_magic_evasion = enemy.stats.get("Magic Evasion",0)
         dstat_macc = get_dstat_macc(player.stats["INT"], enemy.stats["INT"]) # Calculate the magic accuracy bonus/penalty from dINT. TODO: This probably applies for dMND on MND-based weapon skills.
-        magic_accuracy = player.stats.get("Magic Accuracy",0) + player.stats.get("Magic Accuracy Skill",0) + dstat_macc + 100*player.abilities.get("Hover Shot",False)*(ws_type=="ranged")
+        magic_accuracy += dstat_macc 
         magic_hit_rate = get_magic_hit_rate(magic_accuracy, enemy_magic_evasion) if enemy_magic_evasion > 0 else 1.0
         
         magic_crit_rate2 = player.stats.get("Magic Crit Rate II",0)/100
@@ -954,12 +958,22 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     # Multiply final damage by the hover shot bonus (+100% damage). I'm not sure if this applies separately to hybrids.
     total_damage *= (1 + hover_shot)
 
-
     if input_metric=="TP return":
         metric=tp_return
         invert=1
     elif input_metric=="Damage dealt":
         metric=total_damage
+        invert=1
+    elif input_metric=="Magic accuracy":
+        if magical:
+            metric_hitrate = magic_hit_rate
+        elif ws_type=="melee":
+            metric_hitrate = hit_rate11
+        elif ws_type=="ranged":
+            metric_hitrate = hit_rate_ranged1
+        else:
+            metric_hitrate = 1 # Ignore accuracy if the ws_type is not known
+        metric = metric_hitrate * magic_accuracy
         invert=1
     else:
         metric=total_damage
