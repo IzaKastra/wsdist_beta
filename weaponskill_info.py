@@ -326,7 +326,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = False
         wsc = 0.8*player_agi
         nhits = 1
-    elif ws_name == "Jijin Kaimetsu":
+    elif ws_name == "Zesho Meppo":
         base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
@@ -1467,7 +1467,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         acc_bonus = np.interp(tp, base_tp, acc_boost)
         player_accuracy1 += acc_bonus
         player_accuracy2 += acc_bonus
-        ftp  = 1.375
+        ftp  = 1.5
         ftp_rep = True
         wsc = 0.85*player_dex
         nhits = 5-1

@@ -581,12 +581,6 @@ class App(tk.Tk):
         self.conspirator_toggle.state(["!alternate"])
         self.conspirator_toggle.grid(row=11,column=0,sticky="n")
 
-        self.divine_emblem_value = tk.BooleanVar()
-        self.divine_emblem_toggle = ttk.Checkbutton(self.ja_frame,variable=self.divine_emblem_value, text="Divine Emblem",width=-25, command=lambda event="divine_emblem": self.update_special_checkboxes(event))
-        self.divine_emblem_tip = Hovertip(self.divine_emblem_toggle,"Magic Damage +40",hover_delay=500)
-        self.divine_emblem_toggle.state(["!alternate"])
-        self.divine_emblem_toggle.grid(row=38,column=0,sticky="n")
-
         self.enlight_value = tk.BooleanVar()
         self.enlight_toggle = ttk.Checkbutton(self.ja_frame,variable=self.enlight_value, text="Enlight II",width=-25, command=lambda event="enlight": self.update_special_checkboxes(event))
         self.enlighttip = Hovertip(self.enlight_toggle,"Accuracy +112\n(assumes 80% max potency with 600 Divine Magic Skill)",hover_delay=500)
@@ -611,10 +605,11 @@ class App(tk.Tk):
         self.sharpshot_toggle.state(["!alternate"])
         self.sharpshot_toggle.grid(row=15,column=0,sticky="n")
 
-        self.barrage_value = tk.BooleanVar()
-        self.barrage_toggle = ttk.Checkbutton(self.ja_frame,variable=self.barrage_value, text="Barrage",width=-25, command=lambda event="barrage": self.update_special_checkboxes(event))
-        self.barrage_toggle.state(["!alternate"])
-        self.barrage_toggle.grid(row=39,column=0,sticky="n")
+        self.enlightenment_value = tk.BooleanVar()
+        self.enlightenment_toggle = ttk.Checkbutton(self.ja_frame,variable=self.enlightenment_value, text="Enlightenment",width=-25, command=lambda event="enlightenment": self.update_special_checkboxes(event))
+        self.enlightenmenttip = Hovertip(self.enlightenment_toggle,"INT+20\nMND+20",hover_delay=500)
+        self.enlightenment_toggle.state(["!alternate"])
+        self.enlightenment_toggle.grid(row=16,column=0,sticky="n")
 
         self.velocity_shot_value = tk.BooleanVar()
         self.velocity_shot_toggle = ttk.Checkbutton(self.ja_frame,variable=self.velocity_shot_value, text="Velocity Shot",width=-25, command=lambda event="velocity_shot": self.update_special_checkboxes(event))
@@ -695,12 +690,6 @@ class App(tk.Tk):
         self.saber_dance_toggle.state(["!alternate"])
         self.saber_dance_toggle.grid(row=30,column=0,sticky="n")
 
-        self.enlightenment_value = tk.BooleanVar()
-        self.enlightenment_toggle = ttk.Checkbutton(self.ja_frame,variable=self.enlightenment_value, text="Enlightenment",width=-25, command=lambda event="enlightenment": self.update_special_checkboxes(event))
-        self.enlightenmenttip = Hovertip(self.enlightenment_toggle,"INT+20\nMND+20",hover_delay=500)
-        self.enlightenment_toggle.state(["!alternate"])
-        self.enlightenment_toggle.grid(row=16,column=0,sticky="n")
-
         self.ebullience_value = tk.BooleanVar()
         self.ebullience_toggle = ttk.Checkbutton(self.ja_frame,variable=self.ebullience_value, text="Ebullience",width=-25, command=lambda event="ebullience": self.update_special_checkboxes(event))
         self.ebulliencetip = Hovertip(self.ebullience_toggle,"Magic Spell Damage +20%\nSCH mainjob: Magic Damage +40.",hover_delay=500)
@@ -745,6 +734,11 @@ class App(tk.Tk):
         self.distract3_toggle.state(["!alternate"])
         self.distract3_toggle.grid(row=38,column=0,sticky="n")
 
+        self.barrage_value = tk.BooleanVar()
+        self.barrage_toggle = ttk.Checkbutton(self.ja_frame,variable=self.barrage_value, text="Barrage",width=-25, command=lambda event="barrage": self.update_special_checkboxes(event))
+        self.barrage_toggle.state(["!alternate"])
+        self.barrage_toggle.grid(row=39,column=0,sticky="n")
+
         self.haste_samba_value = tk.BooleanVar()
         self.haste_samba_toggle = ttk.Checkbutton(self.ja_frame,variable=self.haste_samba_value, text="Haste Samba",width=-25, command=lambda event="haste_samba": self.update_special_checkboxes(event))
         self.hastesamba_tip = Hovertip(self.haste_samba_toggle,"JA Haste: +5%\nDNC mainjob: JA Haste +5%",hover_delay=500)
@@ -757,6 +751,11 @@ class App(tk.Tk):
         self.klimaform_toggle.state(["!alternate"])
         self.klimaform_toggle.grid(row=41,column=0,sticky="n")
 
+        self.divine_emblem_value = tk.BooleanVar()
+        self.divine_emblem_toggle = ttk.Checkbutton(self.ja_frame,variable=self.divine_emblem_value, text="Divine Emblem",width=-25, command=lambda event="divine_emblem": self.update_special_checkboxes(event))
+        self.divine_emblem_tip = Hovertip(self.divine_emblem_toggle,"Magic Damage +40",hover_delay=500)
+        self.divine_emblem_toggle.state(["!alternate"])
+        self.divine_emblem_toggle.grid(row=42,column=0,sticky="n")
 
         self.ja_canvas.create_window((0,0),window=self.ja_frame, anchor="nw")
         # ===========================================================================
