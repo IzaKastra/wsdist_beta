@@ -608,6 +608,11 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         player_attack1 += player.stats.get("Food Attack",0)
         wsc = 0.75*player_str
         nhits = 1
+    elif ws_name == "Tachi: Ageha":
+        ftp       = 2.625
+        ftp_rep   = False
+        wsc       = 0.6*player_chr + 0.4*player_str
+        nhits     = 1
     elif ws_name == "Tachi: Shoha":
         base_ftp = [1.375, 2.1875, 2.6875]
         ftp = np.interp(tp, base_tp, base_ftp)
@@ -669,6 +674,11 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         magical = True
         element = "Dark"
         dSTAT = 32 if (player_int - enemy_int)/2 + 8 > 32 else (player_int - enemy_int)/2 + 8
+    elif ws_name == "Nightmare Scythe":
+        ftp = 1.0
+        ftp_rep = False 
+        wsc = 0.6*(player_str + player_mnd) 
+        nhits = 1
     elif ws_name == "Spinning Scythe":
         ftp = 1.0
         ftp_rep = False
@@ -843,6 +853,11 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         magical = True
         element = "Light"
         dSTAT = 0
+    elif ws_name == "Skullbreaker":
+        ftp = 1.0
+        ftp_rep = False
+        wsc = 1.0*player_str
+        nhits = 1
     elif ws_name == "True Strike":
         crit_ws = True
         crit_rate = 1.0
@@ -927,6 +942,11 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 2
 
     # Great Axe weapon skills
+    elif ws_name == "Shield Break":
+        ftp = 1.0
+        ftp_rep = False 
+        wsc = 0.6*(player_str + player_vit) 
+        nhits = 1
     elif ws_name == "Iron Tempest":
         atk_boost = [1.0, 1.2, 1.5]
         ws_atk_modifier = np.interp(tp, base_tp, atk_boost) - 1.0
@@ -936,6 +956,16 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp = 1.0
         ftp_rep = False
         wsc = 0.6*player_str
+        nhits = 1
+    elif ws_name == "Armor Break":
+        ftp = 1.0
+        ftp_rep = False 
+        wsc = 0.6*(player_str + player_vit) 
+        nhits = 1
+    elif ws_name == "Weapon Break":
+        ftp = 1.0
+        ftp_rep = False 
+        wsc = 0.6*(player_str + player_vit) 
         nhits = 1
     elif ws_name == "Raging Rush":
         crit_ws = True
@@ -948,6 +978,11 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = True
         wsc = 0.5*player_str
         nhits = 3
+    elif ws_name == "Full Break":
+        ftp = 1.0
+        ftp_rep = False 
+        wsc = 0.5*(player_str + player_vit) 
+        nhits = 1
     elif ws_name == "Steel Cyclone":
         base_ftp = [1.5, 2.5, 4.0]
         ftp = np.interp(tp, base_tp, base_ftp)
@@ -1117,6 +1152,17 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 1
         def_multiplier = [1.0, 0.65, 0.50]
         enemy_def *= np.interp(tp, base_tp, def_multiplier)
+    elif ws_name == "Dulling Arrow":
+        crit_ws = True
+        crit_rate += player.stats["Crit Rate"]/100
+        crit_boost = [0.10, 0.20, 0.25] # I made these numbers up
+        crit_bonus = np.interp(tp, base_tp, crit_boost)
+        crit_rate += crit_bonus
+        crit_rate += ((player_agi - enemy_agi)/10)/100 # Ranged attacks gain crit rate from AGI, not DEX
+        ftp = 1.0
+        ftp_rep = False
+        wsc = 0.5*player_agi + 0.2*player_str
+        nhits = 1
     elif ws_name == "Sidewinder":
         acc_boost = [-50, -20, 0] # I made these numbers up since it isn't known.
         acc_bonus = np.interp(tp, base_tp, acc_boost)
@@ -1192,11 +1238,22 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         element   = "Fire"
     elif ws_name == "Split Shot":
         ftp  = 1.0
-        ftp_rep = True
+        ftp_rep = False
         wsc = 0.7*player_agi
         nhits = 1
         def_multiplier = [1.0, 0.65, 0.50]
         enemy_def *= np.interp(tp, base_tp, def_multiplier)
+    elif ws_name == "Sniper Shot":
+        crit_ws = True
+        crit_rate += player.stats["Crit Rate"]/100
+        crit_boost = [0.10, 0.20, 0.25] # I made these numbers up
+        crit_bonus = np.interp(tp, base_tp, crit_boost)
+        crit_rate += crit_bonus
+        crit_rate += ((player_agi - enemy_agi)/10)/100 # Ranged attacks gain crit rate from AGI, not DEX
+        ftp = 1.0
+        ftp_rep = False
+        wsc = 0.7*player_agi
+        nhits = 1
     elif ws_name == "Slug Shot":
         acc_boost = [-50, -20, 0] # I made these numbers up since it isn't known.
         acc_bonus = np.interp(tp, base_tp, acc_boost)
@@ -1263,7 +1320,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
     elif ws_name == "Terminus":
         base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
-        ftp_rep = True 
+        ftp_rep = False 
         wsc = 0.0*player_dex 
         nhits = 1
 
@@ -1310,6 +1367,11 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         magical = True
         element = "Light"
         dSTAT = 32 if (player_int - enemy_int)/2 + 8 > 32 else (player_int - enemy_int)/2 + 8
+    elif ws_name == "Shell Crusher":
+        ftp = 1.0
+        ftp_rep = False
+        wsc = 1.0*player_str
+        nhits = 1
     elif ws_name == "Full Swing":
         base_ftp = [1.0, 3.0, 5.0]
         ftp = np.interp(tp, base_tp, base_ftp)
