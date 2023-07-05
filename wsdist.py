@@ -326,9 +326,12 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                                 metric_base, output = average_attack_round(player, enemy, starting_tp, min_tp, input_metric)
                                 invert = output[-1]
                                 metric = metric_base**invert
+
                             else:
                                 print(f"Unknown action_type  ({action_type})")
                                 import sys; sys.exit()
+
+                            metric = 0.01 if metric < 0 else metric # Prevent divide-by-zero errors
 
                             if (metric > best_metric):
                                 if item1==item2:
@@ -341,6 +344,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                                     best_set[slot2] = item2
                                 best_metric = metric
                                 best_output = output
+    
 
                             elif (item1==item2) and (best_metric%metric / best_metric < (float(next_best_percent)/100)) and (slot1 not in ["main","sub","ranged","back"]):
                                 swaps[slot1].append([item1["Name2"],metric**invert])
