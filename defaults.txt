@@ -13,8 +13,8 @@ tvrring=Lehko Habhoka's
 tpmetric=Time to WS
 spellmetric=Damage dealt
 wsmetric=Damage dealt
-pdtreq=-1
-mdtreq=-1
+pdtreq=0
+mdtreq=0
 
 # WHM inputs
 whm=True
