@@ -52,7 +52,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric)
 
     crit_rate += 0.5*(1 - starting_tp/3000) * (player.gearset["main"]["Name"]=="Tauret") # Tauret provides +crit_rate to auto attacks with low TP. (https://www.bg-wiki.com/ffxi/Tauret)
 
-    stp = player.stats.get("Store TP",0)/100 + 50*crit_rate*(player.gearset["main"]["Name"]=="Karambit") # Karambit provides +50 STP to critical hit auto attacks. Thus we add crit% of 50 to our STP for average attack rounds. (https://www.bg-wiki.com/ffxi/Karambit)
+    stp = player.stats.get("Store TP",0)/100 + (50./100)*crit_rate*(player.gearset["main"]["Name"]=="Karambit") # Karambit provides +50 STP to critical hit auto attacks. Thus we add crit% of 50 to our STP for average attack rounds, then divide by 100 to keep Store TP as a %. (https://www.bg-wiki.com/ffxi/Karambit)
 
     # Read in delay values now so we can use them in the magical WS section, which return TP for their one magic hit.
     base_delay = (player.stats["Delay1"] + player.stats["Delay2"])/2 
