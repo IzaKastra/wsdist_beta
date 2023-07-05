@@ -331,8 +331,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                                 print(f"Unknown action_type  ({action_type})")
                                 import sys; sys.exit()
 
-                            metric = 0.01 if metric < 0 else metric # Prevent divide-by-zero errors
-
+                            metric = 0.01 if metric <= 0 else metric # Prevent divide-by-zero errors
                             if (metric > best_metric):
                                 if item1==item2:
                                     print(f"[{slot1:<15s}]: [{best_set[slot1]['Name2']} ->  {item1['Name2']}   [{best_metric**invert:>{nondecimals}.{decimals}f} -> {metric**invert:>{nondecimals}.{decimals}f}]")
@@ -345,10 +344,13 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                                 best_metric = metric
                                 best_output = output
     
-
-                            elif (item1==item2) and (best_metric%metric / best_metric < (float(next_best_percent)/100)) and (slot1 not in ["main","sub","ranged","back"]):
-                                swaps[slot1].append([item1["Name2"],metric**invert])
-
+                            elif (item1==item2):
+                                try:
+                                    if (best_metric%metric / best_metric < (float(next_best_percent)/100)) and (slot1 not in ["main","sub","ranged","back"]):
+                                        swaps[slot1].append([item1["Name2"],metric**invert])
+                                except:
+                                    # print(f"Error on \"{item1['Name2']}\" - Metric = {metric}  - Best Metric = {best_metric}")
+                                    pass
 
             if best_set==converged_set: # If no improvement is found after one full iteration.
                 # best_player = create_player(main_job, sub_job, master_level, best_set, buffs, abilities)
