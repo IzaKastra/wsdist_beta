@@ -58,9 +58,10 @@ bolster=False
 
 # Enemy inputs
 ename=Lugcrawler Hunter
+elocation=Crawler's Nest [S]
 elevel=138
 eevasion=1314
-edevense=1338
+edevense=1446
 emagicevasion=0
 emagicdefense=0
 eagi=346
