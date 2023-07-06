@@ -259,7 +259,7 @@ class create_player:
                 if self.abilities.get("Footwork",False):
                     self.stats["Kick Attacks"] = self.stats.get("Kick Attacks",0) + 20
                     self.stats["Kick Attacks Attack%"] = self.stats.get("Kick Attacks Attack%",0) + 100./1024 + 160./1024
-                    self.stats["Kick Attack DMG"] = self.stats.get("Kick Attacks DMG",0) + 20 + 20 # Activating footwork increases Kick DMG by 20, with an additional 20 from job points
+                    self.stats["Kick Attacks DMG"] = self.stats.get("Kick Attacks DMG",0) + 20 + 20 # Activating footwork increases Kick DMG by 20, with an additional 20 from job points
                 if self.abilities.get("Impetus",False):
                     impetus_potency = 0.9
                     self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 50*impetus_potency
