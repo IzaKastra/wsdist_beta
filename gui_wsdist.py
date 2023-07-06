@@ -258,7 +258,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 July 6a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 July 6b)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -3258,7 +3258,6 @@ class App(tk.Tk):
         if use_32x32_icons:
             try:
                 id = items[0][np.where(np.array([k.lower() for k in items[1]])==item_name.lower())][0]
-                print(item_name,id)
                 img = tk.PhotoImage(file=f"{path32}/{id}.png")
             except IndexError:
                 img = tk.PhotoImage(file=f"{path32}/65536.png")
