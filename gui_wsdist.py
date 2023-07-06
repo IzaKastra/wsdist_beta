@@ -105,6 +105,7 @@ def load_defaults(app,defaults):
     app.enemy_evasion.set(defaults.get("eevasion","1225"))
     app.enemy_level.set(defaults.get("elevel","135"))
     app.selected_enemy.set(defaults.get("ename","Apex Bat"))
+    app.enemy_location_var.set(defaults.get("elocation","Outer Ra'Kazanar"))
     app.enemy_agi.set(defaults.get("eagi","356"))
     app.enemy_vit.set(defaults.get("evit","289"))
     app.enemy_int.set(defaults.get("eint","267"))
@@ -190,6 +191,7 @@ def save_defaults():
 
         ofile.write("\n# Enemy inputs\n")
         ofile.write(f"ename={app.selected_enemy.get()}\n")
+        ofile.write(f"elocation={app.enemy_location_var.get()}\n")
         ofile.write(f"elevel={app.enemy_level.get()}\n")
         ofile.write(f"eevasion={app.enemy_evasion.get()}\n")
         ofile.write(f"edevense={app.enemy_defense.get()}\n")
@@ -256,7 +258,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 July 4)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 July 6a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -884,7 +886,7 @@ class App(tk.Tk):
             self.whm_combo3 = ttk.Combobox(self.whm_frame, values=self.whm_stat_spells, textvariable=self.whm_spell3,state="readonly")
             self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2)
 
-            self.whm_spells4 = ["None"] +["Sandstorm II","Rainstorm II","Windstorm II","Firestorm II","Hailstorm II","Thunderstorm II","Aurorastorm II","Voidstorm II"]
+            self.whm_spells4 = ["None"] +["Sandstorm","Sandstorm II","Rainstorm","Rainstorm II","Windstorm","Windstorm II","Firestorm","Firestorm II","Hailstorm","Hailstorm II","Thunderstorm","Thunderstorm II","Aurorastorm","Aurorastorm II","Voidstorm","Voidstorm II"]
             self.whm_spell4 = tk.StringVar(value="None")
             self.whm_combo4 = ttk.Combobox(self.whm_frame, values=self.whm_spells4, textvariable=self.whm_spell4,state="readonly")
             self.whm_combo4.grid(row=5,column=0,sticky="nw",padx=0,pady=2)
@@ -3256,6 +3258,7 @@ class App(tk.Tk):
         if use_32x32_icons:
             try:
                 id = items[0][np.where(np.array([k.lower() for k in items[1]])==item_name.lower())][0]
+                print(item_name,id)
                 img = tk.PhotoImage(file=f"{path32}/{id}.png")
             except IndexError:
                 img = tk.PhotoImage(file=f"{path32}/65536.png")
@@ -3263,6 +3266,11 @@ class App(tk.Tk):
                 id = items[0][np.where(np.array([k.lower() for k in items[1]])==item_name.lower())][0]
                 print(f"File not found: icons32/{id}.png  ({item_name})")
                 img = tk.PhotoImage(file=f"{path32}/65536.png")
+            except:
+                id = items[0][np.where(np.array([k.lower() for k in items[1]])==item_name.lower())][0]
+                print(f"Issue opening image: icons32/{id}.png  ({item_name})")
+                img = tk.PhotoImage(file=f"{path32}/65536.png")
+
         return(img)
 
 
