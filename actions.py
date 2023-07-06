@@ -27,9 +27,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric)
 
     nhits = 1
 
-    qa = player.stats.get("QA",0)/100
-    ta = player.stats.get("TA",0)/100
-    da = player.stats.get("DA",0)/100
+    qa = player.stats.get("QA",0)/100 if player.stats.get("QA",0)/100 < 1.0 else 1.0
+    ta = player.stats.get("TA",0)/100 if player.stats.get("TA",0)/100 < 1.0 else 1.0
+    da = player.stats.get("DA",0)/100 if player.stats.get("DA",0)/100 < 1.0 else 1.0
     oa_list = np.array([player.stats.get("OA3 main",0), # Notice that there is no support for main-hand Kclub. Only the off-hand values support OA4+
             player.stats.get("OA2 main",0),
             player.stats.get("OA8 sub",0),
@@ -51,6 +51,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric)
     crit_dmg = player.stats.get("Crit Damage",0)/100 # Crit rate was read in earlier directly from the WS attributes.
 
     crit_rate += 0.5*(1 - starting_tp/3000) * (player.gearset["main"]["Name"]=="Tauret") # Tauret provides +crit_rate to auto attacks with low TP. (https://www.bg-wiki.com/ffxi/Tauret)
+    crit_rate = 1.0 if crit_rate > 1.0 else 1.0
 
     stp = player.stats.get("Store TP",0)/100 + (50./100)*crit_rate*(player.gearset["main"]["Name"]=="Karambit") # Karambit provides +50 STP to critical hit auto attacks. Thus we add crit% of 50 to our STP for average attack rounds, then divide by 100 to keep Store TP as a %. (https://www.bg-wiki.com/ffxi/Karambit)
 
@@ -99,7 +100,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric)
     hit_rate_matrix = np.array([[hit_rate11, hit_rate21],[hit_rate12, hit_rate22]])
 
     # Ranged stuff is entirely for Daken shuriken throws in this TP function.
-    daken = player.stats.get("Daken",0)/100
+    daken = player.stats.get("Daken",0)/100 if player.stats.get("Daken",0)/100 < 1.0 else 1.0
     ammo_dmg = player.stats.get("Ammo DMG",0)
     fstr_ammo = get_fstr2(ammo_dmg, player.stats["STR"], enemy.stats["VIT"])
     ammo_delay = player.stats.get("Ammo Delay",0)
@@ -112,7 +113,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric)
     # Kick attacks also contribute. We've already assigned Kick DMG based on stats and Footwork in the class file.
     kick_dmg = player.stats["Kick DMG"]
     fstr_kick = get_fstr(kick_dmg, player.stats["STR"], enemy.stats.get("VIT",0))
-    kickattacks = player.stats.get("Kick Attacks",0)/100
+    kickattacks = player.stats.get("Kick Attacks",0)/100 if player.stats.get("Kick Attacks",0)/100 < 1.0 else 1.0
 
     zanshin = player.stats.get("Zanshin",0)/100
     zanshin = 1.0 if zanshin > 1.0 else zanshin
@@ -684,7 +685,6 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
 
     hover_shot = player.abilities.get("Hover Shot",False)*(ws_type=="ranged")
 
-
     ws_info = weaponskill_info(ws_name, tp, player, enemy, player.stats.get("WSC",[]), dual_wield,)
 
     nhits = ws_info["nhits"]
@@ -697,7 +697,7 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     magical = ws_info["magical"]
     ws_dSTAT = ws_info["dSTAT"]
 
-    crit_rate = ws_info["crit_rate"]
+    crit_rate = ws_info["crit_rate"] if ws_info["crit_rate"] < 1.0 else 1.0
 
     ftp += player.stats.get("ftp",0)
     if hybrid:
@@ -706,9 +706,9 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     ftp2 = ftp if ftp_rep else 1.0
 
     # Read in relevant player stat information
-    qa = player.stats.get("QA",0)/100
-    ta = player.stats.get("TA",0)/100
-    da = player.stats.get("DA",0)/100
+    qa = player.stats.get("QA",0)/100 if player.stats.get("QA",0)/100 < 1.0 else 1.0
+    ta = player.stats.get("TA",0)/100 if player.stats.get("TA",0)/100 < 1.0 else 1.0
+    da = player.stats.get("DA",0)/100 if player.stats.get("DA",0)/100 < 1.0 else 1.0
     oa_list = np.array([player.stats.get("OA3 main",0), # Notice that there is no support for main-hand Kclub. Only the off-hand values support OA4+
             player.stats.get("OA2 main",0),
             player.stats.get("OA8 sub",0),
@@ -751,8 +751,9 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
 
     if ws_type == "melee" and not magical: # Melee WSs get multi-attacks, so we separate them from ranged weapon skills when calculating damage.
 
-        main_dmg = player.stats["DMG1"]
-        sub_dmg = player.stats["DMG2"]
+
+        main_dmg = player.stats["Kick DMG"] if (player.abilities.get("Footwork",False) and ws_name in ["Tornado Kick","Dragon Kick"]) else player.stats["DMG1"] # Footwork allows Kick WSs to use Kick DMG.
+        sub_dmg = player.stats["Kick DMG"] if (player.abilities.get("Footwork",False) and ws_name in ["Tornado Kick","Dragon Kick"]) else player.stats["DMG2"]
         fstr_main = get_fstr(main_dmg, player.stats["STR"], enemy.stats["VIT"])
         fstr_sub = get_fstr(sub_dmg, player.stats["STR"], enemy.stats["VIT"])
 
@@ -816,6 +817,7 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
         vajra_bonus_crit_dmg = 0.3*(player.gearset["main"]["Name"]=="Vajra" and (sneak_attack or trick_attack)) # Crit damage +30% for the first hit.
 
         first_main_hit_crit_rate = (1.0 if sneak_attack or trick_attack or climactic_flourish else (crit_rate+striking_crit_rate*(crit_rate>0))) # Special crit rate for SA/TA/Flourishes.
+        first_main_hit_crit_rate = first_main_hit_crit_rate if first_main_hit_crit_rate < 1.0 else 1.0
         adjusted_crit_dmg = (crit_dmg + vajra_bonus_crit_dmg)*(1+climactic_crit_dmg) # Special crit damage that applies to first hit of SA/TA/ClimacticFlourish. Climactic with DNC Empy head provides a unique Crit Damage that applies separately.
         first_main_hit_pdif = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, first_main_hit_crit_rate)
         first_main_hit_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, first_main_hit_pdif, ftp, first_main_hit_crit_rate, adjusted_crit_dmg, wsd, ws_bonus, ws_trait, sneak_attack_bonus, trick_attack_bonus, climactic_flourish_bonus, striking_flourish_bonus, ternary_flourish_bonus)
@@ -827,6 +829,7 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
         if striking_flourish:
             # Define a new crit rate that adds 70% only if crit_rate>0 already (only for critical hit WSs)
             striking_flourish_crit_rate = crit_rate + striking_crit_rate*(crit_rate>0) # This crit_rate>0 ensures I am not letting non-crit WSs crit.
+            striking_flourish_crit_rate = striking_flourish_crit_rate if striking_flourish_crit_rate < 1.0 else 1.0
             striking_flourish_pdif1 = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, striking_flourish_crit_rate)
             striking_flourish_DA_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, striking_flourish_pdif1, ftp2, striking_flourish_crit_rate, crit_dmg, 0, ws_bonus, ws_trait)
             physical_damage += (striking_flourish_DA_damage - main_hit_damage)*hit_rate11 # Add on the difference in damage from a 2nd hit with higher crit.
