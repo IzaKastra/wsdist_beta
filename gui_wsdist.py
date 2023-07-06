@@ -258,7 +258,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 July 6b)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 July 6c)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -3583,7 +3583,7 @@ class App(tk.Tk):
         special_checkbox_toggles = [[self.aggressor_toggle, self.aggressor_value,"war",0],
                                     [self.barrage_toggle, self.barrage_value, "rng", 0], [self.berserk_toggle, self.berserk_value,"war",0], [self.blood_rage_toggle, self.blood_rage_value,"war",999],[self.building_flourish_toggle, self.building_flourish_value,"dnc",5],
                                     [self.chainspell_toggle, self.chainspell_value,"rdm",999],[self.climactic_flourish_toggle, self.climactic_flourish_value,"dnc",999], [self.composure_toggle, self.composure_value,"rdm",999],[self.conspirator_toggle, self.conspirator_value,"thf",0], 
-                                    [self.distract3_toggle, self.distract3_value,"rdm",999],[self.divine_emblem_toggle, self.divine_emblem_value,"pld",999], [self.double_shot_toggle, self.double_shot_value,"rng",999], 
+                                    [self.divine_emblem_toggle, self.divine_emblem_value,"pld",999], [self.double_shot_toggle, self.double_shot_value,"rng",999], 
                                     [self.ebullience_toggle, self.ebullience_value,"sch",30],[self.endark_toggle, self.endark_value,"drk",0],[self.enlight_toggle, self.enlight_value,"pld",999],[self.enlightenment_toggle, self.enlightenment_value,"sch",999],
                                     [self.focus_toggle, self.focus_value,"mnk",0], [self.footwork_toggle, self.footwork_value,"mnk",999], [self.futae_toggle, self.futae_value,"nin",999],
                                     [self.hasso_toggle, self.hasso_value,"sam",0],[self.haste_samba_toggle, self.haste_samba_value,"dnc",0],[self.hover_shot_toggle, self.hover_shot_value,"rng",999],
@@ -3611,18 +3611,21 @@ class App(tk.Tk):
                 mb_jobs = ["whm","blm","rdm","pld","drk","nin","blu","sch","geo"] # Magic Burst jobs
                 ts_jobs = ["rng","cor"] # True Shot jobs
                 if self.mainjob.get().lower() in mb_jobs or self.subjob.get().lower() in mb_jobs:
-                    self.magic_burst_toggle.grid(row=1,column=0,sticky="n")
+                    self.magic_burst_toggle.grid(row=2,column=0,sticky="n")
                 else:
                     self.magic_burst_toggle.grid_forget()
                     self.magic_burst_value.set(False)
                 if self.mainjob.get().lower() in ts_jobs or self.subjob.get().lower() in ts_jobs:
-                    self.true_shot_toggle.grid(row=2,column=0,sticky="n")
+                    self.true_shot_toggle.grid(row=3,column=0,sticky="n")
                 else:
                     self.true_shot_toggle.grid_forget()
                     self.true_shot_value.set(False)
 
                 self.angon_value.set(False) # All jobs can use Angon, but disable it when swapping jobs just to be consistent.
                 self.angon_toggle.grid(row=0,column=0,sticky="n")
+
+                self.distract3_value.set(False) 
+                self.distract3_toggle.grid(row=1,column=0,sticky="n")
 
 
                 # Re-display checkboxes that can be used by the selected main/subjob combination
