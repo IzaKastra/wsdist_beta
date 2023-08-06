@@ -244,7 +244,7 @@ class App(tk.Tk):
 
 
     def __init__(self): # Run on creation of a new "App" instance to define the defaults of the "App"
-        super().__init__() # What does this do exactly? Inherits all attributes from the parent, which is the thing in parenthesis (tk.Tk). super is useless on the parent class itself, (called call App:    -without parenthesis)
+        super().__init__() # Used to inherit methods of tk.Tk
 
         mystyle = ttk.Style()
         mystyle.theme_use('vista')   # choose other theme
@@ -258,7 +258,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 July 6c)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 August 06a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -763,9 +763,15 @@ class App(tk.Tk):
 
         self.angon_value = tk.BooleanVar()
         self.angon_toggle = ttk.Checkbutton(self.ja_frame,variable=self.angon_value, text="Angon",width=-25, command=lambda event="angon": self.update_special_checkboxes(event))
-        self.angon_tip = Hovertip(self.divine_emblem_toggle,"Enemy Defense -20%",hover_delay=500)
+        self.angon_tip = Hovertip(self.angon_toggle,"Enemy Defense -20%",hover_delay=500)
         self.angon_toggle.state(["!alternate"])
         self.angon_toggle.grid(row=43,column=0,sticky="n")
+
+        self.overwhelm_value = tk.BooleanVar()
+        self.overwhelm_toggle = ttk.Checkbutton(self.ja_frame,variable=self.overwhelm_value, text="Overwhelm",width=-25, command=lambda event="overwhelm": self.update_special_checkboxes(event))
+        self.overwhelm_tip = Hovertip(self.overwhelm_toggle,"Weapon Skill Damage +19%\nKnown issue: Applies to ranged WSs when it should not\n    (disable Overwhelm when testing Ranged WSs on SAM).",hover_delay=500)
+        self.overwhelm_toggle.state(["!alternate"])
+        self.overwhelm_toggle.grid(row=44,column=0,sticky="n")
 
         self.ja_canvas.create_window((0,0),window=self.ja_frame, anchor="nw")
         # ===========================================================================
@@ -3005,6 +3011,7 @@ class App(tk.Tk):
                      "Aftermath":self.am_level.get(),
                      "Haste Samba":self.haste_samba_value.get(),
                      "Klimaform":self.klimaform_value.get(),
+                     "Overwhelm":self.overwhelm_value.get(),
                      "Distract III":self.distract3_value.get()}
 
 
@@ -3592,6 +3599,7 @@ class App(tk.Tk):
                                     [self.last_resort_toggle, self.last_resort_value,"drk",0],
                                     [self.manafont_toggle, self.manafont_value,"blm",999], [self.manawell_toggle, self.manawell_value,"blm",999],[self.mighty_strikes_toggle, self.mighty_strikes_value,"war",999],
                                     [self.natures_meditation_toggle, self.natures_meditation_value,"blu",0],
+                                    [self.overwhelm_toggle, self.overwhelm_value,"sam",999],
                                     [self.saber_dance_toggle, self.saber_dance_value,"dnc",999],[self.sange_toggle, self.sange_value,"nin",999], [self.sharpshot_toggle, self.sharpshot_value,"rng",0],[self.sneak_attack_toggle, self.sneak_attack_value,"thf",0], [self.striking_flourish_toggle, self.striking_flourish_value,"dnc",999],[self.swordplay_toggle, self.swordplay_value,"run",0], 
                                     [self.ternary_flourish_toggle, self.ternary_flourish_value,"dnc",999], [self.theurgic_focus_toggle, self.theurgic_focus_value,"geo",999],[self.trick_attack_toggle, self.trick_attack_value,"thf",0],[self.triple_shot_toggle, self.triple_shot_value,"cor",999],
                                     [self.velocity_shot_toggle, self.velocity_shot_value,"rng",999], 
