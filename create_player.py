@@ -454,7 +454,7 @@ class create_player:
         if (self.gearset["sub"]["Type"] in ["Shield","None"]) and (self.gearset["main"]["Skill Type"]!="Hand-to-Hand") and (self.gearset["main"]["Skill Type"] not in two_handed):
             fencer_level = 8 if self.stats.get("Fencer",0) > 8 else self.stats.get("Fencer",0)
             fencer_bonuses = {0:[0,0], 1:[200,3], 2:[300,5], 3:[400,7], 4:[450,9], 5:[500,10], 6:[550,11], 7:[600,12], 8:[630,13]}[fencer_level]
-            self.stats["TP Bonus"] = self.stats.get("Fencer TP Bonus",0) + fencer_bonuses[0]
+            self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + fencer_bonuses[0] + self.stats.get("Fencer TP Bonus",0)
             self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + fencer_bonuses[1]
 
         aftermath_level = self.abilities.get("Aftermath",0)
