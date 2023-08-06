@@ -446,14 +446,15 @@ class create_player:
         # ===========================================================================
 
 
-        # Add Smite and Fencer now.
+        # Add Smite.
         if self.gearset["main"]["Skill Type"] in (two_handed+["Hand-to-Hand"]):
             smite_level = self.stats.get("Smite",0)
             self.stats["Attack%"] = self.stats.get("Attack%",0) + {5:304./1024, 4:256./1024, 3:204./1024, 2:152./1024, 1:100./1024, 0:0.}[smite_level]
+        # Add Fencer.
         if (self.gearset["sub"]["Type"] in ["Shield","None"]) and (self.gearset["main"]["Skill Type"]!="Hand-to-Hand") and (self.gearset["main"]["Skill Type"] not in two_handed):
             fencer_level = 8 if self.stats.get("Fencer",0) > 8 else self.stats.get("Fencer",0)
             fencer_bonuses = {0:[0,0], 1:[200,3], 2:[300,5], 3:[400,7], 4:[450,9], 5:[500,10], 6:[550,11], 7:[600,12], 8:[630,13]}[fencer_level]
-            self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + fencer_bonuses[0]
+            self.stats["TP Bonus"] = self.stats.get("Fencer TP Bonus",0) + fencer_bonuses[0]
             self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + fencer_bonuses[1]
 
         aftermath_level = self.abilities.get("Aftermath",0)
@@ -828,7 +829,7 @@ class create_player:
                             "brd":{},
                             "rng":{},
                             "smn":{},
-                            "sam":{"Zanshin":5,"Store TP":10,"Weapon Skill Damage":19,},
+                            "sam":{"Zanshin":5,"Store TP":10,"Weapon Skill Damage":19 * self.abilities.get("Overwhelm",False)}, # Overwhelm is treated as a checkbox toggle and only applies when enabled. Currently applies to Ranged WSs as well, which is incorrect.
                             "nin":{"Subtle Blow":5,"Ninjutsu Magic Accuracy":25,"Ninjutsu Magic Attack":20+10,"Ninjutsu Magic Damage":0}, # Including +10 matk from group1 and +20 matk from group 2. 
                             "drg":{},
                             "blu":{},
@@ -856,7 +857,7 @@ class create_player:
         # There could easily be typos here. These were all added manually by using ctrl+F on each job page for specific stat names within the Job Points sections.
 
         job_mastery_stats = {
-                            "war":{"Accuracy":26, "Ranged Accuracy":26, "Attack":70, "Ranged Attack":70, "Magic Accuracy":36,"Fencer TP Bonus":230,"Crit Rate":10,"Crit Damage":10,"DA":10,"Evasion":36,"Magic Evasion":36,},
+                            "war":{"Accuracy":26, "Ranged Accuracy":26, "Attack":70, "Ranged Attack":70, "Magic Accuracy":36,"Fencer TP Bonus":230,"Crit Rate":10,"Crit Damage":10,"DA":10,"Evasion":36,"Magic Evasion":36,"Weapon Skill Damage":3},
                             "mnk":{"Accuracy":41, "Ranged Accuracy":41, "Attack":40, "Ranged Attack":40, "Magic Accuracy":36,"Evasion":42,"Magic Evasion":36,"Subtle Blow":10,"Martial Arts":10,"Kick Attacks Attack":40,"Kick Attacks Accuracy":20},
                             "whm":{"Accuracy":14, "Ranged Accuracy":14, "Magic Accuracy":20+50, "Magic Attack":22,"Magic Defense":50,"Divine Magic Skill":36,},
                             "blm":{"Magic Burst Damage Trait":20+23, "Magic Accuracy":20, "Magic Damage":20+23, "Magic Defense":14, "Magic Attack":50, "Magic Evasion":42, "Magic Accuracy":32, "Elemental Magic Skill":36, "Dark Magic Skill":36,},
