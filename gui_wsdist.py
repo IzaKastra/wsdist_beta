@@ -2714,28 +2714,28 @@ class App(tk.Tk):
         # After selecting a main job, this function will hide the items that the selected main job can not use.
         #
         if event=="song1":
-            self.brd_combo3.configure(values=[k for k in self.song_list if k not in [self.song1.get()]]) # 2nd song shouldnt show first song
-            self.brd_combo4.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get()]])
-            self.brd_combo5.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get()]])
-            self.brd_combo6.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get(),self.song4.get()]])
+            self.brd_combo3.configure(values=[k for k in self.song_list if k not in [self.song1.get()]]+["None"]) # 2nd song shouldnt show first song
+            self.brd_combo4.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get()]]+["None"])
+            self.brd_combo5.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get()]]+["None"])
+            self.brd_combo6.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get(),self.song4.get()]]+["None"])
             for k in [self.brd_combo3,self.brd_combo4,self.brd_combo5,self.brd_combo6]:
                 if self.song1.get()==k.get():
                     k.set(value="None")
         elif event=="song2":
-            self.brd_combo4.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get()]])
-            self.brd_combo5.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get()]])
-            self.brd_combo6.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get(),self.song4.get()]])
+            self.brd_combo4.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get()]] + ["None"])
+            self.brd_combo5.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get()]] + ["None"])
+            self.brd_combo6.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get(),self.song4.get()]] + ["None"])
             for k in [self.brd_combo4,self.brd_combo5,self.brd_combo6]:
                 if self.song2.get()==k.get():
                     k.set(value="None")
         elif event=="song3":
-            self.brd_combo5.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get()]])
-            self.brd_combo6.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get(),self.song4.get()]])
+            self.brd_combo5.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get()]] + ["None"])
+            self.brd_combo6.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get(),self.song4.get()]] + ["None"])
             for k in [self.brd_combo5,self.brd_combo6]:
                 if self.song3.get()==k.get():
                     k.set(value="None")
         elif event=="song4":
-            self.brd_combo6.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get(),self.song4.get()]])
+            self.brd_combo6.configure(values=[k for k in self.song_list if k not in [self.song1.get(),self.song2.get(),self.song3.get(),self.song4.get()]] + ["None"])
             for k in [self.brd_combo6,self.brd_combo6]:
                 if self.song4.get()==k.get():
                     k.set(value="None")
@@ -2785,9 +2785,9 @@ class App(tk.Tk):
         nsong = int(self.brd_potency.get().split()[-1])
 
         # Minuets cap at Songs+8
-        brd_min5_attack  = ((brd["Minuet V"]["Attack"][0] + min(8,nsong)*brd["Minuet V"]["Attack"][1])*(1.0+0.5*marcato if song1=="Minuet V" else 1.0) if "Minuet V" in active_songs else 0)*(1.0+1.0*soulvoice)
-        brd_min4_attack  = ((brd["Minuet IV"]["Attack"][0] + min(8,nsong)*brd["Minuet IV"]["Attack"][1])*(1.0+0.5*marcato if song1=="Minuet IV" else 1.0) if "Minuet IV" in active_songs else 0)*(1.0+1.0*soulvoice)
-        brd_min3_attack  = ((brd["Minuet III"]["Attack"][0] + min(8,nsong)*brd["Minuet III"]["Attack"][1])*(1.0+0.5*marcato if song1=="Minuet III" else 1.0) if "Minuet III" in active_songs else 0)*(1.0+1.0*soulvoice)
+        brd_min5_attack  = ((brd["Minuet V"]["Attack"][0] + min(8,nsong)*brd["Minuet V"]["Attack"][1])*(1.0+0.5*marcato if song1=="Minuet V" else 1.0) if "Minuet V" in active_songs else 0)*(1.0+1.0*soulvoice) + 20*brd_on*("Minuet V" in active_songs) # +20 base attack from BRD job point category
+        brd_min4_attack  = ((brd["Minuet IV"]["Attack"][0] + min(8,nsong)*brd["Minuet IV"]["Attack"][1])*(1.0+0.5*marcato if song1=="Minuet IV" else 1.0) if "Minuet IV" in active_songs else 0)*(1.0+1.0*soulvoice) + 20*brd_on*("Minuet IV" in active_songs) # +20 base attack from BRD job point category
+        brd_min3_attack  = ((brd["Minuet III"]["Attack"][0] + min(8,nsong)*brd["Minuet III"]["Attack"][1])*(1.0+0.5*marcato if song1=="Minuet III" else 1.0) if "Minuet III" in active_songs else 0)*(1.0+1.0*soulvoice) + 20*brd_on*("Minuet III" in active_songs) # +20 base attack from BRD job point category
 
         # Honor March caps at Songs+4
         brd_hm_accuracy        = ((brd["Honor March"]["Accuracy"][0] + min(4,nsong)*brd["Honor March"]["Accuracy"][1])*(1.0+0.5*marcato if song1=="Honor March" else 1.0) if "Honor March" in active_songs else 0)*(1.0+1.0*soulvoice)

@@ -316,12 +316,12 @@ class create_player:
                     endark_potency = 0.80
                     self.stats["Accuracy"] = self.stats.get("Accuracy",0) + (20)*endark_potency
                     self.stats["Attack"] = self.stats.get("Attack",0) + (131+20)*endark_potency
-        # ===========================================================================
-        # ===========================================================================
-        # Bard abilities
-        if self.main_job=="brd":
-            if self.buffs["brd"].get("Attack",0)>0:
-                self.stats["Attack"] = self.stats.get("Attack",0) + 20 # Job Points give +20 extra attack if you have a Minuet up.
+        # # ===========================================================================
+        # # ===========================================================================
+        # # Bard abilities
+        # if self.main_job=="brd":
+        #     if self.buffs["brd"].get("Attack",0)>0:
+        #         self.stats["Attack"] = self.stats.get("Attack",0) + 20 # Job Points give +20 extra attack if you have a Minuet up.
         # ===========================================================================
         # ===========================================================================
         # Ranger abilities
