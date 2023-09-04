@@ -258,7 +258,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 August 06a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 September 03a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -320,7 +320,7 @@ class App(tk.Tk):
             self.subjob_label = ttk.Label(self.player_inputs_frame,text="Sub Job:",width=15)
             self.subjob_label.grid(row=2, column=0, padx=0, pady=1, sticky="w")
 
-            self.main_jobs = sorted(["NIN", "DRK", "SCH", "RDM", "BLM", "SAM", "DRG", "WHM", "WAR", "COR","BRD", "THF", "MNK", "DNC", "BST", "RUN", "RNG", "PUP", "BLU", "GEO", "PLD"])
+            self.main_jobs = sorted(["NIN", "DRK", "SCH", "RDM", "BLM", "SAM", "DRG", "WHM", "WAR", "COR","BRD", "THF", "MNK", "DNC", "BST", "RUN", "RNG", "PUP", "BLU", "GEO", "PLD", "SMN"])
             self.mainjob = tk.StringVar(value="NIN")
             self.mainjob_box = ttk.Combobox(self.player_inputs_frame, textvariable=self.mainjob, values=self.main_jobs,state="readonly",)
             self.mainjob_box.config(width=11,)
@@ -773,6 +773,18 @@ class App(tk.Tk):
         self.overwhelm_toggle.state(["!alternate"])
         self.overwhelm_toggle.grid(row=44,column=0,sticky="n")
 
+        self.temper1_value = tk.BooleanVar()
+        self.temper1_toggle = ttk.Checkbutton(self.ja_frame,variable=self.temper1_value, text="Temper",width=-25, command=lambda event="temper1": self.update_special_checkboxes(event))
+        self.temper1_tip = Hovertip(self.temper1_toggle,"Provides Double Attack based on Enhancing Magic Skill value",hover_delay=500)
+        self.temper1_toggle.state(["!alternate"])
+        self.temper1_toggle.grid(row=45,column=0,sticky="n")
+
+        self.temper2_value = tk.BooleanVar()
+        self.temper2_toggle = ttk.Checkbutton(self.ja_frame,variable=self.temper2_value, text="Temper II",width=-25, command=lambda event="temper2": self.update_special_checkboxes(event))
+        self.temper2_tip = Hovertip(self.temper2_toggle,"Provides Triple Attack based on Enhancing Magic Skill value",hover_delay=500)
+        self.temper2_toggle.state(["!alternate"])
+        self.temper2_toggle.grid(row=46,column=0,sticky="n")
+
         self.ja_canvas.create_window((0,0),window=self.ja_frame, anchor="nw")
         # ===========================================================================
         # ===========================================================================
@@ -871,34 +883,45 @@ class App(tk.Tk):
             self.whm_on = tk.BooleanVar(value=True)
             self.whm_cbox = ttk.Checkbutton(self.whm_frame,variable=self.whm_on,text="White Magic",command=lambda trigger="whm": self.update_buff_cboxes(trigger))
             # self.whm_cbox.state(['!alternate']) 
-            self.whm_cbox.grid(row=0,column=0,sticky="nw",padx=0,pady=2)
+            self.whm_cbox.grid(row=0,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
             self.shell5_on = tk.BooleanVar(value=True)
             self.shell5_cbox = ttk.Checkbutton(self.whm_frame,variable=self.shell5_on,text="Shell V")
-            self.shell5_cbox.grid(row=1,column=0,sticky="nw",padx=0,pady=2)
+            self.shell5_cbox.grid(row=1,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
             self.whm_spells1 = ["None"] + ["Dia","Dia II","Dia III"]
             self.whm_spell1 = tk.StringVar(value="Dia III")
             self.whm_combo1 = ttk.Combobox(self.whm_frame, values=self.whm_spells1, textvariable=self.whm_spell1,state="readonly")
-            self.whm_combo1.grid(row=2,column=0,sticky="nw",padx=0,pady=2)
+            self.whm_combo1.grid(row=2,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
             self.whm_spells2 = ["None"] + ["Haste","Haste II"] 
             self.whm_spell2 = tk.StringVar(value="Haste II")
             self.whm_combo2 = ttk.Combobox(self.whm_frame, values=self.whm_spells2, textvariable=self.whm_spell2,state="readonly")
-            self.whm_combo2.grid(row=3,column=0,sticky="nw",padx=0,pady=2)
+            self.whm_combo2.grid(row=3,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
             self.whm_stat_spells = ["None"] + ["Boost-STR","Boost-DEX","Boost-VIT","Boost-AGI","Boost-INT","Boost-MND","Boost-CHR"]
             self.whm_spell3 = tk.StringVar(value="None")
             self.whm_combo3 = ttk.Combobox(self.whm_frame, values=self.whm_stat_spells, textvariable=self.whm_spell3,state="readonly")
-            self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2)
+            self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
             self.whm_spells4 = ["None"] +["Sandstorm","Sandstorm II","Rainstorm","Rainstorm II","Windstorm","Windstorm II","Firestorm","Firestorm II","Hailstorm","Hailstorm II","Thunderstorm","Thunderstorm II","Aurorastorm","Aurorastorm II","Voidstorm","Voidstorm II"]
             self.whm_spell4 = tk.StringVar(value="None")
             self.whm_combo4 = ttk.Combobox(self.whm_frame, values=self.whm_spells4, textvariable=self.whm_spell4,state="readonly")
-            self.whm_combo4.grid(row=5,column=0,sticky="nw",padx=0,pady=2)
+            self.whm_combo4.grid(row=5,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
+
+            self.skill_frame = ttk.Frame(self.whm_frame)
+            self.skill_frame.grid(row=6,column=0,sticky="nw",padx=0,pady=2)
+
+            self.enhancing_skill_label = ttk.Label(self.skill_frame,text="Enhancing Skill:",width=-16)
+            self.enhancing_skill_label.grid(row=0, column=0, sticky="w", padx=0, pady=1)
+            self.enh_skill = tk.IntVar(value=500)
+            self.enhancing_entry = ttk.Entry(self.skill_frame,textvariable=self.enh_skill,justify="right")
+            self.enhancing_entry.configure(width=6)
+            self.enhancing_entry.grid(row=0, column=1,padx=0,pady=1,sticky='w')
+
 
             self.food_frame = ttk.LabelFrame(self.whm_frame, text="  Active Food  ")
-            self.food_frame.grid(row=6,column=0,sticky="nw",padx=0,pady=10)
+            self.food_frame.grid(row=7,column=0,sticky="nw",padx=0,pady=5)
             self.active_food = tk.StringVar(value="Grape Daifuku")
             self.food_combo = ttk.Combobox(self.food_frame, values=["None"] + [k["Name"] for k in all_food], textvariable=self.active_food,state="readonly")
             self.food_combo.grid(row=0,column=0,sticky="nw",padx=0,pady=2)
@@ -1175,9 +1198,9 @@ class App(tk.Tk):
             self.quickdamage_frame = ttk.Frame(self.frame31)
             self.quickdamage_frame.grid(row=3,column=0,padx=0,pady=5)
 
-            self.quickdamage = ttk.Label(self.quickdamage_frame, text=f"{'Average Damage = ':>17s}{0.0:>9.1f}",font="Courier 10")
+            self.quickdamage = ttk.Label(self.quickdamage_frame, text=f"{'Average Damage = ':>17s}{0.0:>9.1f}",font="Courier 11")
             self.quickdamage.grid(row=0,column=0,padx=0,pady=1)
-            self.quicktp = ttk.Label(self.quickdamage_frame, text=f"{'Average TP = ':>17s}{0.0:>9.1f}",font="Courier 10")
+            self.quicktp = ttk.Label(self.quickdamage_frame, text=f"{'Average TP = ':>17s}{0.0:>9.1f}",font="Courier 11")
             self.quicktp.grid(row=1,column=0,padx=0,pady=1)
 
 # ====================================================================================================================================================================================
@@ -2482,15 +2505,321 @@ class App(tk.Tk):
 # ====================================================================================================================================================================================
 
 
-        self.stats_frame = ttk.Frame(self.stats_tab,width=676,height=350)
-        self.stats_frame.grid_propagate(0)
+        self.stats_frame = ttk.Frame(self.stats_tab,width=676,height=650)
+        # self.stats_frame.grid_propagate(0)
         self.stats_frame.grid(row=0, column=0, padx=2, pady=0)
         self.stats_frame.grid_columnconfigure((0,1),weight=1) # Column 0 expands in the horizontal direction to fill blank space, effectively centering column1 in the frame. Weight=1 is how fast it expands; 2 is twice as fast, but it's all relative so no reason to change it with only one column
         self.stats_frame.grid_rowconfigure((0,1),weight=1) # Column 0 expands in the horizontal direction to fill blank space, effectively centering column1 in the frame. Weight=1 is how fast it expands; 2 is twice as fast, but it's all relative so no reason to change it with only one column
 
-    
-        self.wip_text = tk.Label(self.stats_frame,text="Work in progress.\n\n For now, just click the \"Show Stats\" button in the Inputs Tab to print a list of all of the player's stats in alphabetical order.\nIf the stat doesn't show up in the output, then the stat has zero value.")
-        self.wip_text.grid(row=0,column=0)
+        self.stats_frame1 = ttk.Frame(self.stats_frame)
+        self.stats_frame1.grid(row=0,column=0,pady=0,padx=0,sticky="nw")
+
+        self.base_parameters_frame = ttk.LabelFrame(self.stats_frame1,text="Base parameters",)
+        self.base_parameters_frame.grid(row=0,column=0,padx=2,pady=2,sticky="nw")
+
+        self.str_label = ttk.Label(self.base_parameters_frame, text="STR:", anchor="w", width=4,font="Courier 11")
+        self.str_label.grid(row=0,column=0,padx=2,pady=2)
+        self.str_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.str_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.dex_label = ttk.Label(self.base_parameters_frame, text="DEX:", anchor="w", width=4,font="Courier 11")
+        self.dex_label.grid(row=1,column=0,padx=2,pady=2)
+        self.dex_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.dex_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.vit_label = ttk.Label(self.base_parameters_frame, text="VIT:", anchor="w", width=4,font="Courier 11")
+        self.vit_label.grid(row=2,column=0,padx=2,pady=2)
+        self.vit_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.vit_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.agi_label = ttk.Label(self.base_parameters_frame, text="AGI:", anchor="w", width=4,font="Courier 11")
+        self.agi_label.grid(row=3,column=0,padx=2,pady=2)
+        self.agi_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.agi_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.int_label = ttk.Label(self.base_parameters_frame, text="INT:", anchor="w", width=4,font="Courier 11")
+        self.int_label.grid(row=4,column=0,padx=2,pady=2)
+        self.int_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.int_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.mnd_label = ttk.Label(self.base_parameters_frame, text="MND:", anchor="w", width=4,font="Courier 11")
+        self.mnd_label.grid(row=5,column=0,padx=2,pady=2)
+        self.mnd_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.mnd_value.grid(row=5,column=1,padx=2,pady=2)
+
+        self.chr_label = ttk.Label(self.base_parameters_frame, text="CHR:", anchor="w", width=4,font="Courier 11")
+        self.chr_label.grid(row=6,column=0,padx=2,pady=2)
+        self.chr_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.chr_value.grid(row=6,column=1,padx=2,pady=2)
+
+
+        self.basic_stats = ttk.LabelFrame(self.stats_frame1, text="Physical")
+        self.basic_stats.grid(row=0,column=1,sticky="nw",pady=2,padx=2)
+
+        self.acc1_label = ttk.Label(self.basic_stats, text="Accuracy1:", anchor="w", width=17,font="Courier 11")
+        self.acc1_label.grid(row=0,column=0,padx=2,pady=2)
+        self.acc1_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.acc1_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.acc2_label = ttk.Label(self.basic_stats, text="Accuracy2:", anchor="w", width=17,font="Courier 11")
+        self.acc2_label.grid(row=1,column=0,padx=2,pady=2)
+        self.acc2_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.acc2_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.atk1_label = ttk.Label(self.basic_stats, text="Attack1:", anchor="w", width=17,font="Courier 11")
+        self.atk1_label.grid(row=2,column=0,padx=2,pady=2)
+        self.atk1_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.atk1_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.atk2_label = ttk.Label(self.basic_stats, text="Attack2:", anchor="w", width=17,font="Courier 11")
+        self.atk2_label.grid(row=3,column=0,padx=2,pady=2)
+        self.atk2_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.atk2_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.racc_label = ttk.Label(self.basic_stats, text="Ranged Accuracy:", anchor="w", width=17,font="Courier 11")
+        self.racc_label.grid(row=4,column=0,padx=2,pady=2)
+        self.racc_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.racc_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.ratk_label = ttk.Label(self.basic_stats, text="Ranged Attack:", anchor="w", width=17,font="Courier 11")
+        self.ratk_label.grid(row=5,column=0,padx=2,pady=2)
+        self.ratk_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.ratk_value.grid(row=5,column=1,padx=2,pady=2)
+
+
+        self.magic_stats = ttk.LabelFrame(self.stats_frame1, text="Magical")
+        self.magic_stats.grid(row=0,column=2,pady=2,padx=2,sticky="nw")
+
+        self.macc_label = ttk.Label(self.magic_stats, text="Magic Accuracy:", anchor="w", width=20,font="Courier 11")
+        self.macc_label.grid(row=0,column=0,padx=2,pady=2)
+        self.macc_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.macc_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.maccskill_label = ttk.Label(self.magic_stats, text="Magic Acc. Skill:", anchor="w", width=20,font="Courier 11")
+        self.maccskill_label.grid(row=1,column=0,padx=2,pady=2)
+        self.maccskill_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.maccskill_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.matk_label = ttk.Label(self.magic_stats, text="Magic Attack:", anchor="w", width=20,font="Courier 11")
+        self.matk_label.grid(row=2,column=0,padx=2,pady=2)
+        self.matk_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.matk_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.mdmg_label = ttk.Label(self.magic_stats, text="Magic Damage:", anchor="w", width=20,font="Courier 11")
+        self.mdmg_label.grid(row=3,column=0,padx=2,pady=2)
+        self.mdmg_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.mdmg_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.mburst1_label = ttk.Label(self.magic_stats, text="Magic Burst Bonus:", anchor="w", width=20,font="Courier 11")
+        self.mburst1_label.grid(row=4,column=0,padx=2,pady=2)
+        self.mburst1_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.mburst1_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.mburst2_label = ttk.Label(self.magic_stats, text="Magic Burst Bonus II:", anchor="w", width=20,font="Courier 11")
+        self.mburst2_label.grid(row=5,column=0,padx=2,pady=2)
+        self.mburst2_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.mburst2_value.grid(row=5,column=1,padx=2,pady=2)
+
+        self.mburst3_label = ttk.Label(self.magic_stats, text="Magic Burst Traits:", anchor="w", width=20,font="Courier 11")
+        self.mburst3_label.grid(row=6,column=0,padx=2,pady=2)
+        self.mburst3_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.mburst3_value.grid(row=6,column=1,padx=2,pady=2)
+
+
+        self.stats_frame2 = ttk.Frame(self.stats_frame)
+        self.stats_frame2.grid(row=1,column=0,pady=0,padx=0, sticky="nw")
+
+        self.ma_frame = ttk.LabelFrame(self.stats_frame2, text="Multi-Attack")
+        self.ma_frame.grid(row=0,column=0,sticky="nw", pady=2,padx=2)
+
+        self.daken_label = ttk.Label(self.ma_frame, text="Daken:", anchor="w", width=15,font="Courier 11")
+        self.daken_label.grid(row=0,column=0,padx=2,pady=2)
+        self.daken_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.daken_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.zanshin_label = ttk.Label(self.ma_frame, text="Zanshin:", anchor="w", width=15,font="Courier 11")
+        self.zanshin_label.grid(row=1,column=0,padx=2,pady=2)
+        self.zanshin_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.zanshin_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.kicks_label = ttk.Label(self.ma_frame, text="Kick attacks:", anchor="w", width=15,font="Courier 11")
+        self.kicks_label.grid(row=2,column=0,padx=2,pady=2)
+        self.kicks_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.kicks_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.da_label = ttk.Label(self.ma_frame, text="Double attack:", anchor="w", width=15,font="Courier 11")
+        self.da_label.grid(row=3,column=0,padx=2,pady=2)
+        self.da_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.da_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.ta_label = ttk.Label(self.ma_frame, text="Triple attack:", anchor="w", width=15,font="Courier 11")
+        self.ta_label.grid(row=4,column=0,padx=2,pady=2)
+        self.ta_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.ta_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.qa_label = ttk.Label(self.ma_frame, text="Quad. attack:", anchor="w", width=15,font="Courier 11")
+        self.qa_label.grid(row=5,column=0,padx=2,pady=2)
+        self.qa_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.qa_value.grid(row=5,column=1,padx=2,pady=2)
+
+        self.ds_label = ttk.Label(self.ma_frame, text="Double shot:", anchor="w", width=15,font="Courier 11")
+        self.ds_label.grid(row=6,column=0,padx=2,pady=2)
+        self.ds_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.ds_value.grid(row=6,column=1,padx=2,pady=2)
+
+        self.ts_label = ttk.Label(self.ma_frame, text="Triple shot:", anchor="w", width=15,font="Courier 11")
+        self.ts_label.grid(row=7,column=0,padx=2,pady=2)
+        self.ts_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.ts_value.grid(row=7,column=1,padx=2,pady=2)
+
+        self.qs_label = ttk.Label(self.ma_frame, text="Quad. shot:", anchor="w", width=15,font="Courier 11")
+        self.qs_label.grid(row=8,column=0,padx=2,pady=2)
+        self.qs_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.qs_value.grid(row=8,column=1,padx=2,pady=2)
+
+
+
+        self.tp_frame = ttk.LabelFrame(self.stats_frame2, text="Attack speed")
+        self.tp_frame.grid(row=0,column=1,sticky="nw", pady=2,padx=2)
+
+        self.dw_label = ttk.Label(self.tp_frame, text="Dual wield:", anchor="w", width=20,font="Courier 11")
+        self.dw_label.grid(row=0,column=0,padx=2,pady=2)
+        self.dw_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.dw_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.ma_label = ttk.Label(self.tp_frame, text="Martial arts:", anchor="w", width=20,font="Courier 11")
+        self.ma_label.grid(row=1,column=0,padx=2,pady=2)
+        self.ma_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.ma_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.gear_haste_label = ttk.Label(self.tp_frame, text="Gear haste:", anchor="w", width=20,font="Courier 11")
+        self.gear_haste_label.grid(row=2,column=0,padx=2,pady=2)
+        self.gear_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.gear_haste_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.magic_haste_label = ttk.Label(self.tp_frame, text="Magic haste:", anchor="w", width=20,font="Courier 11")
+        self.magic_haste_label.grid(row=3,column=0,padx=2,pady=2)
+        self.magic_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.magic_haste_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.ja_haste_label = ttk.Label(self.tp_frame, text="JA haste:", anchor="w", width=20,font="Courier 11")
+        self.ja_haste_label.grid(row=4,column=0,padx=2,pady=2)
+        self.ja_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.ja_haste_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.delayreduction_label = ttk.Label(self.tp_frame, text="Delay reduction:", anchor="w", width=20,font="Courier 11")
+        self.delayreduction_label.grid(row=5,column=0,padx=2,pady=2)
+        self.delayreduction_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.delayreduction_value.grid(row=5,column=1,padx=2,pady=2)
+
+
+        self.stats_frame3 = ttk.Frame(self.stats_frame)
+        self.stats_frame3.grid(row=2,column=0,pady=0,padx=0, sticky="nw")
+
+        self.def_frame = ttk.LabelFrame(self.stats_frame3, text="Defensive")
+        self.def_frame.grid(row=0,column=0,sticky="nw", pady=2,padx=2)
+
+        self.pdt_label = ttk.Label(self.def_frame, text="PDT:", anchor="w", width=20,font="Courier 11")
+        self.pdt_label.grid(row=0,column=0,padx=2,pady=2)
+        self.pdt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.pdt_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.mdt_label = ttk.Label(self.def_frame, text="MDT:", anchor="w", width=20,font="Courier 11")
+        self.mdt_label.grid(row=1,column=0,padx=2,pady=2)
+        self.mdt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.mdt_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.dt_label = ttk.Label(self.def_frame, text="DT:", anchor="w", width=20,font="Courier 11")
+        self.dt_label.grid(row=2,column=0,padx=2,pady=2)
+        self.dt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.dt_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.eva_label = ttk.Label(self.def_frame, text="Evasion:", anchor="w", width=20,font="Courier 11")
+        self.eva_label.grid(row=3,column=0,padx=2,pady=2)
+        self.eva_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.eva_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.meva_label = ttk.Label(self.def_frame, text="Magic evasion:", anchor="w", width=20,font="Courier 11")
+        self.meva_label.grid(row=4,column=0,padx=2,pady=2)
+        self.meva_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.meva_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.mdef_label = ttk.Label(self.def_frame, text="Magic defense:", anchor="w", width=20,font="Courier 11")
+        self.mdef_label.grid(row=5,column=0,padx=2,pady=2)
+        self.mdef_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.mdef_value.grid(row=5,column=1,padx=2,pady=2)
+
+        self.subtle_label = ttk.Label(self.def_frame, text="Subtle blow:", anchor="w", width=20,font="Courier 11")
+        self.subtle_label.grid(row=6,column=0,padx=2,pady=2)
+        self.subtle_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.subtle_value.grid(row=6,column=1,padx=2,pady=2)
+
+        self.subtle2_label = ttk.Label(self.def_frame, text="Subtle blow II:", anchor="w", width=20,font="Courier 11")
+        self.subtle2_label.grid(row=7,column=0,padx=2,pady=2)
+        self.subtle2_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.subtle2_value.grid(row=7,column=1,padx=2,pady=2)
+
+
+        self.misc_frame = ttk.LabelFrame(self.stats_frame3, text="Misc.")
+        self.misc_frame.grid(row=0,column=1,sticky="nw", pady=2,padx=2)
+
+        self.critrate_label = ttk.Label(self.misc_frame, text="Crit. rate:", anchor="w", width=20,font="Courier 11")
+        self.critrate_label.grid(row=0,column=0,padx=2,pady=2)
+        self.critrate_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.critrate_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.critdmg_label = ttk.Label(self.misc_frame, text="Crit. damage:", anchor="w", width=20,font="Courier 11")
+        self.critdmg_label.grid(row=1,column=0,padx=2,pady=2)
+        self.critdmg_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.critdmg_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.wsd_label = ttk.Label(self.misc_frame, text="Weapon skill damage:", anchor="w", width=20,font="Courier 11")
+        self.wsd_label.grid(row=2,column=0,padx=2,pady=2)
+        self.wsd_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.wsd_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.wsdtrait_label = ttk.Label(self.misc_frame, text="Weapon skill trait:", anchor="w", width=20,font="Courier 11")
+        self.wsdtrait_label.grid(row=3,column=0,padx=2,pady=2)
+        self.wsdtrait_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.wsdtrait_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.pdl_label = ttk.Label(self.misc_frame, text="PDL:", anchor="w", width=20,font="Courier 11")
+        self.pdl_label.grid(row=4,column=0,padx=2,pady=2)
+        self.pdl_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.pdl_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.pdltrait_label = ttk.Label(self.misc_frame, text="PDL trait:", anchor="w", width=20,font="Courier 11")
+        self.pdltrait_label.grid(row=5,column=0,padx=2,pady=2)
+        self.pdltrait_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.pdltrait_value.grid(row=5,column=1,padx=2,pady=2)
+
+        self.stp_label = ttk.Label(self.misc_frame, text="Store TP:", anchor="w", width=20,font="Courier 11")
+        self.stp_label.grid(row=6,column=0,padx=2,pady=2)
+        self.stp_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.stp_value.grid(row=6,column=1,padx=2,pady=2)
+
+        self.tp_bonus_label = ttk.Label(self.misc_frame, text="TP bonus:", anchor="w", width=20,font="Courier 11")
+        self.tp_bonus_label.grid(row=7,column=0,padx=2,pady=2)
+        self.tp_bonus_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.tp_bonus_value.grid(row=7,column=1,padx=2,pady=2)
+
+        self.regain_label = ttk.Label(self.misc_frame, text="Regain:", anchor="w", width=20,font="Courier 11")
+        self.regain_label.grid(row=8,column=0,padx=2,pady=2)
+        self.regain_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.regain_value.grid(row=8,column=1,padx=2,pady=2)
+
+        self.skillchain_label = ttk.Label(self.misc_frame, text="Skillchain bonus:", anchor="w", width=20,font="Courier 11")
+        self.skillchain_label.grid(row=9,column=0,padx=2,pady=2)
+        self.skillchain_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.skillchain_value.grid(row=9,column=1,padx=2,pady=2)
+
+        self.smite_label = ttk.Label(self.misc_frame, text="Smite tier:", anchor="w", width=20,font="Courier 11")
+        self.smite_label.grid(row=10,column=0,padx=2,pady=2)
+        self.smite_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.smite_value.grid(row=10,column=1,padx=2,pady=2)
+
+        # self.wip_text = tk.Label(self.stats_frame,text="Work in progress.\n\n For now, just click the \"Show Stats\" button in the Inputs Tab to print a list of all of the player's stats in alphabetical order.\nIf the stat doesn't show up in the output, then the stat has zero value.")
+        # self.wip_text.grid(row=0,column=0)
 
 
         melee_stats = ["Attack1","Attack2","Accuracy1","Accuracy2","DA","TA","QA","Zanshin","ZanHasso","Kick Attacks","Attack%"]
@@ -2587,7 +2916,7 @@ class App(tk.Tk):
         # TODO: Dictionary these buttons/checkboxes/radio
         #
         tvr_rings = ["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's"]
-        jse_ear_names = {"nin":"Hattori","drk":"Heathen","blm":"Wicce","rdm":"Lethargy","drg":"Peltast","whm":"Ebers","sam":"Kasuga","sch":"Arbatel","war":"Boii","cor":"Chasseur","brd":"Fili","thf":"Skulker","mnk":"Bhikku","dnc":"Maculele","bst":"Nukumi","geo":"Azimuth","pld":"Chevalier","rng":"Amini","blu":"Hashishin","run":"Erilaz","pup":"Karagoz"}
+        jse_ear_names = {"nin":"Hattori","drk":"Heathen","blm":"Wicce","rdm":"Lethargy","drg":"Peltast","whm":"Ebers","sam":"Kasuga","sch":"Arbatel","war":"Boii","cor":"Chasseur","brd":"Fili","thf":"Skulker","mnk":"Bhikku","dnc":"Maculele","bst":"Nukumi","geo":"Azimuth","pld":"Chevalier","rng":"Amini","blu":"Hashishin","run":"Erilaz","pup":"Karagoz","smn":"Beckoner"}
 
         cbox_lists = {"main":[self.main_cbox_frame,self.x_main2,self.x_main2_var],
                         "sub":[self.sub_cbox_frame,self.x_sub2,self.x_sub2_var],
@@ -2891,13 +3220,26 @@ class App(tk.Tk):
         whm_on = self.whm_on.get()
 
         whm_haste = whm_on*(whm["Haste"]["Magic Haste"]*(self.whm_spell2.get() == "Haste") + whm["Haste II"]["Magic Haste"]*(self.whm_spell2.get() == "Haste II"))
-        whm_str   = whm_on*(whm["Boost-STR"]["STR"]*(self.whm_spell3.get()=="Boost-STR") + 7*(self.whm_spell4.get()=="Firestorm II")    + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_dex   = whm_on*(whm["Boost-DEX"]["DEX"]*(self.whm_spell3.get()=="Boost-DEX") + 7*(self.whm_spell4.get()=="Thunderstorm II") + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_vit   = whm_on*(whm["Boost-VIT"]["VIT"]*(self.whm_spell3.get()=="Boost-VIT") + 7*(self.whm_spell4.get()=="Sandstorm II")    + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_agi   = whm_on*(whm["Boost-AGI"]["AGI"]*(self.whm_spell3.get()=="Boost-AGI") + 7*(self.whm_spell4.get()=="Windstorm II")    + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_int   = whm_on*(whm["Boost-INT"]["INT"]*(self.whm_spell3.get()=="Boost-INT") + 7*(self.whm_spell4.get()=="Hailstorm II")    + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_mnd   = whm_on*(whm["Boost-MND"]["MND"]*(self.whm_spell3.get()=="Boost-MND") + 7*(self.whm_spell4.get()=="Rainstorm II")    + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_chr   = whm_on*(whm["Boost-CHR"]["CHR"]*(self.whm_spell3.get()=="Boost-CHR") + 7*(self.whm_spell4.get()=="Aurorastorm II")  + 3*(self.whm_spell4.get()=="Voidstorm II"))
+        self.boost_potency = (self.enh_skill.get() - 300)/10 + 5 if (self.enh_skill.get() - 300)/10 + 5 < 25 else 25 # Cap at +25 (500 skill)
+        self.boost_potency = 5 if self.boost_potency < 5 else self.boost_potency # Floor at +5
+        self.gain_potency = (self.enh_skill.get() - 300)/10 + 5 + 30 if (self.enh_skill.get() - 300)/10 + 5 + 30 < 55 else 55 # Cap at +55 (500 skill plus relic+3 hands)
+        self.gain_potency = 5+30 if self.gain_potency < 5+30 else self.gain_potency # Floor at +35 (with relic+3 hands)
+
+        whm_str   = whm_on*( (self.whm_spell3.get()=="Boost-STR")*(self.boost_potency) + 7*(self.whm_spell4.get() in ["Firestorm", "Firestorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-STR"))
+        whm_dex   = whm_on*( (self.whm_spell3.get()=="Boost-DEX")*(self.boost_potency) + 7*(self.whm_spell4.get() in ["Thunderstorm", "Thunderstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-DEX"))
+        whm_vit   = whm_on*( (self.boost_potency)*(self.whm_spell3.get()=="Boost-VIT") + 7*(self.whm_spell4.get() in ["Sandstorm", "Sandstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-VIT"))
+        whm_agi   = whm_on*( (self.boost_potency)*(self.whm_spell3.get()=="Boost-AGI") + 7*(self.whm_spell4.get() in ["Windstorm", "Windstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-AGI"))
+        whm_int   = whm_on*( (self.boost_potency)*(self.whm_spell3.get()=="Boost-INT") + 7*(self.whm_spell4.get() in ["Hailstorm", "Hailstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-INT"))
+        whm_mnd   = whm_on*( (self.boost_potency)*(self.whm_spell3.get()=="Boost-MND") + 7*(self.whm_spell4.get() in ["Rainstorm", "Rainstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-MND"))
+        whm_chr   = whm_on*( (self.boost_potency)*(self.whm_spell3.get()=="Boost-CHR") + 7*(self.whm_spell4.get() in ["Aurorastorm", "Aurorastorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-CHR"))
+
+        # whm_str   = whm_on*(whm["Boost-STR"]["STR"]*(self.whm_spell3.get()=="Boost-STR") + 7*(self.whm_spell4.get() in ["Firestorm", "Firestorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-STR"]["STR"]*(self.whm_spell3.get()=="Gain-STR"))
+        # whm_dex   = whm_on*(whm["Boost-DEX"]["DEX"]*(self.whm_spell3.get()=="Boost-DEX") + 7*(self.whm_spell4.get() in ["Thunderstorm", "Thunderstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-DEX"]["DEX"]*(self.whm_spell3.get()=="Gain-DEX"))
+        # whm_vit   = whm_on*(whm["Boost-VIT"]["VIT"]*(self.whm_spell3.get()=="Boost-VIT") + 7*(self.whm_spell4.get() in ["Sandstorm", "Sandstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-VIT"]["VIT"]*(self.whm_spell3.get()=="Gain-VIT"))
+        # whm_agi   = whm_on*(whm["Boost-AGI"]["AGI"]*(self.whm_spell3.get()=="Boost-AGI") + 7*(self.whm_spell4.get() in ["Windstorm", "Windstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-AGI"]["AGI"]*(self.whm_spell3.get()=="Gain-AGI"))
+        # whm_int   = whm_on*(whm["Boost-INT"]["INT"]*(self.whm_spell3.get()=="Boost-INT") + 7*(self.whm_spell4.get() in ["Hailstorm", "Hailstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-INT"]["INT"]*(self.whm_spell3.get()=="Gain-INT"))
+        # whm_mnd   = whm_on*(whm["Boost-MND"]["MND"]*(self.whm_spell3.get()=="Boost-MND") + 7*(self.whm_spell4.get() in ["Rainstorm", "Rainstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-MND"]["MND"]*(self.whm_spell3.get()=="Gain-MND"))
+        # whm_chr   = whm_on*(whm["Boost-CHR"]["CHR"]*(self.whm_spell3.get()=="Boost-CHR") + 7*(self.whm_spell4.get() in ["Aurorastorm", "Aurorastorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-CHR"]["CHR"]*(self.whm_spell3.get()=="Gain-CHR"))
 
 
         buffs = {"brd": {"Attack": brd_attack, "Accuracy": brd_accuracy, "Ranged Accuracy": brd_rangedaccuracy, "Ranged Attack": brd_attack,"Magic Haste":brd_haste, "STR":brd_str,"DEX":brd_dex, "VIT":brd_vit, "AGI":brd_agi, "INT":brd_int, "MND":brd_mnd, "CHR":brd_chr,},
@@ -3012,7 +3354,10 @@ class App(tk.Tk):
                      "Haste Samba":self.haste_samba_value.get(),
                      "Klimaform":self.klimaform_value.get(),
                      "Overwhelm":self.overwhelm_value.get(),
-                     "Distract III":self.distract3_value.get()}
+                     "Distract III":self.distract3_value.get(),
+                     "Temper":self.temper1_value.get(),
+                     "Temper II":self.temper2_value.get(),
+                     "Enh. Skill":self.enh_skill.get() if self.enh_skill.get() > 0 else 0}
 
 
         gearset = {
@@ -3601,7 +3946,7 @@ class App(tk.Tk):
                                     [self.natures_meditation_toggle, self.natures_meditation_value,"blu",0],
                                     [self.overwhelm_toggle, self.overwhelm_value,"sam",999],
                                     [self.saber_dance_toggle, self.saber_dance_value,"dnc",999],[self.sange_toggle, self.sange_value,"nin",999], [self.sharpshot_toggle, self.sharpshot_value,"rng",0],[self.sneak_attack_toggle, self.sneak_attack_value,"thf",0], [self.striking_flourish_toggle, self.striking_flourish_value,"dnc",999],[self.swordplay_toggle, self.swordplay_value,"run",0], 
-                                    [self.ternary_flourish_toggle, self.ternary_flourish_value,"dnc",999], [self.theurgic_focus_toggle, self.theurgic_focus_value,"geo",999],[self.trick_attack_toggle, self.trick_attack_value,"thf",0],[self.triple_shot_toggle, self.triple_shot_value,"cor",999],
+                                    [self.ternary_flourish_toggle, self.ternary_flourish_value,"dnc",999], [self.temper1_toggle, self.temper1_value,"run",999], [self.temper2_toggle, self.temper2_value,"rdm",999],[self.theurgic_focus_toggle, self.theurgic_focus_value,"geo",999],[self.trick_attack_toggle, self.trick_attack_value,"thf",0],[self.triple_shot_toggle, self.triple_shot_value,"cor",999],
                                     [self.velocity_shot_toggle, self.velocity_shot_value,"rng",999], 
                                     [self.warcry_toggle, self.warcry_value,"war",0],]
 
@@ -3639,6 +3984,43 @@ class App(tk.Tk):
                 # Re-display checkboxes that can be used by the selected main/subjob combination
                 if (k[2].upper()==self.mainjob.get()) or (k[2].upper()==self.subjob.get() and int(self.masterlevel.get())>=k[3]):
                     k[0].grid(row=i+2,column=0,sticky="n")
+
+            # Swap Boost-spells for Gain-spells when using RDM main.
+            if self.mainjob.get().lower() == "rdm":
+                self.current_boost = self.whm_spell3.get()
+                self.new_boost = self.current_boost.replace("Boost","Gain")
+                self.whm_stat_spells = ["None"] + ["Gain-STR","Gain-DEX","Gain-VIT","Gain-AGI","Gain-INT","Gain-MND","Gain-CHR"]
+                self.whm_spell3 = tk.StringVar(value=self.new_boost)
+                self.whm_combo3 = ttk.Combobox(self.whm_frame, values=self.whm_stat_spells, textvariable=self.whm_spell3,state="readonly")
+                self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2)
+            else:
+                self.current_boost = self.whm_spell3.get()
+                self.new_boost = self.current_boost.replace("Gain","Boost")
+                self.whm_stat_spells = ["None"] + ["Boost-STR","Boost-DEX","Boost-VIT","Boost-AGI","Boost-INT","Boost-MND","Boost-CHR"]
+                self.whm_spell3 = tk.StringVar(value=self.new_boost)
+                self.whm_combo3 = ttk.Combobox(self.whm_frame, values=self.whm_stat_spells, textvariable=self.whm_spell3,state="readonly")
+                self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2)
+
+            if self.mainjob.get().lower() == "rdm":
+                self.enhancing_skill_label.config(text="Enhancing Skill:")
+                self.enh_skill.set(value=650)
+            elif self.mainjob.get().lower() == "run":
+                self.enhancing_skill_label.config(text="Enhancing Skill:")
+                self.enh_skill.set(value=570)
+            elif self.mainjob.get().lower() == "drk":
+                self.enhancing_skill_label.config(text="Dark Skill:")
+                self.enh_skill.set(value=600)
+            elif self.mainjob.get().lower() == "pld":
+                self.enhancing_skill_label.config(text="Divine Skill:")
+                self.enh_skill.set(value=600)
+            else:
+                self.enhancing_skill_label.config(text="Enhancing Skill:")
+                self.enh_skill.set(value=500)
+                
+            if self.mainjob.get().lower() == "rdm":
+                self.temper2_value.set(True)
+            if self.mainjob.get().lower() == "run":
+                self.temper1_value.set(True)
 
 
         # Climactic/Striking/Ternary flourishes can not exist together. Disable the others when one is enabled.
