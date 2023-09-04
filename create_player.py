@@ -283,7 +283,7 @@ class create_player:
                 if self.abilities.get("Chainspell",False):
                     self.stats["Magic Damage"] = self.stats.get("Magic Damage",0) + 40
                 if self.abilities.get("Composure",False):
-                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 20
+                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 20 + 50 # +50 from Lv99 base and +20 from JP
         # ===========================================================================
         # ===========================================================================
         # Thief abilities
@@ -300,9 +300,16 @@ class create_player:
             if self.main_job=="pld":
                 if self.abilities.get("Divine Emblem",False):
                     self.stats["Magic Damage"] = self.stats.get("Magic Damage",0) + 40
-                if self.abilities.get("Enlight II",False): # Assuming 600 Divine Magic Skill
+                if self.abilities.get("Enlight II",False):
+                    divine_skill = self.abilities.get("Enh. Skill",0)
+                    divine_skill = 0 if divine_skill < 0 else divine_skill
+                    if divine_skill <=500:
+                        enlight_acc = 2*((divine_skill + 85)/13) + ((divine_skill + 85)/26) + 20 # +20 from JP
+                    else:
+                        enlight_acc = 2*((divine_skill + 400)/20) + ((divine_skill + 400)/40) + 20 # +20 from JP
+
                     enlight_potency = 0.80
-                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + (120+20)*enlight_potency
+                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + enlight_acc*enlight_potency
         # ===========================================================================
         # ===========================================================================
         # Dark Knight abilities
@@ -691,7 +698,7 @@ class create_player:
             "bst":{"STR":90, "DEX":97, "VIT":90, "AGI":95, "INT":93, "MND":81, "CHR":81,}, # TODO: Do these match THF by coincidence or are these placeholders?
             "brd":{"STR":90, "DEX":90, "VIT":90, "AGI":84, "INT":90, "MND":90, "CHR":95,},
             "rng":{"STR":87, "DEX":90, "VIT":90, "AGI":97, "INT":87, "MND":90, "CHR":87,},
-            "smn":{"STR":0, "DEX":0, "VIT":0, "AGI":0, "INT":0, "MND":0, "CHR":0,},
+            "smn":{"STR":84, "DEX":87, "VIT":84, "AGI":90, "INT":95, "MND":95, "CHR":95,},
             "sam":{"STR":93, "DEX":93, "VIT":93, "AGI":90, "INT":87, "MND":87, "CHR":90,},
             "nin":{"STR":93, "DEX":95, "VIT":93, "AGI":95, "INT":90, "MND":81, "CHR":84,},
             "drg":{"STR":95, "DEX":90, "VIT":93, "AGI":90, "INT":84, "MND":87, "CHR":93,},
@@ -712,8 +719,8 @@ class create_player:
             "thf":{"STR":10, "DEX":15, "VIT":10, "AGI":13, "INT":12, "MND":6, "CHR":6,},
             "pld":{"STR":13, "DEX":9, "VIT":15, "AGI":6, "INT":6, "MND":12, "CHR":12,},
             "drk":{"STR":15, "DEX":12, "VIT":12, "AGI":10, "INT":12, "MND":6, "CHR":6,},
-            "bst":{"STR":0, "DEX":0, "VIT":0, "AGI":0, "INT":0, "MND":0, "CHR":0,}, # Unknown parameter bonuses from BST
-            "brd":{"STR":0, "DEX":0, "VIT":0, "AGI":0, "INT":0, "MND":0, "CHR":0,}, # Unknown parameter bonuses from BRD
+            "bst":{"STR":9, "DEX":9, "VIT":9, "AGI":9, "INT":9, "MND":9, "CHR":9,}, # Unknown parameter bonuses from BST, copying BLU which is balanced
+            "brd":{"STR":9, "DEX":9, "VIT":9, "AGI":9, "INT":9, "MND":9, "CHR":9,}, # Unknown parameter bonuses from BRD, copying BLU which is balanced
             "rng":{"STR":9, "DEX":10, "VIT":10, "AGI":15, "INT":9, "MND":10, "CHR":9,},
             "smn":{"STR":7, "DEX":9, "VIT":7, "AGI":10, "INT":13, "MND":13, "CHR":13,},
             "sam":{"STR":12, "DEX":12, "VIT":12, "AGI":10, "INT":9, "MND":9, "CHR":10,},
@@ -888,12 +895,13 @@ class create_player:
         # Add job-specific stats from spells and abilities which are assumed to be active full-time.
 
         if self.main_job == "rdm": 
-            self.stats["TA"] = self.stats.get("TA",0) + 35 # Temper2
-            self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 50
-            # TODO: "Gain-PARAMETER" spells are treated later as a checkbox buff.
+            temper2_ta = int((self.abilities.get("Enh. Skill",0)-300)/10) if int((self.abilities.get("Enh. Skill",0)-300)/10) > 0 else 0  # Temper2 based on Enhancing Magic Skill https://www.bg-wiki.com/ffxi/Temper_II
+            self.stats["TA"] = self.stats.get("TA",0) + temper2_ta*self.abilities.get("Temper II",False)
 
         if self.main_job == "run":
-            self.stats["DA"] = self.stats.get("DA",0) + 17 # Temper1
+            temper1_da = int((self.abilities.get("Enh. Skill",0)-300)/10) if int((self.abilities.get("Enh. Skill",0)-300)/10) > 0 else 0  # Temper1 based on Enhancing Magic Skill https://www.bg-wiki.com/ffxi/Temper
+            temper1_da = 5 if temper1_da < 5 else temper1_da
+            self.stats["DA"] = self.stats.get("DA",0) + temper1_da*self.abilities.get("Temper",False)
         
         if "sch" in [self.main_job, self.sub_job]:
             self.stats["Elemental Magic Skill"] = max(self.stats.get("Elemental Magic Skill",0), 404+16) # Dark Arts enhances elemental magic skill to B+ rank, plus 16 from merits
