@@ -258,7 +258,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 September 03a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 September 06a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -3961,29 +3961,30 @@ class App(tk.Tk):
                 k[1].set(False)
                 k[0].grid_forget()
 
-                mb_jobs = ["whm","blm","rdm","pld","drk","nin","blu","sch","geo"] # Magic Burst jobs
-                ts_jobs = ["rng","cor"] # True Shot jobs
-                if self.mainjob.get().lower() in mb_jobs or self.subjob.get().lower() in mb_jobs:
-                    self.magic_burst_toggle.grid(row=2,column=0,sticky="n")
-                else:
-                    self.magic_burst_toggle.grid_forget()
-                    self.magic_burst_value.set(False)
-                if self.mainjob.get().lower() in ts_jobs or self.subjob.get().lower() in ts_jobs:
-                    self.true_shot_toggle.grid(row=3,column=0,sticky="n")
-                else:
-                    self.true_shot_toggle.grid_forget()
-                    self.true_shot_value.set(False)
-
-                self.angon_value.set(False) # All jobs can use Angon, but disable it when swapping jobs just to be consistent.
-                self.angon_toggle.grid(row=0,column=0,sticky="n")
-
-                self.distract3_value.set(False) 
-                self.distract3_toggle.grid(row=1,column=0,sticky="n")
-
-
                 # Re-display checkboxes that can be used by the selected main/subjob combination
                 if (k[2].upper()==self.mainjob.get()) or (k[2].upper()==self.subjob.get() and int(self.masterlevel.get())>=k[3]):
-                    k[0].grid(row=i+2,column=0,sticky="n")
+                    k[0].grid(row=i+4,column=0,sticky="n") # Update this i+4 for each permanent checkbox added. Right now we have MB, TS, Distract3, Angon, so we use +4
+
+            mb_jobs = ["whm","blm","rdm","pld","drk","nin","blu","sch","geo"] # Magic Burst jobs
+            ts_jobs = ["rng","cor"] # True Shot jobs
+            if self.mainjob.get().lower() in mb_jobs or self.subjob.get().lower() in mb_jobs:
+                self.magic_burst_toggle.grid(row=2,column=0,sticky="n")
+            else:
+                self.magic_burst_toggle.grid_forget()
+                self.magic_burst_value.set(False)
+            if self.mainjob.get().lower() in ts_jobs or self.subjob.get().lower() in ts_jobs:
+                self.true_shot_toggle.grid(row=3,column=0,sticky="n")
+            else:
+                self.true_shot_toggle.grid_forget()
+                self.true_shot_value.set(False)
+
+            self.angon_value.set(False) # All jobs can use Angon, but disable it when swapping jobs just to be consistent.
+            self.angon_toggle.grid(row=0,column=0,sticky="n")
+
+            self.distract3_value.set(False) 
+            self.distract3_toggle.grid(row=1,column=0,sticky="n")
+
+
 
             # Swap Boost-spells for Gain-spells when using RDM main.
             if self.mainjob.get().lower() == "rdm":
