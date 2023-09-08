@@ -258,7 +258,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 September 06a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 September 07a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -2512,167 +2512,167 @@ class App(tk.Tk):
         self.stats_frame.grid_rowconfigure((0,1),weight=1) # Column 0 expands in the horizontal direction to fill blank space, effectively centering column1 in the frame. Weight=1 is how fast it expands; 2 is twice as fast, but it's all relative so no reason to change it with only one column
 
         self.stats_frame1 = ttk.Frame(self.stats_frame)
-        self.stats_frame1.grid(row=0,column=0,pady=0,padx=0,sticky="nw")
+        self.stats_frame1.grid(row=0,column=0,pady=5,padx=5,sticky="nw")
 
         self.base_parameters_frame = ttk.LabelFrame(self.stats_frame1,text="Base parameters",)
-        self.base_parameters_frame.grid(row=0,column=0,padx=2,pady=2,sticky="nw")
+        self.base_parameters_frame.grid(row=0,column=0,padx=5,pady=5,sticky="nw")
 
-        self.str_label = ttk.Label(self.base_parameters_frame, text="STR:", anchor="w", width=4,font="Courier 11")
+        self.str_label = ttk.Label(self.base_parameters_frame, text="STR", anchor="w", width=4,font="Courier 11")
         self.str_label.grid(row=0,column=0,padx=2,pady=2)
         self.str_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.str_value.grid(row=0,column=1,padx=2,pady=2)
 
-        self.dex_label = ttk.Label(self.base_parameters_frame, text="DEX:", anchor="w", width=4,font="Courier 11")
+        self.dex_label = ttk.Label(self.base_parameters_frame, text="DEX", anchor="w", width=4,font="Courier 11")
         self.dex_label.grid(row=1,column=0,padx=2,pady=2)
         self.dex_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.dex_value.grid(row=1,column=1,padx=2,pady=2)
 
-        self.vit_label = ttk.Label(self.base_parameters_frame, text="VIT:", anchor="w", width=4,font="Courier 11")
+        self.vit_label = ttk.Label(self.base_parameters_frame, text="VIT", anchor="w", width=4,font="Courier 11")
         self.vit_label.grid(row=2,column=0,padx=2,pady=2)
         self.vit_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.vit_value.grid(row=2,column=1,padx=2,pady=2)
 
-        self.agi_label = ttk.Label(self.base_parameters_frame, text="AGI:", anchor="w", width=4,font="Courier 11")
+        self.agi_label = ttk.Label(self.base_parameters_frame, text="AGI", anchor="w", width=4,font="Courier 11")
         self.agi_label.grid(row=3,column=0,padx=2,pady=2)
         self.agi_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.agi_value.grid(row=3,column=1,padx=2,pady=2)
 
-        self.int_label = ttk.Label(self.base_parameters_frame, text="INT:", anchor="w", width=4,font="Courier 11")
+        self.int_label = ttk.Label(self.base_parameters_frame, text="INT", anchor="w", width=4,font="Courier 11")
         self.int_label.grid(row=4,column=0,padx=2,pady=2)
         self.int_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.int_value.grid(row=4,column=1,padx=2,pady=2)
 
-        self.mnd_label = ttk.Label(self.base_parameters_frame, text="MND:", anchor="w", width=4,font="Courier 11")
+        self.mnd_label = ttk.Label(self.base_parameters_frame, text="MND", anchor="w", width=4,font="Courier 11")
         self.mnd_label.grid(row=5,column=0,padx=2,pady=2)
         self.mnd_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.mnd_value.grid(row=5,column=1,padx=2,pady=2)
 
-        self.chr_label = ttk.Label(self.base_parameters_frame, text="CHR:", anchor="w", width=4,font="Courier 11")
+        self.chr_label = ttk.Label(self.base_parameters_frame, text="CHR", anchor="w", width=4,font="Courier 11")
         self.chr_label.grid(row=6,column=0,padx=2,pady=2)
         self.chr_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.chr_value.grid(row=6,column=1,padx=2,pady=2)
 
 
         self.basic_stats = ttk.LabelFrame(self.stats_frame1, text="Physical")
-        self.basic_stats.grid(row=0,column=1,sticky="nw",pady=2,padx=2)
+        self.basic_stats.grid(row=0,column=1,sticky="nw",pady=5,padx=5)
 
-        self.acc1_label = ttk.Label(self.basic_stats, text="Accuracy1:", anchor="w", width=17,font="Courier 11")
+        self.acc1_label = ttk.Label(self.basic_stats, text="Accuracy1", anchor="w", width=17,font="Courier 11")
         self.acc1_label.grid(row=0,column=0,padx=2,pady=2)
         self.acc1_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.acc1_value.grid(row=0,column=1,padx=2,pady=2)
 
-        self.acc2_label = ttk.Label(self.basic_stats, text="Accuracy2:", anchor="w", width=17,font="Courier 11")
+        self.acc2_label = ttk.Label(self.basic_stats, text="Accuracy2", anchor="w", width=17,font="Courier 11")
         self.acc2_label.grid(row=1,column=0,padx=2,pady=2)
         self.acc2_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.acc2_value.grid(row=1,column=1,padx=2,pady=2)
 
-        self.atk1_label = ttk.Label(self.basic_stats, text="Attack1:", anchor="w", width=17,font="Courier 11")
+        self.atk1_label = ttk.Label(self.basic_stats, text="Attack1", anchor="w", width=17,font="Courier 11")
         self.atk1_label.grid(row=2,column=0,padx=2,pady=2)
         self.atk1_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.atk1_value.grid(row=2,column=1,padx=2,pady=2)
 
-        self.atk2_label = ttk.Label(self.basic_stats, text="Attack2:", anchor="w", width=17,font="Courier 11")
+        self.atk2_label = ttk.Label(self.basic_stats, text="Attack2", anchor="w", width=17,font="Courier 11")
         self.atk2_label.grid(row=3,column=0,padx=2,pady=2)
         self.atk2_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.atk2_value.grid(row=3,column=1,padx=2,pady=2)
 
-        self.racc_label = ttk.Label(self.basic_stats, text="Ranged Accuracy:", anchor="w", width=17,font="Courier 11")
+        self.racc_label = ttk.Label(self.basic_stats, text="Ranged Accuracy", anchor="w", width=17,font="Courier 11")
         self.racc_label.grid(row=4,column=0,padx=2,pady=2)
         self.racc_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.racc_value.grid(row=4,column=1,padx=2,pady=2)
 
-        self.ratk_label = ttk.Label(self.basic_stats, text="Ranged Attack:", anchor="w", width=17,font="Courier 11")
+        self.ratk_label = ttk.Label(self.basic_stats, text="Ranged Attack", anchor="w", width=17,font="Courier 11")
         self.ratk_label.grid(row=5,column=0,padx=2,pady=2)
         self.ratk_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.ratk_value.grid(row=5,column=1,padx=2,pady=2)
 
 
         self.magic_stats = ttk.LabelFrame(self.stats_frame1, text="Magical")
-        self.magic_stats.grid(row=0,column=2,pady=2,padx=2,sticky="nw")
+        self.magic_stats.grid(row=0,column=2,pady=5,padx=5,sticky="nw")
 
-        self.macc_label = ttk.Label(self.magic_stats, text="Magic Accuracy:", anchor="w", width=20,font="Courier 11")
+        self.macc_label = ttk.Label(self.magic_stats, text="Magic Accuracy", anchor="w", width=20,font="Courier 11")
         self.macc_label.grid(row=0,column=0,padx=2,pady=2)
         self.macc_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.macc_value.grid(row=0,column=1,padx=2,pady=2)
 
-        self.maccskill_label = ttk.Label(self.magic_stats, text="Magic Acc. Skill:", anchor="w", width=20,font="Courier 11")
+        self.maccskill_label = ttk.Label(self.magic_stats, text="Magic Acc. Skill", anchor="w", width=20,font="Courier 11")
         self.maccskill_label.grid(row=1,column=0,padx=2,pady=2)
         self.maccskill_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.maccskill_value.grid(row=1,column=1,padx=2,pady=2)
 
-        self.matk_label = ttk.Label(self.magic_stats, text="Magic Attack:", anchor="w", width=20,font="Courier 11")
+        self.matk_label = ttk.Label(self.magic_stats, text="Magic Attack", anchor="w", width=20,font="Courier 11")
         self.matk_label.grid(row=2,column=0,padx=2,pady=2)
         self.matk_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.matk_value.grid(row=2,column=1,padx=2,pady=2)
 
-        self.mdmg_label = ttk.Label(self.magic_stats, text="Magic Damage:", anchor="w", width=20,font="Courier 11")
+        self.mdmg_label = ttk.Label(self.magic_stats, text="Magic Damage", anchor="w", width=20,font="Courier 11")
         self.mdmg_label.grid(row=3,column=0,padx=2,pady=2)
         self.mdmg_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.mdmg_value.grid(row=3,column=1,padx=2,pady=2)
 
-        self.mburst1_label = ttk.Label(self.magic_stats, text="Magic Burst Bonus:", anchor="w", width=20,font="Courier 11")
+        self.mburst1_label = ttk.Label(self.magic_stats, text="Magic Burst Bonus", anchor="w", width=20,font="Courier 11")
         self.mburst1_label.grid(row=4,column=0,padx=2,pady=2)
         self.mburst1_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.mburst1_value.grid(row=4,column=1,padx=2,pady=2)
 
-        self.mburst2_label = ttk.Label(self.magic_stats, text="Magic Burst Bonus II:", anchor="w", width=20,font="Courier 11")
+        self.mburst2_label = ttk.Label(self.magic_stats, text="Magic Burst Bonus II", anchor="w", width=20,font="Courier 11")
         self.mburst2_label.grid(row=5,column=0,padx=2,pady=2)
         self.mburst2_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.mburst2_value.grid(row=5,column=1,padx=2,pady=2)
 
-        self.mburst3_label = ttk.Label(self.magic_stats, text="Magic Burst Traits:", anchor="w", width=20,font="Courier 11")
+        self.mburst3_label = ttk.Label(self.magic_stats, text="Magic Burst Trait", anchor="w", width=20,font="Courier 11")
         self.mburst3_label.grid(row=6,column=0,padx=2,pady=2)
         self.mburst3_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.mburst3_value.grid(row=6,column=1,padx=2,pady=2)
 
 
         self.stats_frame2 = ttk.Frame(self.stats_frame)
-        self.stats_frame2.grid(row=1,column=0,pady=0,padx=0, sticky="nw")
+        self.stats_frame2.grid(row=1,column=0,pady=5,padx=5, sticky="nw")
 
         self.ma_frame = ttk.LabelFrame(self.stats_frame2, text="Multi-Attack")
         self.ma_frame.grid(row=0,column=0,sticky="nw", pady=2,padx=2)
 
-        self.daken_label = ttk.Label(self.ma_frame, text="Daken:", anchor="w", width=15,font="Courier 11")
+        self.daken_label = ttk.Label(self.ma_frame, text="Daken", anchor="w", width=15,font="Courier 11")
         self.daken_label.grid(row=0,column=0,padx=2,pady=2)
         self.daken_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.daken_value.grid(row=0,column=1,padx=2,pady=2)
 
-        self.zanshin_label = ttk.Label(self.ma_frame, text="Zanshin:", anchor="w", width=15,font="Courier 11")
+        self.zanshin_label = ttk.Label(self.ma_frame, text="Zanshin", anchor="w", width=15,font="Courier 11")
         self.zanshin_label.grid(row=1,column=0,padx=2,pady=2)
         self.zanshin_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.zanshin_value.grid(row=1,column=1,padx=2,pady=2)
 
-        self.kicks_label = ttk.Label(self.ma_frame, text="Kick attacks:", anchor="w", width=15,font="Courier 11")
+        self.kicks_label = ttk.Label(self.ma_frame, text="Kick Attacks", anchor="w", width=15,font="Courier 11")
         self.kicks_label.grid(row=2,column=0,padx=2,pady=2)
         self.kicks_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.kicks_value.grid(row=2,column=1,padx=2,pady=2)
 
-        self.da_label = ttk.Label(self.ma_frame, text="Double attack:", anchor="w", width=15,font="Courier 11")
+        self.da_label = ttk.Label(self.ma_frame, text="Double Attack", anchor="w", width=15,font="Courier 11")
         self.da_label.grid(row=3,column=0,padx=2,pady=2)
         self.da_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.da_value.grid(row=3,column=1,padx=2,pady=2)
 
-        self.ta_label = ttk.Label(self.ma_frame, text="Triple attack:", anchor="w", width=15,font="Courier 11")
+        self.ta_label = ttk.Label(self.ma_frame, text="Triple Attack", anchor="w", width=15,font="Courier 11")
         self.ta_label.grid(row=4,column=0,padx=2,pady=2)
         self.ta_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.ta_value.grid(row=4,column=1,padx=2,pady=2)
 
-        self.qa_label = ttk.Label(self.ma_frame, text="Quad. attack:", anchor="w", width=15,font="Courier 11")
+        self.qa_label = ttk.Label(self.ma_frame, text="Quad. Attack", anchor="w", width=15,font="Courier 11")
         self.qa_label.grid(row=5,column=0,padx=2,pady=2)
         self.qa_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.qa_value.grid(row=5,column=1,padx=2,pady=2)
 
-        self.ds_label = ttk.Label(self.ma_frame, text="Double shot:", anchor="w", width=15,font="Courier 11")
+        self.ds_label = ttk.Label(self.ma_frame, text="Double Shot", anchor="w", width=15,font="Courier 11")
         self.ds_label.grid(row=6,column=0,padx=2,pady=2)
         self.ds_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.ds_value.grid(row=6,column=1,padx=2,pady=2)
 
-        self.ts_label = ttk.Label(self.ma_frame, text="Triple shot:", anchor="w", width=15,font="Courier 11")
+        self.ts_label = ttk.Label(self.ma_frame, text="Triple Shot", anchor="w", width=15,font="Courier 11")
         self.ts_label.grid(row=7,column=0,padx=2,pady=2)
         self.ts_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.ts_value.grid(row=7,column=1,padx=2,pady=2)
 
-        self.qs_label = ttk.Label(self.ma_frame, text="Quad. shot:", anchor="w", width=15,font="Courier 11")
+        self.qs_label = ttk.Label(self.ma_frame, text="Quad. Shot", anchor="w", width=15,font="Courier 11")
         self.qs_label.grid(row=8,column=0,padx=2,pady=2)
         self.qs_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.qs_value.grid(row=8,column=1,padx=2,pady=2)
@@ -2680,143 +2680,143 @@ class App(tk.Tk):
 
 
         self.tp_frame = ttk.LabelFrame(self.stats_frame2, text="Attack speed")
-        self.tp_frame.grid(row=0,column=1,sticky="nw", pady=2,padx=2)
+        self.tp_frame.grid(row=0,column=1,sticky="nw", pady=5,padx=5)
 
-        self.dw_label = ttk.Label(self.tp_frame, text="Dual wield:", anchor="w", width=20,font="Courier 11")
+        self.dw_label = ttk.Label(self.tp_frame, text="Dual Wield", anchor="w", width=20,font="Courier 11")
         self.dw_label.grid(row=0,column=0,padx=2,pady=2)
         self.dw_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.dw_value.grid(row=0,column=1,padx=2,pady=2)
 
-        self.ma_label = ttk.Label(self.tp_frame, text="Martial arts:", anchor="w", width=20,font="Courier 11")
+        self.ma_label = ttk.Label(self.tp_frame, text="Martial Arts", anchor="w", width=20,font="Courier 11")
         self.ma_label.grid(row=1,column=0,padx=2,pady=2)
         self.ma_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.ma_value.grid(row=1,column=1,padx=2,pady=2)
 
-        self.gear_haste_label = ttk.Label(self.tp_frame, text="Gear haste:", anchor="w", width=20,font="Courier 11")
+        self.gear_haste_label = ttk.Label(self.tp_frame, text="Gear Haste", anchor="w", width=20,font="Courier 11")
         self.gear_haste_label.grid(row=2,column=0,padx=2,pady=2)
-        self.gear_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.gear_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
         self.gear_haste_value.grid(row=2,column=1,padx=2,pady=2)
 
-        self.magic_haste_label = ttk.Label(self.tp_frame, text="Magic haste:", anchor="w", width=20,font="Courier 11")
+        self.magic_haste_label = ttk.Label(self.tp_frame, text="Magic Haste", anchor="w", width=20,font="Courier 11")
         self.magic_haste_label.grid(row=3,column=0,padx=2,pady=2)
-        self.magic_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.magic_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
         self.magic_haste_value.grid(row=3,column=1,padx=2,pady=2)
 
-        self.ja_haste_label = ttk.Label(self.tp_frame, text="JA haste:", anchor="w", width=20,font="Courier 11")
+        self.ja_haste_label = ttk.Label(self.tp_frame, text="JA Haste", anchor="w", width=20,font="Courier 11")
         self.ja_haste_label.grid(row=4,column=0,padx=2,pady=2)
-        self.ja_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.ja_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
         self.ja_haste_value.grid(row=4,column=1,padx=2,pady=2)
 
-        self.delayreduction_label = ttk.Label(self.tp_frame, text="Delay reduction:", anchor="w", width=20,font="Courier 11")
+        self.delayreduction_label = ttk.Label(self.tp_frame, text="Delay Reduction", anchor="w", width=20,font="Courier 11")
         self.delayreduction_label.grid(row=5,column=0,padx=2,pady=2)
-        self.delayreduction_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.delayreduction_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
         self.delayreduction_value.grid(row=5,column=1,padx=2,pady=2)
 
 
         self.stats_frame3 = ttk.Frame(self.stats_frame)
-        self.stats_frame3.grid(row=2,column=0,pady=0,padx=0, sticky="nw")
+        self.stats_frame3.grid(row=2,column=0,pady=5,padx=5, sticky="nw")
 
         self.def_frame = ttk.LabelFrame(self.stats_frame3, text="Defensive")
-        self.def_frame.grid(row=0,column=0,sticky="nw", pady=2,padx=2)
+        self.def_frame.grid(row=0,column=0,sticky="nw", pady=5,padx=5)
 
-        self.pdt_label = ttk.Label(self.def_frame, text="PDT:", anchor="w", width=20,font="Courier 11")
+        self.pdt_label = ttk.Label(self.def_frame, text="PDT", anchor="w", width=20,font="Courier 11")
         self.pdt_label.grid(row=0,column=0,padx=2,pady=2)
-        self.pdt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.pdt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
         self.pdt_value.grid(row=0,column=1,padx=2,pady=2)
 
-        self.mdt_label = ttk.Label(self.def_frame, text="MDT:", anchor="w", width=20,font="Courier 11")
+        self.mdt_label = ttk.Label(self.def_frame, text="MDT", anchor="w", width=20,font="Courier 11")
         self.mdt_label.grid(row=1,column=0,padx=2,pady=2)
-        self.mdt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.mdt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
         self.mdt_value.grid(row=1,column=1,padx=2,pady=2)
 
-        self.dt_label = ttk.Label(self.def_frame, text="DT:", anchor="w", width=20,font="Courier 11")
+        self.dt_label = ttk.Label(self.def_frame, text="DT", anchor="w", width=20,font="Courier 11")
         self.dt_label.grid(row=2,column=0,padx=2,pady=2)
-        self.dt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.dt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
         self.dt_value.grid(row=2,column=1,padx=2,pady=2)
 
-        self.eva_label = ttk.Label(self.def_frame, text="Evasion:", anchor="w", width=20,font="Courier 11")
+        self.eva_label = ttk.Label(self.def_frame, text="Evasion", anchor="w", width=20,font="Courier 11")
         self.eva_label.grid(row=3,column=0,padx=2,pady=2)
         self.eva_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.eva_value.grid(row=3,column=1,padx=2,pady=2)
 
-        self.meva_label = ttk.Label(self.def_frame, text="Magic evasion:", anchor="w", width=20,font="Courier 11")
+        self.meva_label = ttk.Label(self.def_frame, text="Magic Evasion", anchor="w", width=20,font="Courier 11")
         self.meva_label.grid(row=4,column=0,padx=2,pady=2)
         self.meva_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.meva_value.grid(row=4,column=1,padx=2,pady=2)
 
-        self.mdef_label = ttk.Label(self.def_frame, text="Magic defense:", anchor="w", width=20,font="Courier 11")
+        self.mdef_label = ttk.Label(self.def_frame, text="Magic Defense", anchor="w", width=20,font="Courier 11")
         self.mdef_label.grid(row=5,column=0,padx=2,pady=2)
         self.mdef_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.mdef_value.grid(row=5,column=1,padx=2,pady=2)
 
-        self.subtle_label = ttk.Label(self.def_frame, text="Subtle blow:", anchor="w", width=20,font="Courier 11")
+        self.subtle_label = ttk.Label(self.def_frame, text="Subtle Blow", anchor="w", width=20,font="Courier 11")
         self.subtle_label.grid(row=6,column=0,padx=2,pady=2)
         self.subtle_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.subtle_value.grid(row=6,column=1,padx=2,pady=2)
 
-        self.subtle2_label = ttk.Label(self.def_frame, text="Subtle blow II:", anchor="w", width=20,font="Courier 11")
+        self.subtle2_label = ttk.Label(self.def_frame, text="Subtle Blow II", anchor="w", width=20,font="Courier 11")
         self.subtle2_label.grid(row=7,column=0,padx=2,pady=2)
         self.subtle2_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.subtle2_value.grid(row=7,column=1,padx=2,pady=2)
 
 
         self.misc_frame = ttk.LabelFrame(self.stats_frame3, text="Misc.")
-        self.misc_frame.grid(row=0,column=1,sticky="nw", pady=2,padx=2)
+        self.misc_frame.grid(row=0,column=1,sticky="nw", pady=5,padx=5)
 
-        self.critrate_label = ttk.Label(self.misc_frame, text="Crit. rate:", anchor="w", width=20,font="Courier 11")
+        self.critrate_label = ttk.Label(self.misc_frame, text="Crit. Rate", anchor="w", width=20,font="Courier 11")
         self.critrate_label.grid(row=0,column=0,padx=2,pady=2)
         self.critrate_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.critrate_value.grid(row=0,column=1,padx=2,pady=2)
 
-        self.critdmg_label = ttk.Label(self.misc_frame, text="Crit. damage:", anchor="w", width=20,font="Courier 11")
+        self.critdmg_label = ttk.Label(self.misc_frame, text="Crit. Damage", anchor="w", width=20,font="Courier 11")
         self.critdmg_label.grid(row=1,column=0,padx=2,pady=2)
         self.critdmg_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.critdmg_value.grid(row=1,column=1,padx=2,pady=2)
 
-        self.wsd_label = ttk.Label(self.misc_frame, text="Weapon skill damage:", anchor="w", width=20,font="Courier 11")
-        self.wsd_label.grid(row=2,column=0,padx=2,pady=2)
+        self.wsacc_label = ttk.Label(self.misc_frame, text="Weapon Skill Acc.", anchor="w", width=20,font="Courier 11")
+        self.wsacc_label.grid(row=3,column=0,padx=2,pady=2)
+        self.wsacc_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.wsacc_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.wsd_label = ttk.Label(self.misc_frame, text="Weapon Skill Damage", anchor="w", width=20,font="Courier 11")
+        self.wsd_label.grid(row=4,column=0,padx=2,pady=2)
         self.wsd_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
-        self.wsd_value.grid(row=2,column=1,padx=2,pady=2)
+        self.wsd_value.grid(row=4,column=1,padx=2,pady=2)
 
-        self.wsdtrait_label = ttk.Label(self.misc_frame, text="Weapon skill trait:", anchor="w", width=20,font="Courier 11")
-        self.wsdtrait_label.grid(row=3,column=0,padx=2,pady=2)
+        self.wsdtrait_label = ttk.Label(self.misc_frame, text="Weapon Skill Trait", anchor="w", width=20,font="Courier 11")
+        self.wsdtrait_label.grid(row=5,column=0,padx=2,pady=2)
         self.wsdtrait_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
-        self.wsdtrait_value.grid(row=3,column=1,padx=2,pady=2)
+        self.wsdtrait_value.grid(row=5,column=1,padx=2,pady=2)
 
-        self.pdl_label = ttk.Label(self.misc_frame, text="PDL:", anchor="w", width=20,font="Courier 11")
-        self.pdl_label.grid(row=4,column=0,padx=2,pady=2)
+        self.pdl_label = ttk.Label(self.misc_frame, text="PDL", anchor="w", width=20,font="Courier 11")
+        self.pdl_label.grid(row=6,column=0,padx=2,pady=2)
         self.pdl_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
-        self.pdl_value.grid(row=4,column=1,padx=2,pady=2)
+        self.pdl_value.grid(row=6,column=1,padx=2,pady=2)
 
-        self.pdltrait_label = ttk.Label(self.misc_frame, text="PDL trait:", anchor="w", width=20,font="Courier 11")
-        self.pdltrait_label.grid(row=5,column=0,padx=2,pady=2)
+        self.pdltrait_label = ttk.Label(self.misc_frame, text="PDL Trait", anchor="w", width=20,font="Courier 11")
+        self.pdltrait_label.grid(row=7,column=0,padx=2,pady=2)
         self.pdltrait_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
-        self.pdltrait_value.grid(row=5,column=1,padx=2,pady=2)
+        self.pdltrait_value.grid(row=7,column=1,padx=2,pady=2)
 
-        self.stp_label = ttk.Label(self.misc_frame, text="Store TP:", anchor="w", width=20,font="Courier 11")
-        self.stp_label.grid(row=6,column=0,padx=2,pady=2)
+        self.stp_label = ttk.Label(self.misc_frame, text="Store TP", anchor="w", width=20,font="Courier 11")
+        self.stp_label.grid(row=8,column=0,padx=2,pady=2)
         self.stp_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
-        self.stp_value.grid(row=6,column=1,padx=2,pady=2)
+        self.stp_value.grid(row=8,column=1,padx=2,pady=2)
 
-        self.tp_bonus_label = ttk.Label(self.misc_frame, text="TP bonus:", anchor="w", width=20,font="Courier 11")
-        self.tp_bonus_label.grid(row=7,column=0,padx=2,pady=2)
+        self.tp_bonus_label = ttk.Label(self.misc_frame, text="TP Bonus", anchor="w", width=20,font="Courier 11")
+        self.tp_bonus_label.grid(row=9,column=0,padx=2,pady=2)
         self.tp_bonus_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
-        self.tp_bonus_value.grid(row=7,column=1,padx=2,pady=2)
+        self.tp_bonus_value.grid(row=9,column=1,padx=2,pady=2)
 
-        self.regain_label = ttk.Label(self.misc_frame, text="Regain:", anchor="w", width=20,font="Courier 11")
-        self.regain_label.grid(row=8,column=0,padx=2,pady=2)
+        self.regain_label = ttk.Label(self.misc_frame, text="Regain", anchor="w", width=20,font="Courier 11")
+        self.regain_label.grid(row=10,column=0,padx=2,pady=2)
         self.regain_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
-        self.regain_value.grid(row=8,column=1,padx=2,pady=2)
+        self.regain_value.grid(row=10,column=1,padx=2,pady=2)
 
-        self.skillchain_label = ttk.Label(self.misc_frame, text="Skillchain bonus:", anchor="w", width=20,font="Courier 11")
-        self.skillchain_label.grid(row=9,column=0,padx=2,pady=2)
+        self.skillchain_label = ttk.Label(self.misc_frame, text="Skillchain Bonus", anchor="w", width=20,font="Courier 11")
+        self.skillchain_label.grid(row=11,column=0,padx=2,pady=2)
         self.skillchain_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
-        self.skillchain_value.grid(row=9,column=1,padx=2,pady=2)
-
-        self.smite_label = ttk.Label(self.misc_frame, text="Smite tier:", anchor="w", width=20,font="Courier 11")
-        self.smite_label.grid(row=10,column=0,padx=2,pady=2)
-        self.smite_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
-        self.smite_value.grid(row=10,column=1,padx=2,pady=2)
+        self.skillchain_value.grid(row=11,column=1,padx=2,pady=2)
 
         # self.wip_text = tk.Label(self.stats_frame,text="Work in progress.\n\n For now, just click the \"Show Stats\" button in the Inputs Tab to print a list of all of the player's stats in alphabetical order.\nIf the stat doesn't show up in the output, then the stat has zero value.")
         # self.wip_text.grid(row=0,column=0)
@@ -3300,8 +3300,6 @@ class App(tk.Tk):
         enemy.stats["Evasion"] -= (torpor_potency + 280*self.distract3_value.get())
         enemy.stats["Magic Evasion"] -= languor_potency
 
-        # TODO: update tooltip for enemy stats when changing Dia and Geomany comboboxes
-
         return(buffs, enemy)
 
     def run_optimize(self,trigger):
@@ -3427,14 +3425,86 @@ class App(tk.Tk):
             self.quicktp.configure(text=f"{'Avg TP/Round = ':>17}{avg_tp:>9.1f}")
 
         elif trigger=="stats":
+            self.notebook.select(self.stats_tab)
             player = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset, buffs, abilities)
             s = ["STR","DEX","VIT","AGI","INT","MND","CHR","Accuracy1","Accuracy2","Attack1","Attack2","Ranged Accuracy","Ranged Attack","DA","TA","QA","Store TP","Weapon Skill Damage","Double Shot","Triple Shot","Quad Shot","Gear Haste","Magic Haste","JA Haste","Dual Wield","Delay Reduction"]
             # for stat in s:
             #     print(stat+":",player.stats.get(stat,0))
-            print("======================= Player stats =======================")
-            for stat in player.stats:
-                print(f"{stat:>30s}  =  {player.stats[stat]}")
-            print("============================================================")
+            self.str_value.config(text=f"{int(player.stats.get('STR',0)):>4d}")
+            self.dex_value.config(text=f"{int(player.stats.get('DEX',0)):>4d}")
+            self.vit_value.config(text=f"{int(player.stats.get('VIT',0)):>4d}")
+            self.agi_value.config(text=f"{int(player.stats.get('AGI',0)):>4d}")
+            self.int_value.config(text=f"{int(player.stats.get('INT',0)):>4d}")
+            self.mnd_value.config(text=f"{int(player.stats.get('MND',0)):>4d}")
+            self.chr_value.config(text=f"{int(player.stats.get('CHR',0)):>4d}")
+            self.atk1_value.config(text=f"{int(player.stats.get('Attack1',0)):>4d}")
+            self.atk2_value.config(text=f"{int(player.stats.get('Attack2',0)):>4d}")
+            self.ratk_value.config(text=f"{int(player.stats.get('Ranged Attack',0)):>4d}")
+            self.acc1_value.config(text=f"{int(player.stats.get('Accuracy1',0)):>4d}")
+            self.acc2_value.config(text=f"{int(player.stats.get('Accuracy2',0)):>4d}")
+            self.racc_value.config(text=f"{int(player.stats.get('Ranged Accuracy',0)):>4d}")
+
+            self.da_value.config(text=f"{int(player.stats.get('DA',0)):>3d}%")
+            self.ta_value.config(text=f"{int(player.stats.get('TA',0)):>3d}%")
+            self.qa_value.config(text=f"{int(player.stats.get('QA',0)):>3d}%")
+
+            self.ds_value.config(text=f"{int(player.stats.get('Double Shot',0)):>3d}%")
+            self.ts_value.config(text=f"{int(player.stats.get('Triple Shot',0)):>3d}%")
+            self.qs_value.config(text=f"{int(player.stats.get('Quad Shot',0)):>3d}%")
+
+            self.kicks_value.config(text=f"{int(player.stats.get('Kick Attacks',0)):>3d}%")
+            self.daken_value.config(text=f"{int(player.stats.get('Daken',0)):>3d}%")
+            self.zanshin_value.config(text=f"{int(player.stats.get('Zanshin',0)):>3d}%")
+
+            self.gear_haste_value.config(text=f"{float(player.stats.get('Gear Haste',0))*100:>4.1f}%")
+            self.ja_haste_value.config(text=f"{float(player.stats.get('JA Haste',0))*100:>4.1f}%")
+            self.magic_haste_value.config(text=f"{float(player.stats.get('Magic Haste',0))*100:>4.1f}%")
+            self.delayreduction_value.config(text=f"{float(player.stats.get('Delay Reduction',0))*100:>4.1f}%")
+
+            self.dw_value.config(text=f"{int(player.stats.get('Dual Wield',0)):>4d}")
+            self.ma_value.config(text=f"{int(player.stats.get('Martial Arts',0)):>4d}")
+
+            self.regain_value.config(text=f"{int(player.stats.get('Regain',0)) + (player.gearset['main']['Name']=='Gokotai')*player.stats.get('Dual Wield',0):>4d}")
+
+            self.critrate_value.config(text=f"{int(player.stats.get('Crit Rate',0)):>3d}%")
+            self.critdmg_value.config(text=f"{int(player.stats.get('Crit DMG',0)):>3d}%")
+
+            self.stp_value.config(text=f"{int(player.stats.get('Store TP',0)):>4d}")
+            self.wsd_value.config(text=f"{int(player.stats.get('Weapon Skill Damage',0)):>3d}%")
+            self.wsacc_value.config(text=f"{int(player.stats.get('Weapon Skill Accuracy',0)):>4d}")
+            self.wsdtrait_value.config(text=f"{int(player.stats.get('Weapon Skill Damage Trait',0)):>3d}%")
+
+            self.pdl_value.config(text=f"{int(player.stats.get('PDL',0)):>3d}%")
+            self.pdltrait_value.config(text=f"{int(player.stats.get('PDL Trait',0)):>3d}%")
+
+            self.skillchain_value.config(text=f"{int(player.stats.get('Skillchain Bonus',0)):>3d}%")
+
+            self.tp_bonus_value.config(text=f"{int(player.stats.get('TP Bonus',0)):>4d}")
+
+            self.dt_value.config(text=f"{int(player.stats.get('DT',0)):>4d}%")
+            self.mdt_value.config(text=f"{int(player.stats.get('MDT',0)):>4d}%")
+            self.pdt_value.config(text=f"{int(player.stats.get('PDT',0)):>4d}%")
+
+            self.subtle_value.config(text=f"{int(player.stats.get('Subtle Blow',0)):>4d}")
+            self.subtle2_value.config(text=f"{int(player.stats.get('Subtle Blow II',0)):>4d}")
+
+            self.eva_value.config(text=f"{int(player.stats.get('Evasion',0)):>4d}")
+            self.meva_value.config(text=f"{int(player.stats.get('Magic Evasion',0)):>4d}")
+            self.mdef_value.config(text=f"{int(player.stats.get('Magic Defense',0)):>4d}")
+
+            self.maccskill_value.config(text=f"{int(player.stats.get('main Magic Accuracy Skill',0)):>4d}")
+            self.macc_value.config(text=f"{int(player.stats.get('Magic Accuracy',0)):>4d}")
+            self.mdmg_value.config(text=f"{int(player.stats.get('Magic Damage',0)):>4d}")
+            self.matk_value.config(text=f"{int(player.stats.get('Magic Attack',0)):>4d}")
+            self.mburst1_value.config(text=f"{int(player.stats.get('Magic Burst Damage',0)):>4d}")
+            self.mburst2_value.config(text=f"{int(player.stats.get('Magic Burst Damage II',0)):>4d}")
+            self.mburst3_value.config(text=f"{int(player.stats.get('Magic Burst Damage Trait',0)):>4d}")
+
+
+            # print("======================= Player stats =======================")
+            # for stat in player.stats:
+            #     print(f"{stat:>30s}  =  {player.stats[stat]}")
+            # print("============================================================")
             print("======================= Enemy  stats =======================")
             for stat in enemy.stats:
                 print(f"{stat:>15s}  =  {enemy.stats[stat]}")
