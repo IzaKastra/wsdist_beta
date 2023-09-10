@@ -12,6 +12,8 @@ from get_dint_m_v import *
 from get_delay_timing import *
 
 
+
+
 def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric):
     #
     # Calculate the damage dealt from a typical attack round.
@@ -660,8 +662,18 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
     return(metric, [damage, tp_return, invert]) 
 
 
+def real_tp_round(player, enemy, starting_tp, ws_threshold, input_metric):
+    pass
 
-def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
+
+def real_ws(player, enemy, ws_name, tp, ws_type, input_metric):
+    #
+    #
+    #
+    pass
+
+
+def average_ws(player, enemy, ws_name, tp, ws_type, input_metric, simulation=False):
     #
     # Calculate average weapon skill damage.
     #
@@ -709,6 +721,20 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     qa = player.stats.get("QA",0)/100 if player.stats.get("QA",0)/100 < 1.0 else 1.0
     ta = player.stats.get("TA",0)/100 if player.stats.get("TA",0)/100 < 1.0 else 1.0
     da = player.stats.get("DA",0)/100 if player.stats.get("DA",0)/100 < 1.0 else 1.0
+    oa8_main = player.stats.get("OA8 main",0)
+    oa7_main = player.stats.get("OA7 main",0)
+    oa6_main = player.stats.get("OA6 main",0)
+    oa5_main = player.stats.get("OA5 main",0)
+    oa4_main = player.stats.get("OA4 main",0)
+    oa3_main = player.stats.get("OA3 main",0)
+    oa2_main = player.stats.get("OA2 main",0)
+    oa8_sub = player.stats.get("OA8 sub",0)
+    oa7_sub = player.stats.get("OA7 sub",0)
+    oa6_sub = player.stats.get("OA6 sub",0)
+    oa5_sub = player.stats.get("OA5 sub",0)
+    oa4_sub = player.stats.get("OA4 sub",0)
+    oa3_sub = player.stats.get("OA3 sub",0)
+    oa2_sub = player.stats.get("OA2 sub",0)
     oa_list = np.array([player.stats.get("OA3 main",0), # Notice that there is no support for main-hand Kclub. Only the off-hand values support OA4+
             player.stats.get("OA2 main",0),
             player.stats.get("OA8 sub",0),
@@ -741,6 +767,7 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     physical_damage = 0 # Calculate the physical damage first, so we can add magical damage to hybrids after.
     magical_damage = 0
     total_damage = 0
+    tp_return = 0
 
     main_skill_type = player.gearset["main"]["Skill Type"]
     sub_skill_type = player.gearset["sub"].get("Skill Type",None) if not main_skill_type=="Hand-to-Hand" else "Hand-to-Hand"
@@ -793,19 +820,6 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
 
         hit_rate_matrix = np.array([[hit_rate11, hit_rate21],[hit_rate12, hit_rate22]])
 
-        # Use multi-attack values to estimate the number of hits per weapon. This must include Flourishes, which can force multi-attacks.
-        main_hits, sub_hits, _, _, _ = get_ma_rate3(player.main_job, nhits, qa, ta, da, oa_list, dual_wield, hit_rate_matrix, 0, 0, 0, 0, 0, 0, 0, striking_flourish, ternary_flourish, False) # Zero for ranged hit rate, daken, and kick attacks since this is the melee WS check
-
-        # Now calculate damage dealt for these hits.
-        # I calculate Hand-to-Hand off-hand attack using STR/2 instead of STR in the player class code, which lowers damage by a few % when compared to attack2 = attack1. I keep attack2 = attack1 in this main code for now.
-        player_attack2 = player_attack1 if main_skill_type == "Hand-to-Hand" else player_attack2
-
-        # Calculate how much damage the main hits would do if they were treated as sub-hits.
-        main_hit_pdif = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
-        main_hit_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, main_hit_pdif, ftp2, crit_rate, crit_dmg, 0, ws_bonus, ws_trait) # Using FTP2, WSD=0, etc
-        physical_damage += main_hits*main_hit_damage
-
-        # Calculate the correction to the first hit based on the full set of buffs and bonuses.
         sneak_attack_bonus = (player.stats["DEX"] * (1+player.stats.get("Sneak Attack Bonus",0)/100))*sneak_attack
         trick_attack_bonus = (player.stats["AGI"] * (1+player.stats.get("Trick Attack Bonus",0)/100))*trick_attack
         climactic_flourish_bonus = (0.5*player.stats["CHR"] * (1+player.stats.get("Flourish CHR%",0)/100))*climactic_flourish
@@ -818,42 +832,261 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
 
         first_main_hit_crit_rate = (1.0 if sneak_attack or trick_attack or climactic_flourish else (crit_rate+striking_crit_rate*(crit_rate>0))) # Special crit rate for SA/TA/Flourishes.
         first_main_hit_crit_rate = first_main_hit_crit_rate if first_main_hit_crit_rate < 1.0 else 1.0
+
         adjusted_crit_dmg = (crit_dmg + vajra_bonus_crit_dmg)*(1+climactic_crit_dmg) # Special crit damage that applies to first hit of SA/TA/ClimacticFlourish. Climactic with DNC Empy head provides a unique Crit Damage that applies separately.
-        first_main_hit_pdif = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, first_main_hit_crit_rate)
-        first_main_hit_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, first_main_hit_pdif, ftp, first_main_hit_crit_rate, adjusted_crit_dmg, wsd, ws_bonus, ws_trait, sneak_attack_bonus, trick_attack_bonus, climactic_flourish_bonus, striking_flourish_bonus, ternary_flourish_bonus)
 
-        # Adds the extra damage gained by those bonuses to the first hit's damage.
-        physical_damage += (first_main_hit_damage*hit_rate11 - main_hit_damage*hit_rate11)
+        if not simulation: # Check average damage if not running a simulation
+            
+            # Use multi-attack values to estimate the number of hits per weapon. This must include Flourishes, which can force multi-attacks.
+            main_hits, sub_hits, _, _, _ = get_ma_rate3(player.main_job, nhits, qa, ta, da, oa_list, dual_wield, hit_rate_matrix, 0, 0, 0, 0, 0, 0, 0, striking_flourish, ternary_flourish, False) # Zero for ranged hit rate, daken, and kick attacks since this is the melee WS check
 
-        # Striking Flourish also boosts the crit rate for its double attack hit, but doesn't provide the +100% CHR bonus (probably)
-        if striking_flourish:
-            # Define a new crit rate that adds 70% only if crit_rate>0 already (only for critical hit WSs)
-            striking_flourish_crit_rate = crit_rate + striking_crit_rate*(crit_rate>0) # This crit_rate>0 ensures I am not letting non-crit WSs crit.
-            striking_flourish_crit_rate = striking_flourish_crit_rate if striking_flourish_crit_rate < 1.0 else 1.0
-            striking_flourish_pdif1 = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, striking_flourish_crit_rate)
-            striking_flourish_DA_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, striking_flourish_pdif1, ftp2, striking_flourish_crit_rate, crit_dmg, 0, ws_bonus, ws_trait)
-            physical_damage += (striking_flourish_DA_damage - main_hit_damage)*hit_rate11 # Add on the difference in damage from a 2nd hit with higher crit.
+            # Now calculate damage dealt for these hits.
+            # I calculate Hand-to-Hand off-hand attack using STR/2 instead of STR in the player class code, which lowers damage by a few % when compared to attack2 = attack1. I keep attack2 = attack1 in this main code for now.
+            player_attack2 = player_attack1 if main_skill_type == "Hand-to-Hand" else player_attack2
 
-        # Calculate the damage for off-hand hits, which receive no bonuses. No fancy correction terms are required here.
-        offhand_pdif = get_avg_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
-        offhand_damage = get_avg_phys_damage(sub_dmg, fstr_sub, wsc, offhand_pdif, ftp2, crit_rate, crit_dmg, 0, ws_bonus, ws_trait)
-        physical_damage += offhand_damage*sub_hits
+            # Calculate how much damage the main hits would do if they were treated as sub-hits.
+            main_hit_pdif = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+            main_hit_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, main_hit_pdif, ftp2, crit_rate, crit_dmg, 0, ws_bonus, ws_trait) # Using FTP2, WSD=0, etc
+            physical_damage += main_hits*main_hit_damage
 
-        total_damage += physical_damage # Save the total physical damage dealt. We'll add magical damage for hybrid WSs after we treat Ranged weapon skils.
-        # print("------------------------------------------------------")
-        # print("first_main_hit: ",player_attack1, main_skill_type, first_main_hit_pdif, first_main_hit_damage,main_hits,hit_rate11,hit_rate12,accuracy1,ftp)
-        # print("mainhand: ",player_attack1, main_skill_type, main_hit_pdif, main_hit_damage,main_hits,hit_rate11,hit_rate12,accuracy1,ftp2)
-        # print("offhand: ",player_attack2, sub_skill_type, offhand_pdif, offhand_damage,sub_hits,hit_rate21,hit_rate22,accuracy2,ftp2)
-        # print("stats: ",wsd,ws_trait,ws_bonus,crit_rate,crit_dmg,player.stats["DEX"],player.stats["STR"])
+
+            # Calculate the correction to the first hit based on the full set of buffs and bonuses.
+
+            first_main_hit_pdif = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, first_main_hit_crit_rate)
+            first_main_hit_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, first_main_hit_pdif, ftp, first_main_hit_crit_rate, adjusted_crit_dmg, wsd, ws_bonus, ws_trait, sneak_attack_bonus, trick_attack_bonus, climactic_flourish_bonus, striking_flourish_bonus, ternary_flourish_bonus)
+
+            # Adds the extra damage gained by those bonuses to the first hit's damage.
+            physical_damage += (first_main_hit_damage*hit_rate11 - main_hit_damage*hit_rate11)
+
+            # Striking Flourish also boosts the crit rate for its double attack hit, but doesn't provide the +100% CHR bonus (probably)
+            if striking_flourish:
+                # Define a new crit rate that adds 70% only if crit_rate>0 already (only for critical hit WSs)
+                striking_flourish_crit_rate = crit_rate + striking_crit_rate*(crit_rate>0) # This crit_rate>0 ensures I am not letting non-crit WSs crit.
+                striking_flourish_crit_rate = striking_flourish_crit_rate if striking_flourish_crit_rate < 1.0 else 1.0
+                striking_flourish_pdif1 = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, striking_flourish_crit_rate)
+                striking_flourish_DA_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, striking_flourish_pdif1, ftp2, striking_flourish_crit_rate, crit_dmg, 0, ws_bonus, ws_trait)
+                physical_damage += (striking_flourish_DA_damage - main_hit_damage)*hit_rate11 # Add on the difference in damage from a 2nd hit with higher crit.
+
+            # Calculate the damage for off-hand hits, which receive no bonuses. No fancy correction terms are required here.
+            offhand_pdif = get_avg_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+            offhand_damage = get_avg_phys_damage(sub_dmg, fstr_sub, wsc, offhand_pdif, ftp2, crit_rate, crit_dmg, 0, ws_bonus, ws_trait)
+            physical_damage += offhand_damage*sub_hits
+
+            # print("------------------------------------------------------")
+            # print("first_main_hit: ",player_attack1, main_skill_type, first_main_hit_pdif, first_main_hit_damage,main_hits,hit_rate11,hit_rate12,accuracy1,ftp)
+            # print("mainhand: ",player_attack1, main_skill_type, main_hit_pdif, main_hit_damage,main_hits,hit_rate11,hit_rate12,accuracy1,ftp2)
+            # print("offhand: ",player_attack2, sub_skill_type, offhand_pdif, offhand_damage,sub_hits,hit_rate21,hit_rate22,accuracy2,ftp2)
+            # print("stats: ",wsd,ws_trait,ws_bonus,crit_rate,crit_dmg,player.stats["DEX"],player.stats["STR"])
+        
+            # Calculate melee WS TP return.
+            tp_return += get_tp(hit_rate11, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp) # Calculate TP return from the first main hit, which gains full TP. H2H hits each use half of the total mdelay for TP return, but time between attack rounds is still the same full mdelay.
+            tp_return += get_tp(hit_rate21, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp) # Add TP return from the first off-hand hit, which also gains the full TP amount
+
+            # Add TP return from the remaining main+off-hand hits together. All of these hits simply gain 10*(1+stp) TP
+            tp_return += 10*(1+stp)*(main_hits+sub_hits - hit_rate11 - hit_rate21) # main_hits and sub_hits already account for hit rates, so we only subtract off the number of first main+sub hits.
+            tp_return += (tp-player.stats.get("TP Bonus",0))*(0.01*(player.gearset["neck"]["Name"]=="Fotia Gorget"))*(0.01*(player.gearset["waist"]["Name"]=="Fotia Belt")) # Fotia gorget/belt each include +1% chance to retain TP on WS (before TP bonus)
+
+        else: # Run a proper damage simulation.
+
+            attempted_hits = 0 # Limited to 8 total attempted hits
+
+            # First main-hand hit
+            attempted_hits += 1
+            if np.random.uniform() < hit_rate11:
+                pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, first_main_hit_crit_rate) # Returns both the PDIF and whether or not the hit was a crit.
+                physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp, crit, adjusted_crit_dmg, wsd, ws_bonus, ws_trait, 0, sneak_attack_bonus, trick_attack_bonus, climactic_flourish_bonus, striking_flourish_bonus, ternary_flourish_bonus)
+                tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                
+            # First off-hand hit
+            if dual_wield:
+                attempted_hits += 1
+                if np.random.uniform() < hit_rate21:
+                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+
+            # nhits-1 main-hand hits (Blade: Shun is 5 hits, so this is the 4 extra main-hand hits)
+            for i in range(nhits-1):
+                if attempted_hits < 8:
+                    attempted_hits += 1
+                    if np.random.uniform() < hit_rate12:
+                        pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                        physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                        tp_return += 10*(1+stp)
+
+            # Main hit MA check(s): QA > TA > DA > OA8 > OA7 > OA6 > OA5 > OA4 > OA3 > OA2
+            # Main-hand gets two multi-attack checks if the WS has at least two native hits and the player is not dual wielding.
+            main_hand_multi_attacks = 2 if (not dual_wield) and (nhits > 1) else 1
+            for k in range(main_hand_multi_attacks):
+                if attempted_hits < 8:
+                    if np.random.uniform() < qa:
+                        for i in range(3): # 3 bonus hits on a Quad. Attack
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate12:
+                                    pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < ta:
+                        for i in range(2):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate12:
+                                    pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < da:
+                        for i in range(1):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate12:
+                                    pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa8_main:
+                        for i in range(7):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate12:
+                                    pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa7_main:
+                        for i in range(6):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate12:
+                                    pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa6_main:
+                        for i in range(5):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate12:
+                                    pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa5_main:
+                        for i in range(4):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate12:
+                                    pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa4_main:
+                        for i in range(3):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate12:
+                                    pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa3_main:
+                        for i in range(2):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate12:
+                                    pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa2_main:
+                        for i in range(1):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate12:
+                                    pdif, crit = get_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(main_dmg, fstr_main, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+
+            # Off-hand hit MA check.
+            if dual_wield:
+                if attempted_hits < 8:
+                    if np.random.uniform() < qa:
+                        for i in range(3):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate22:
+                                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < ta:
+                        for i in range(2):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate22:
+                                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < da:
+                        for i in range(1):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate22:
+                                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa8_sub:
+                        for i in range(7):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate22:
+                                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa7_sub:
+                        for i in range(6):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate22:
+                                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa6_sub:
+                        for i in range(5):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate22:
+                                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa5_sub:
+                        for i in range(4):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate22:
+                                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa4_sub:
+                        for i in range(3):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate22:
+                                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa3_sub:
+                        for i in range(2):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate22:
+                                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                    elif np.random.uniform() < oa2_sub:
+                        for i in range(1):
+                            if attempted_hits < 8:
+                                attempted_hits += 1
+                                if np.random.uniform() < hit_rate22:
+                                    pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                                    physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
+                                    tp_return += 10*(1+stp)
+                
+            if np.random.uniform() < (0.01*(player.gearset["neck"]["Name"]=="Fotia Gorget")) + (0.01*(player.gearset["waist"]["Name"]=="Fotia Belt")):
+                tp_return += (tp-player.stats.get("TP Bonus",0)) # Fotia gorget/belt each include +1% chance to retain TP on WS (before TP bonus)
     
-        # Calculate melee WS TP return.
-        tp_return = 0
-        tp_return += get_tp(hit_rate11,mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay,stp) # Calculate TP return from the first main hit, which gains full TP. H2H hits each use half of the total mdelay for TP return, but time between attack rounds is still the same full mdelay.
-        tp_return += get_tp(hit_rate21,mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay,stp) # Add TP return from the first off-hand hit, which also gains the full TP amount
-
-        # Add TP return from the remaining main+off-hand hits together. All of these hits simply gain 10*(1+stp) TP
-        tp_return += 10*(1+stp)*(main_hits+sub_hits - hit_rate11 - hit_rate21) # main_hits and sub_hits already account for hit rates, so we only subtract off the number of first main+sub hits.
-        tp_return += (tp-player.stats.get("TP Bonus",0))*(0.01*(player.gearset["neck"]["Name"]=="Fotia Gorget"))*(0.01*(player.gearset["waist"]["Name"]=="Fotia Belt")) # Fotia gorget/belt each include +1% chance to retain TP on WS (before TP bonus)
 
     elif ws_type == "ranged" and not magical:
 
@@ -876,25 +1109,47 @@ def average_ws(player, enemy, ws_name, tp, ws_type, input_metric):
 
         hit_rate_ranged1 = get_hit_rate(ranged_accuracy + 100*hover_shot +100, enemy_evasion, hit_rate_cap_ranged) # Assume first ranged hit gets +100 accuracy.
         hit_rate_ranged2 = get_hit_rate(ranged_accuracy + 100*hover_shot, enemy_evasion, hit_rate_cap_ranged) 
-        
-        # Calculate average ranged damage
-        avg_pdif_rng = get_avg_pdif_ranged(player_rangedattack, ranged_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
 
-        ranged_hit_damage = get_avg_phys_damage(ranged_dmg+ammo_dmg, fstr_rng, wsc, avg_pdif_rng, ftp,  crit_rate, crit_dmg, wsd, ws_bonus, ws_trait) # The amount of damage done by the first hit of the WS if it does not miss
-        ranged_hit_damage2 = get_avg_phys_damage(ranged_dmg+ammo_dmg, fstr_rng, wsc, avg_pdif_rng, ftp2,  crit_rate, crit_dmg, 0, ws_bonus, ws_trait) # Ranged hits after the first main hit (ie Jishnu's Radiance is a 3-hit Ranged WS.)
+        if not simulation:
 
-        physical_damage += ranged_hit_damage*hit_rate_ranged1 + ranged_hit_damage2*hit_rate_ranged2*(nhits-1)
-        physical_damage *= (1+true_shot)
-        total_damage += physical_damage
+            # Calculate average ranged damage
+            avg_pdif_rng = get_avg_pdif_ranged(player_rangedattack, ranged_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
 
-        # Calculate Ranged WS TP return.
-        tp_return = 0
-        tp_return += get_tp(hit_rate_ranged1, ranged_delay+ammo_delay, stp) # First main shot TP
-        tp_return += 10*(1+stp)*(nhits-1)*hit_rate_ranged2 # TP from other ranged WS hits get 10*(1+stp) TP
+            ranged_hit_damage = get_avg_phys_damage(ranged_dmg+ammo_dmg, fstr_rng, wsc, avg_pdif_rng, ftp,  crit_rate, crit_dmg, wsd, ws_bonus, ws_trait) # The amount of damage done by the first hit of the WS if it does not miss
+            ranged_hit_damage2 = get_avg_phys_damage(ranged_dmg+ammo_dmg, fstr_rng, wsc, avg_pdif_rng, ftp2,  crit_rate, crit_dmg, 0, ws_bonus, ws_trait) # Ranged hits after the first main hit (ie Jishnu's Radiance is a 3-hit Ranged WS.)
 
+            physical_damage += ranged_hit_damage*hit_rate_ranged1 + ranged_hit_damage2*hit_rate_ranged2*(nhits-1)
+            physical_damage *= (1+true_shot)
+
+            # Calculate Ranged WS TP return.
+            tp_return = 0
+            tp_return += get_tp(hit_rate_ranged1, ranged_delay+ammo_delay, stp) # First main shot TP
+            tp_return += 10*(1+stp)*(nhits-1)*hit_rate_ranged2 # TP from other ranged WS hits get 10*(1+stp) TP
+
+        else:
+
+            attempted_hits = 0
+
+            # First ranged hit
+            attempted_hits += 1
+            if np.random.uniform() < hit_rate_ranged1:
+                pdif, crit = get_pdif_ranged(player_rangedattack, ranged_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                physical_damage += get_phys_damage(ranged_dmg+ammo_dmg, fstr_rng, wsc, pdif, ftp, crit, crit_dmg, wsd, ws_bonus, ws_trait,0)
+                tp_return += get_tp(1, ranged_delay+ammo_delay, stp)
+
+            # Additional nhits-1 ranged hits
+            for i in range(nhits-1):
+                if attempted_hits < 8:
+                    if np.random.uniform() < hit_rate_ranged2:
+                        pdif, crit = get_pdif_ranged(player_rangedattack, ranged_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
+                        physical_damage += get_phys_damage(ranged_dmg+ammo_dmg, fstr_rng, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait,1)
+                        tp_return += 10*(1+stp)
+
+    total_damage += physical_damage
 
     # ===========================================================================
     # ===========================================================================
+    # Treat the magical portion of WSs as an average
     if hybrid or magical:
         # Calculate magical WS damage and the magical portion for hybrid weapon skills now.
         # https://www.ffxiah.com/forum/topic/51313/tachi-jinpu-set/
