@@ -89,7 +89,7 @@ def plot_final(damage, player, tp1, tp2, WS_name,):
     player_rangedaccuracy = player.stats['Ranged Accuracy']
     player_rangedattack = player.stats['Ranged Attack']
 
-    anno = f"{'STR = ':>14s}{player_str:>4.0f}\n{'DEX = ':>14s}{player_dex:>4.0f}\n{'VIT = ':>14s}{player_vit:>4.0f}\n{'AGI = ':>14s}{player_agi:>4.0f}\n{'INT = ':>14s}{player_int:>4.0f}\n{'MND = ':>14s}{player_mnd:>4.0f}\n{'CHR = ':>14s}{player_chr:>4.0f}\n{'Attack1 = ':>14s}{player_attack1:>4.0f}\n{'Attack2 = ':>14s}{player_attack2:>4.0f}\n{'Accuracy1 = ':>14s}{player_accuracy1:>4.0f}\n{'Accuracy2 = ':>14s}{player_accuracy2:>4.0f}\n{'Ranged Acc. = ':>14s}{player_rangedaccuracy:>4.0f}\n{'Ranged Atk. = ':>14s}{player_rangedattack:>4.0f}"
+    anno = f"{'STR = ':>14s}{player_str:>4.0f}\n{'DEX = ':>14s}{player_dex:>4.0f}\n{'VIT = ':>14s}{player_vit:>4.0f}\n{'AGI = ':>14s}{player_agi:>4.0f}\n{'INT = ':>14s}{player_int:>4.0f}\n{'MND = ':>14s}{player_mnd:>4.0f}\n{'CHR = ':>14s}{player_chr:>4.0f}\n{'Accuracy1 = ':>14s}{player_accuracy1:>4.0f}\n{'Accuracy2 = ':>14s}{player_accuracy2:>4.0f}\n{'Attack1 = ':>14s}{player_attack1:>4.0f}\n{'Attack2 = ':>14s}{player_attack2:>4.0f}\n{'Ranged Acc. = ':>14s}{player_rangedaccuracy:>4.0f}\n{'Ranged Atk. = ':>14s}{player_rangedattack:>4.0f}"
 
     bbox = dict(boxstyle="round", fc="1.0",)
     ax.annotate(anno, xycoords="figure fraction", xy=(0.015,0.17), bbox=bbox, fontsize=10) # Print the stats in a specific format

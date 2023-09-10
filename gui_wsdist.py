@@ -14,6 +14,7 @@ sys.path.append(os.path.dirname(sys.executable))
 from gear import *
 
 from enemies import *
+from fancy_plot import *
 
 from idlelib.tooltip import Hovertip # https://stackoverflow.com/questions/3221956/how-do-i-display-tooltips-in-tkinter
 
@@ -258,7 +259,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 September 07a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 September 09a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -587,7 +588,7 @@ class App(tk.Tk):
 
         self.enlight_value = tk.BooleanVar()
         self.enlight_toggle = ttk.Checkbutton(self.ja_frame,variable=self.enlight_value, text="Enlight II",width=-25, command=lambda event="enlight": self.update_special_checkboxes(event))
-        self.enlighttip = Hovertip(self.enlight_toggle,"Accuracy +112\n(assumes 80% max potency with 600 Divine Magic Skill)",hover_delay=500)
+        self.enlighttip = Hovertip(self.enlight_toggle,"Accuracy +112\n(assumes 80% max potency",hover_delay=500)
         self.enlight_toggle.state(["!alternate"])
         self.enlight_toggle.grid(row=12,column=0,sticky="n")
 
@@ -1915,6 +1916,9 @@ class App(tk.Tk):
         self.equip_best_set.configure(state="disabled")
         self.equip_best_set.grid(row=2,column=1,padx=0,pady=0)
 
+        self.build_dist = tk.Button(self.run_frame, text="Create WS Distribution Plot",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("build distribution"))
+        self.build_dist_tip = Hovertip(self.build_dist,f"Simulate 50,000 weapon skills using the current buffs and equipment and plot the resulting damage distribution.")
+        self.build_dist.grid(row=3,column=0,columnspan=2,padx=0,pady=0)
 
 # ====================================================================================================================================================================================
 
@@ -2595,35 +2599,30 @@ class App(tk.Tk):
         self.macc_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
         self.macc_value.grid(row=0,column=1,padx=2,pady=2)
 
-        self.maccskill_label = ttk.Label(self.magic_stats, text="Magic Acc. Skill", anchor="w", width=20,font="Courier 11")
-        self.maccskill_label.grid(row=1,column=0,padx=2,pady=2)
-        self.maccskill_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
-        self.maccskill_value.grid(row=1,column=1,padx=2,pady=2)
-
         self.matk_label = ttk.Label(self.magic_stats, text="Magic Attack", anchor="w", width=20,font="Courier 11")
-        self.matk_label.grid(row=2,column=0,padx=2,pady=2)
+        self.matk_label.grid(row=1,column=0,padx=2,pady=2)
         self.matk_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
-        self.matk_value.grid(row=2,column=1,padx=2,pady=2)
+        self.matk_value.grid(row=1,column=1,padx=2,pady=2)
 
         self.mdmg_label = ttk.Label(self.magic_stats, text="Magic Damage", anchor="w", width=20,font="Courier 11")
-        self.mdmg_label.grid(row=3,column=0,padx=2,pady=2)
+        self.mdmg_label.grid(row=2,column=0,padx=2,pady=2)
         self.mdmg_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
-        self.mdmg_value.grid(row=3,column=1,padx=2,pady=2)
+        self.mdmg_value.grid(row=2,column=1,padx=2,pady=2)
 
         self.mburst1_label = ttk.Label(self.magic_stats, text="Magic Burst Bonus", anchor="w", width=20,font="Courier 11")
-        self.mburst1_label.grid(row=4,column=0,padx=2,pady=2)
+        self.mburst1_label.grid(row=3,column=0,padx=2,pady=2)
         self.mburst1_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
-        self.mburst1_value.grid(row=4,column=1,padx=2,pady=2)
+        self.mburst1_value.grid(row=3,column=1,padx=2,pady=2)
 
         self.mburst2_label = ttk.Label(self.magic_stats, text="Magic Burst Bonus II", anchor="w", width=20,font="Courier 11")
-        self.mburst2_label.grid(row=5,column=0,padx=2,pady=2)
+        self.mburst2_label.grid(row=4,column=0,padx=2,pady=2)
         self.mburst2_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
-        self.mburst2_value.grid(row=5,column=1,padx=2,pady=2)
+        self.mburst2_value.grid(row=4,column=1,padx=2,pady=2)
 
         self.mburst3_label = ttk.Label(self.magic_stats, text="Magic Burst Trait", anchor="w", width=20,font="Courier 11")
-        self.mburst3_label.grid(row=6,column=0,padx=2,pady=2)
+        self.mburst3_label.grid(row=5,column=0,padx=2,pady=2)
         self.mburst3_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
-        self.mburst3_value.grid(row=6,column=1,padx=2,pady=2)
+        self.mburst3_value.grid(row=5,column=1,padx=2,pady=2)
 
 
         self.stats_frame2 = ttk.Frame(self.stats_frame)
@@ -2684,12 +2683,12 @@ class App(tk.Tk):
 
         self.dw_label = ttk.Label(self.tp_frame, text="Dual Wield", anchor="w", width=20,font="Courier 11")
         self.dw_label.grid(row=0,column=0,padx=2,pady=2)
-        self.dw_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.dw_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
         self.dw_value.grid(row=0,column=1,padx=2,pady=2)
 
         self.ma_label = ttk.Label(self.tp_frame, text="Martial Arts", anchor="w", width=20,font="Courier 11")
         self.ma_label.grid(row=1,column=0,padx=2,pady=2)
-        self.ma_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.ma_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
         self.ma_value.grid(row=1,column=1,padx=2,pady=2)
 
         self.gear_haste_label = ttk.Label(self.tp_frame, text="Gear Haste", anchor="w", width=20,font="Courier 11")
@@ -2736,27 +2735,27 @@ class App(tk.Tk):
 
         self.eva_label = ttk.Label(self.def_frame, text="Evasion", anchor="w", width=20,font="Courier 11")
         self.eva_label.grid(row=3,column=0,padx=2,pady=2)
-        self.eva_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.eva_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
         self.eva_value.grid(row=3,column=1,padx=2,pady=2)
 
         self.meva_label = ttk.Label(self.def_frame, text="Magic Evasion", anchor="w", width=20,font="Courier 11")
         self.meva_label.grid(row=4,column=0,padx=2,pady=2)
-        self.meva_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.meva_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
         self.meva_value.grid(row=4,column=1,padx=2,pady=2)
 
         self.mdef_label = ttk.Label(self.def_frame, text="Magic Defense", anchor="w", width=20,font="Courier 11")
         self.mdef_label.grid(row=5,column=0,padx=2,pady=2)
-        self.mdef_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.mdef_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
         self.mdef_value.grid(row=5,column=1,padx=2,pady=2)
 
         self.subtle_label = ttk.Label(self.def_frame, text="Subtle Blow", anchor="w", width=20,font="Courier 11")
         self.subtle_label.grid(row=6,column=0,padx=2,pady=2)
-        self.subtle_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.subtle_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
         self.subtle_value.grid(row=6,column=1,padx=2,pady=2)
 
         self.subtle2_label = ttk.Label(self.def_frame, text="Subtle Blow II", anchor="w", width=20,font="Courier 11")
         self.subtle2_label.grid(row=7,column=0,padx=2,pady=2)
-        self.subtle2_value = ttk.Label(self.def_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.subtle2_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
         self.subtle2_value.grid(row=7,column=1,padx=2,pady=2)
 
 
@@ -3399,12 +3398,14 @@ class App(tk.Tk):
 
         ws_name = self.ws_name.get()
 
-        if trigger in ["quicklook ws","quicklook spell"]:
+        if trigger in ["quicklook ws","quicklook spell", "build_distribution"]:
             if trigger=="quicklook ws":
                 if ws_name=="None":
                     print("No weapon skill selected.")
                     return
                 ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
+                x = []
+                y = []
                 outputs = average_ws(player, enemy, ws_name, effective_tp, ws_type, "Damage dealt")
             elif trigger=="quicklook spell":
                 if spell_name=="None":
@@ -3423,6 +3424,22 @@ class App(tk.Tk):
             avg_tp = outputs[1][1]
             self.quickdamage.configure(text=f"{'Time per WS = ':>17}{avg_time:>7.3f} s")
             self.quicktp.configure(text=f"{'Avg TP/Round = ':>17}{avg_tp:>9.1f}")
+
+        elif trigger=="build distribution":
+            damage_list = []
+            tp_list = []
+            ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
+            for k in range(50000):
+
+                # Randomly sample TP between the upper and lower limits.
+                effective_tp = np.random.uniform(self.tp1.get(), self.tp2.get()) + player.stats.get("TP Bonus",0)
+                effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
+
+                outputs = average_ws(player, enemy, ws_name, effective_tp, ws_type, "Damage dealt", simulation=True)[1]
+                damage_list.append(outputs[0])
+                tp_list.append(outputs[1])
+            plot_final(damage_list, player, self.tp1.get(), self.tp2.get(), ws_name)
+
 
         elif trigger=="stats":
             self.notebook.select(self.stats_tab)
@@ -3492,7 +3509,6 @@ class App(tk.Tk):
             self.meva_value.config(text=f"{int(player.stats.get('Magic Evasion',0)):>4d}")
             self.mdef_value.config(text=f"{int(player.stats.get('Magic Defense',0)):>4d}")
 
-            self.maccskill_value.config(text=f"{int(player.stats.get('main Magic Accuracy Skill',0)):>4d}")
             self.macc_value.config(text=f"{int(player.stats.get('Magic Accuracy',0)):>4d}")
             self.mdmg_value.config(text=f"{int(player.stats.get('Magic Damage',0)):>4d}")
             self.matk_value.config(text=f"{int(player.stats.get('Magic Attack',0)):>4d}")
@@ -4073,19 +4089,14 @@ class App(tk.Tk):
                 self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2)
 
             if self.mainjob.get().lower() == "rdm":
-                self.enhancing_skill_label.config(text="Enhancing Skill:")
                 self.enh_skill.set(value=650)
             elif self.mainjob.get().lower() == "run":
-                self.enhancing_skill_label.config(text="Enhancing Skill:")
                 self.enh_skill.set(value=570)
             elif self.mainjob.get().lower() == "drk":
-                self.enhancing_skill_label.config(text="Dark Skill:")
                 self.enh_skill.set(value=600)
             elif self.mainjob.get().lower() == "pld":
-                self.enhancing_skill_label.config(text="Divine Skill:")
                 self.enh_skill.set(value=600)
             else:
-                self.enhancing_skill_label.config(text="Enhancing Skill:")
                 self.enh_skill.set(value=500)
                 
             if self.mainjob.get().lower() == "rdm":
