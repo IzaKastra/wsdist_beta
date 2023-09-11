@@ -13,7 +13,7 @@ from get_dint_m_v import *
 from get_delay_timing import *
 
 
-def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, verbose=False):
+def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, plot_dps=False, verbose=False):
     #
     #
     #
@@ -78,11 +78,10 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
     tp_time_list = np.array(tp_time_list)
     ws_time_list = np.array(ws_time_list)
 
-    plot_dps = False
     if plot_dps:
         plt.plot(time_list, damage_list/time_list,label=f"Total={damage/time:7.1f}")
-        plt.plot(tp_time_list, tp_damage_list/tp_time_list,label=f"TP={tp_damage/time:7.1f}")
-        plt.plot(ws_time_list, ws_damage_list/ws_time_list,label=f"WS={ws_damage/time:7.1f}")
+        plt.plot(tp_time_list, tp_damage_list/tp_time_list,label=f"TP={tp_damage/time:7.1f} ({tp_damage/damage*100:5.1f}%)")
+        plt.plot(ws_time_list, ws_damage_list/ws_time_list,label=f"WS={ws_damage/time:7.1f} ({ws_damage/damage*100:5.1f}%)")
         plt.xlabel("Time (s)")
         plt.ylabel("DPS")
         plt.legend()
