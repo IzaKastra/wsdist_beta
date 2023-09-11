@@ -231,7 +231,7 @@ def save_defaults():
         ofile.write(f"elocation={app.enemy_location_var.get()}\n")
         ofile.write(f"elevel={app.enemy_level.get()}\n")
         ofile.write(f"eevasion={app.enemy_evasion.get()}\n")
-        ofile.write(f"edevense={app.enemy_defense.get()}\n")
+        ofile.write(f"edefense={app.enemy_defense.get()}\n")
         ofile.write(f"emagicevasion={app.enemy_magic_evasion.get()}\n")
         ofile.write(f"emagicdefense={app.enemy_magic_defense.get()}\n")
         ofile.write(f"eagi={app.enemy_agi.get()}\n")
@@ -331,7 +331,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 September 10a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 September 11a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -4230,12 +4230,15 @@ class App(tk.Tk):
 
         self.sim_button = tk.Button(self.sim_frame, text="Run weapon skill simulations",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("damage simulation"))
         self.sim_button_tip = Hovertip(self.sim_button,f"Simulate 10 hours of weapon skills using the above TP and WS sets.\nWeapon skills are used after reaching Minimum TP through normal attack rounds with the selected buffs.")
-        self.sim_button.grid(row=0,column=0,columnspan=2,padx=5,pady=5)
+        self.sim_button.grid(row=1,column=0,columnspan=2,padx=5,pady=5)
 
         self.build_dist = tk.Button(self.sim_frame, text="Create weapon skill\ndistribution plot",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("build distribution"))
         self.build_dist_tip = Hovertip(self.build_dist,f"Simulate 50,000 weapon skills using the current buffs and the equipped WS set and plot the resulting damage distribution.")
-        self.build_dist.grid(row=1,column=0,columnspan=2,padx=5,pady=5)
+        self.build_dist.grid(row=2,column=0,columnspan=2,padx=5,pady=5)
 
+        self.plot_dps = tk.BooleanVar(value=False)
+        self.plot_dps_cbox = ttk.Checkbutton(self.sim_frame,variable=self.plot_dps,text="Plot DPS")
+        self.plot_dps_cbox.grid(row=0,column=0,padx=5,pady=5)
 
         # Run Simulation button under the WS set where the quicklook buttons are.
         # Damage simulations store Time, Total TP Damage, Total WS damage, (Total SC Damage), 
@@ -4905,7 +4908,7 @@ class App(tk.Tk):
 
         elif trigger=="damage simulation":
             ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
-            run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type)
+            run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, self.plot_dps.get())
 
 
 
