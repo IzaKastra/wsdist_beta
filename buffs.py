@@ -77,4 +77,11 @@ whm = {"Haste":{"Magic Haste":150/1024},
        "Boost-AGI":{"AGI":25},
        "Boost-INT":{"INT":25},
        "Boost-MND":{"MND":25},
-       "Boost-CHR":{"CHR":25}}
+       "Boost-CHR":{"CHR":25},
+       "Gain-STR":{"STR":65},
+       "Gain-DEX":{"DEX":65},
+       "Gain-VIT":{"VIT":65},
+       "Gain-AGI":{"AGI":65},
+       "Gain-INT":{"INT":65},
+       "Gain-MND":{"MND":65},
+       "Gain-CHR":{"CHR":65}}

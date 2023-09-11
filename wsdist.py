@@ -94,13 +94,17 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
             best_set[slot] = Empty
 
         # Unequip gear that is not selected to be tested, unless the player locked the slot by selecting nothing.
-        if (starting_gearset[slot]["Name2"] not in check_gear[slot]) and len(check_gear[slot])>0:
+        # if (starting_gearset[slot] not in check_gear[slot]) and len(check_gear[slot])>0:
+        #     best_set[slot] = Empty
+
+        # Unequip all gear in slots to be tested.
+        if len(check_gear[slot])>0:
             best_set[slot] = Empty
             
         # If testing a melee WS, do not find the best ranged weapon unless it is an instrument. This does not apply to RNG or COR who might want savage blade sets to test gun/bow options
         if ws_type=="melee" and main_job not in ["rng","cor"]:
             check_gear["ranged"] = [k for k in check_gear["ranged"] if k["Type"]=="Instrument"]
-
+ 
     # Define JSE earrings now. We'll use them later to prevent Balder's Earring+1 and a JSE+2 being equipped at the same time since we ignore right_ear requirement for testing.
     jse_ears1 = [k + " Earring +1" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulkers", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
     jse_ears2 = [k + " Earring +2" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulkers", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
@@ -127,7 +131,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
 
         # Reset some variables between PDT/MDT iterations.
 
-        best_metric = 0.01 # Metric used to find the best set. This part of the code exclusively looks for "highest number".
+        best_metric = 0.0001 # Metric used to find the best set. This part of the code exclusively looks for "highest number".
 
         for z in range(n_iter):
             print(f"Current iteration: {z+1}")

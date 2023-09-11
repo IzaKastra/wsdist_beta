@@ -14,6 +14,7 @@ sys.path.append(os.path.dirname(sys.executable))
 from gear import *
 
 from enemies import *
+from fancy_plot import *
 
 from idlelib.tooltip import Hovertip # https://stackoverflow.com/questions/3221956/how-do-i-display-tooltips-in-tkinter
 
@@ -94,9 +95,45 @@ def load_defaults(app,defaults):
     app.selected_legs.set(value=name2dictionary(defaults.get("legs","Samnuha Tights")))
     app.selected_feet.set(value=name2dictionary(defaults.get("feet","Malignance Boots")))
 
+    app.selected_main_tp.set(value=name2dictionary(defaults.get("tp_main","Heishi Shorinken R15")))
+    app.selected_sub_tp.set(value=name2dictionary(defaults.get("tp_sub","Crepuscular Knife")))
+    app.selected_ranged_tp.set(value=name2dictionary(defaults.get("tp_ranged","Empty")))
+    app.selected_ammo_tp.set(value=name2dictionary(defaults.get("tp_ammo","Seki Shuriken")))
+    app.selected_head_tp.set(value=name2dictionary(defaults.get("tp_head","Malignance Chapeau")))
+    app.selected_neck_tp.set(value=name2dictionary(defaults.get("tp_neck","Ninja Nodowa +2 R25")))
+    app.selected_ear1_tp.set(value=name2dictionary(defaults.get("tp_ear1","Dedition Earring")))
+    app.selected_ear2_tp.set(value=name2dictionary(defaults.get("tp_ear2","Telos Earring")))
+    app.selected_body_tp.set(value=name2dictionary(defaults.get("tp_body","Tatenashi Haramaki +1 R15")))
+    app.selected_hands_tp.set(value=name2dictionary(defaults.get("tp_hands","Malignance Gloves")))
+    app.selected_ring1_tp.set(value=name2dictionary(defaults.get("tp_ring1","Gere Ring")))
+    app.selected_ring2_tp.set(value=name2dictionary(defaults.get("tp_ring2","Epona's Ring")))
+    app.selected_back_tp.set(value=name2dictionary(defaults.get("tp_back","Andartia's Mantle DEX Store TP")))
+    app.selected_waist_tp.set(value=name2dictionary(defaults.get("tp_waist","Sailfi Belt +1 R15")))
+    app.selected_legs_tp.set(value=name2dictionary(defaults.get("tp_legs","Samnuha Tights")))
+    app.selected_feet_tp.set(value=name2dictionary(defaults.get("tp_feet","Malignance Boots")))
+
+    app.selected_main_ws.set(value=name2dictionary(defaults.get("ws_main","Heishi Shorinken R15")))
+    app.selected_sub_ws.set(value=name2dictionary(defaults.get("ws_sub","Crepuscular Knife")))
+    app.selected_ranged_ws.set(value=name2dictionary(defaults.get("ws_ranged","Empty")))
+    app.selected_ammo_ws.set(value=name2dictionary(defaults.get("ws_ammo","Seki Shuriken")))
+    app.selected_head_ws.set(value=name2dictionary(defaults.get("ws_head","Malignance Chapeau")))
+    app.selected_neck_ws.set(value=name2dictionary(defaults.get("ws_neck","Ninja Nodowa +2 R25")))
+    app.selected_ear1_ws.set(value=name2dictionary(defaults.get("ws_ear1","Dedition Earring")))
+    app.selected_ear2_ws.set(value=name2dictionary(defaults.get("ws_ear2","Telos Earring")))
+    app.selected_body_ws.set(value=name2dictionary(defaults.get("ws_body","Tatenashi Haramaki +1 R15")))
+    app.selected_hands_ws.set(value=name2dictionary(defaults.get("ws_hands","Malignance Gloves")))
+    app.selected_ring1_ws.set(value=name2dictionary(defaults.get("ws_ring1","Gere Ring")))
+    app.selected_ring2_ws.set(value=name2dictionary(defaults.get("ws_ring2","Epona's Ring")))
+    app.selected_back_ws.set(value=name2dictionary(defaults.get("ws_back","Andartia's Mantle DEX Store TP")))
+    app.selected_waist_ws.set(value=name2dictionary(defaults.get("ws_waist","Sailfi Belt +1 R15")))
+    app.selected_legs_ws.set(value=name2dictionary(defaults.get("ws_legs","Samnuha Tights")))
+    app.selected_feet_ws.set(value=name2dictionary(defaults.get("ws_feet","Malignance Boots")))
+
     # Update gear icons and tooltips
     for slot in ["main","sub","ranged","ammo","head","neck","ear1","ear2","body","hands","ring1","ring2","back","waist","legs","feet"]:
         app.update_buttons(slot)
+        app.update_buttons_tp(slot)
+        app.update_buttons_ws(slot)
             
     # Update enemy input defaults
     app.enemy_magic_defense.set(defaults.get("emagicdefense","0"))
@@ -194,7 +231,7 @@ def save_defaults():
         ofile.write(f"elocation={app.enemy_location_var.get()}\n")
         ofile.write(f"elevel={app.enemy_level.get()}\n")
         ofile.write(f"eevasion={app.enemy_evasion.get()}\n")
-        ofile.write(f"edevense={app.enemy_defense.get()}\n")
+        ofile.write(f"edefense={app.enemy_defense.get()}\n")
         ofile.write(f"emagicevasion={app.enemy_magic_evasion.get()}\n")
         ofile.write(f"emagicdefense={app.enemy_magic_defense.get()}\n")
         ofile.write(f"eagi={app.enemy_agi.get()}\n")
@@ -220,6 +257,42 @@ def save_defaults():
         ofile.write(f"waist={eval(app.selected_waist.get())['Name2']}\n")
         ofile.write(f"legs={eval(app.selected_legs.get())['Name2']}\n")
         ofile.write(f"feet={eval(app.selected_feet.get())['Name2']}\n")
+
+        ofile.write("\n# Simulation inputs\n")
+        ofile.write(f"tp_main={eval(app.selected_main_tp.get())['Name2']}\n")
+        ofile.write(f"tp_sub={eval(app.selected_sub_tp.get())['Name2']}\n")
+        ofile.write(f"tp_ranged={eval(app.selected_ranged_tp.get())['Name2']}\n")
+        ofile.write(f"tp_ammo={eval(app.selected_ammo_tp.get())['Name2']}\n")
+        ofile.write(f"tp_head={eval(app.selected_head_tp.get())['Name2']}\n")
+        ofile.write(f"tp_neck={eval(app.selected_neck_tp.get())['Name2']}\n")
+        ofile.write(f"tp_ear1={eval(app.selected_ear1_tp.get())['Name2']}\n")
+        ofile.write(f"tp_ear2={eval(app.selected_ear2_tp.get())['Name2']}\n")
+        ofile.write(f"tp_body={eval(app.selected_body_tp.get())['Name2']}\n")
+        ofile.write(f"tp_hands={eval(app.selected_hands_tp.get())['Name2']}\n")
+        ofile.write(f"tp_ring1={eval(app.selected_ring1_tp.get())['Name2']}\n")
+        ofile.write(f"tp_ring2={eval(app.selected_ring2_tp.get())['Name2']}\n")
+        ofile.write(f"tp_back={eval(app.selected_back_tp.get())['Name2']}\n")
+        ofile.write(f"tp_waist={eval(app.selected_waist_tp.get())['Name2']}\n")
+        ofile.write(f"tp_legs={eval(app.selected_legs_tp.get())['Name2']}\n")
+        ofile.write(f"tp_feet={eval(app.selected_feet_tp.get())['Name2']}\n")
+
+        print("\n")
+        ofile.write(f"ws_main={eval(app.selected_main_ws.get())['Name2']}\n")
+        ofile.write(f"ws_sub={eval(app.selected_sub_ws.get())['Name2']}\n")
+        ofile.write(f"ws_ranged={eval(app.selected_ranged_ws.get())['Name2']}\n")
+        ofile.write(f"ws_ammo={eval(app.selected_ammo_ws.get())['Name2']}\n")
+        ofile.write(f"ws_head={eval(app.selected_head_ws.get())['Name2']}\n")
+        ofile.write(f"ws_neck={eval(app.selected_neck_ws.get())['Name2']}\n")
+        ofile.write(f"ws_ear1={eval(app.selected_ear1_ws.get())['Name2']}\n")
+        ofile.write(f"ws_ear2={eval(app.selected_ear2_ws.get())['Name2']}\n")
+        ofile.write(f"ws_body={eval(app.selected_body_ws.get())['Name2']}\n")
+        ofile.write(f"ws_hands={eval(app.selected_hands_ws.get())['Name2']}\n")
+        ofile.write(f"ws_ring1={eval(app.selected_ring1_ws.get())['Name2']}\n")
+        ofile.write(f"ws_ring2={eval(app.selected_ring2_ws.get())['Name2']}\n")
+        ofile.write(f"ws_back={eval(app.selected_back_ws.get())['Name2']}\n")
+        ofile.write(f"ws_waist={eval(app.selected_waist_ws.get())['Name2']}\n")
+        ofile.write(f"ws_legs={eval(app.selected_legs_ws.get())['Name2']}\n")
+        ofile.write(f"ws_feet={eval(app.selected_feet_ws.get())['Name2']}\n")
 
         # Save the current window size. Most/all of the widgets use a specific size anyway, so resizing the window is mostly pointless for now.
         ofile.write("\n# Window size:  widthxheight\n")
@@ -258,7 +331,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 August 06a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 September 11a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -272,10 +345,12 @@ class App(tk.Tk):
         self.inputs_tab = ttk.Frame(self.notebook)
         self.select_gear_tab = ttk.Frame(self.notebook)
         self.stats_tab = ttk.Frame(self.notebook)
+        self.sim_tab = ttk.Frame(self.notebook)
 
         self.notebook.add(self.inputs_tab, text="Inputs")
         self.notebook.add(self.select_gear_tab, text="Optimize")
         self.notebook.add(self.stats_tab, text="Player Stats")
+        self.notebook.add(self.sim_tab, text="Simulations")
 
         # tkinter Menu  https://blog.teclado.com/how-to-add-menu-to-tkinter-app/
         self.menu_bar = tk.Menu(self)
@@ -320,7 +395,7 @@ class App(tk.Tk):
             self.subjob_label = ttk.Label(self.player_inputs_frame,text="Sub Job:",width=15)
             self.subjob_label.grid(row=2, column=0, padx=0, pady=1, sticky="w")
 
-            self.main_jobs = sorted(["NIN", "DRK", "SCH", "RDM", "BLM", "SAM", "DRG", "WHM", "WAR", "COR","BRD", "THF", "MNK", "DNC", "BST", "RUN", "RNG", "PUP", "BLU", "GEO", "PLD"])
+            self.main_jobs = sorted(["NIN", "DRK", "SCH", "RDM", "BLM", "SAM", "DRG", "WHM", "WAR", "COR","BRD", "THF", "MNK", "DNC", "BST", "RUN", "RNG", "PUP", "BLU", "GEO", "PLD", "SMN"])
             self.mainjob = tk.StringVar(value="NIN")
             self.mainjob_box = ttk.Combobox(self.player_inputs_frame, textvariable=self.mainjob, values=self.main_jobs,state="readonly",)
             self.mainjob_box.config(width=11,)
@@ -587,7 +662,7 @@ class App(tk.Tk):
 
         self.enlight_value = tk.BooleanVar()
         self.enlight_toggle = ttk.Checkbutton(self.ja_frame,variable=self.enlight_value, text="Enlight II",width=-25, command=lambda event="enlight": self.update_special_checkboxes(event))
-        self.enlighttip = Hovertip(self.enlight_toggle,"Accuracy +112\n(assumes 80% max potency with 600 Divine Magic Skill)",hover_delay=500)
+        self.enlighttip = Hovertip(self.enlight_toggle,"Accuracy +112\n(assumes 80% max potency",hover_delay=500)
         self.enlight_toggle.state(["!alternate"])
         self.enlight_toggle.grid(row=12,column=0,sticky="n")
 
@@ -773,6 +848,18 @@ class App(tk.Tk):
         self.overwhelm_toggle.state(["!alternate"])
         self.overwhelm_toggle.grid(row=44,column=0,sticky="n")
 
+        self.temper1_value = tk.BooleanVar()
+        self.temper1_toggle = ttk.Checkbutton(self.ja_frame,variable=self.temper1_value, text="Temper",width=-25, command=lambda event="temper1": self.update_special_checkboxes(event))
+        self.temper1_tip = Hovertip(self.temper1_toggle,"Provides Double Attack based on Enhancing Magic Skill value",hover_delay=500)
+        self.temper1_toggle.state(["!alternate"])
+        self.temper1_toggle.grid(row=45,column=0,sticky="n")
+
+        self.temper2_value = tk.BooleanVar()
+        self.temper2_toggle = ttk.Checkbutton(self.ja_frame,variable=self.temper2_value, text="Temper II",width=-25, command=lambda event="temper2": self.update_special_checkboxes(event))
+        self.temper2_tip = Hovertip(self.temper2_toggle,"Provides Triple Attack based on Enhancing Magic Skill value",hover_delay=500)
+        self.temper2_toggle.state(["!alternate"])
+        self.temper2_toggle.grid(row=46,column=0,sticky="n")
+
         self.ja_canvas.create_window((0,0),window=self.ja_frame, anchor="nw")
         # ===========================================================================
         # ===========================================================================
@@ -871,34 +958,45 @@ class App(tk.Tk):
             self.whm_on = tk.BooleanVar(value=True)
             self.whm_cbox = ttk.Checkbutton(self.whm_frame,variable=self.whm_on,text="White Magic",command=lambda trigger="whm": self.update_buff_cboxes(trigger))
             # self.whm_cbox.state(['!alternate']) 
-            self.whm_cbox.grid(row=0,column=0,sticky="nw",padx=0,pady=2)
+            self.whm_cbox.grid(row=0,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
             self.shell5_on = tk.BooleanVar(value=True)
             self.shell5_cbox = ttk.Checkbutton(self.whm_frame,variable=self.shell5_on,text="Shell V")
-            self.shell5_cbox.grid(row=1,column=0,sticky="nw",padx=0,pady=2)
+            self.shell5_cbox.grid(row=1,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
             self.whm_spells1 = ["None"] + ["Dia","Dia II","Dia III"]
             self.whm_spell1 = tk.StringVar(value="Dia III")
             self.whm_combo1 = ttk.Combobox(self.whm_frame, values=self.whm_spells1, textvariable=self.whm_spell1,state="readonly")
-            self.whm_combo1.grid(row=2,column=0,sticky="nw",padx=0,pady=2)
+            self.whm_combo1.grid(row=2,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
             self.whm_spells2 = ["None"] + ["Haste","Haste II"] 
             self.whm_spell2 = tk.StringVar(value="Haste II")
             self.whm_combo2 = ttk.Combobox(self.whm_frame, values=self.whm_spells2, textvariable=self.whm_spell2,state="readonly")
-            self.whm_combo2.grid(row=3,column=0,sticky="nw",padx=0,pady=2)
+            self.whm_combo2.grid(row=3,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
             self.whm_stat_spells = ["None"] + ["Boost-STR","Boost-DEX","Boost-VIT","Boost-AGI","Boost-INT","Boost-MND","Boost-CHR"]
             self.whm_spell3 = tk.StringVar(value="None")
             self.whm_combo3 = ttk.Combobox(self.whm_frame, values=self.whm_stat_spells, textvariable=self.whm_spell3,state="readonly")
-            self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2)
+            self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
             self.whm_spells4 = ["None"] +["Sandstorm","Sandstorm II","Rainstorm","Rainstorm II","Windstorm","Windstorm II","Firestorm","Firestorm II","Hailstorm","Hailstorm II","Thunderstorm","Thunderstorm II","Aurorastorm","Aurorastorm II","Voidstorm","Voidstorm II"]
             self.whm_spell4 = tk.StringVar(value="None")
             self.whm_combo4 = ttk.Combobox(self.whm_frame, values=self.whm_spells4, textvariable=self.whm_spell4,state="readonly")
-            self.whm_combo4.grid(row=5,column=0,sticky="nw",padx=0,pady=2)
+            self.whm_combo4.grid(row=5,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
+
+            self.skill_frame = ttk.Frame(self.whm_frame)
+            self.skill_frame.grid(row=6,column=0,sticky="nw",padx=0,pady=2)
+
+            self.enhancing_skill_label = ttk.Label(self.skill_frame,text="Enhancing Skill:",width=-16)
+            self.enhancing_skill_label.grid(row=0, column=0, sticky="w", padx=0, pady=1)
+            self.enh_skill = tk.IntVar(value=500)
+            self.enhancing_entry = ttk.Entry(self.skill_frame,textvariable=self.enh_skill,justify="right")
+            self.enhancing_entry.configure(width=6)
+            self.enhancing_entry.grid(row=0, column=1,padx=0,pady=1,sticky='w')
+
 
             self.food_frame = ttk.LabelFrame(self.whm_frame, text="  Active Food  ")
-            self.food_frame.grid(row=6,column=0,sticky="nw",padx=0,pady=10)
+            self.food_frame.grid(row=7,column=0,sticky="nw",padx=0,pady=5)
             self.active_food = tk.StringVar(value="Grape Daifuku")
             self.food_combo = ttk.Combobox(self.food_frame, values=["None"] + [k["Name"] for k in all_food], textvariable=self.active_food,state="readonly")
             self.food_combo.grid(row=0,column=0,sticky="nw",padx=0,pady=2)
@@ -1110,15 +1208,15 @@ class App(tk.Tk):
             self.copy_set_frame = ttk.Frame(self.frame31)
             self.copy_set_frame.grid(row=0,column=0,padx=0,pady=1)
 
-            self.copy2tp = ttk.Button(self.copy_set_frame,text="Copy to TP set",width=15)
+            self.copy2tp = ttk.Button(self.copy_set_frame,text="Copy to TP set",width=15,command=lambda: self.copy_to("tp"))
             self.copy2tp.grid(row=2,column=0,padx=1,pady=1)
-            self.copy2ws = ttk.Button(self.copy_set_frame,text="Copy to WS set",width=15)
+            self.copy2ws = ttk.Button(self.copy_set_frame,text="Copy to WS set",width=15,command=lambda: self.copy_to("ws"))
             self.copy2ws.grid(row=2,column=1,padx=1,pady=1)
             self.export_gearswap = ttk.Button(self.copy_set_frame,text="Copy set to clipboard",width=32,command=self.export2gearswap)
             self.export_gearswap_tip = Hovertip(self.export_gearswap,"Copy the currently displayed gear to clipboard with a gearswap.lua format.",hover_delay=500)
             self.export_gearswap.grid(row=3,column=0,padx=0,pady=1,columnspan=2)
-            self.copy2tp.state(["disabled"])
-            self.copy2ws.state(["disabled"])
+            # self.copy2tp.state(["disabled"])
+            # self.copy2ws.state(["disabled"])
 
             self.eframe = ttk.Frame(self.frame31,)
             self.eframe.grid(row=1,column=0,padx=0,pady=0)
@@ -1175,9 +1273,9 @@ class App(tk.Tk):
             self.quickdamage_frame = ttk.Frame(self.frame31)
             self.quickdamage_frame.grid(row=3,column=0,padx=0,pady=5)
 
-            self.quickdamage = ttk.Label(self.quickdamage_frame, text=f"{'Average Damage = ':>17s}{0.0:>9.1f}",font="Courier 10")
+            self.quickdamage = ttk.Label(self.quickdamage_frame, text=f"{'Average Damage = ':>17s}{0.0:>9.1f}",font="Courier 11")
             self.quickdamage.grid(row=0,column=0,padx=0,pady=1)
-            self.quicktp = ttk.Label(self.quickdamage_frame, text=f"{'Average TP = ':>17s}{0.0:>9.1f}",font="Courier 10")
+            self.quicktp = ttk.Label(self.quickdamage_frame, text=f"{'Average TP = ':>17s}{0.0:>9.1f}",font="Courier 11")
             self.quicktp.grid(row=1,column=0,padx=0,pady=1)
 
 # ====================================================================================================================================================================================
@@ -1892,7 +1990,6 @@ class App(tk.Tk):
         self.equip_best_set.configure(state="disabled")
         self.equip_best_set.grid(row=2,column=1,padx=0,pady=0)
 
-
 # ====================================================================================================================================================================================
 
         self.checkbox_frame = ttk.Frame(self.frame4,borderwidth=3,width=310)
@@ -2482,15 +2579,323 @@ class App(tk.Tk):
 # ====================================================================================================================================================================================
 
 
-        self.stats_frame = ttk.Frame(self.stats_tab,width=676,height=350)
-        self.stats_frame.grid_propagate(0)
+        self.stats_frame = ttk.Frame(self.stats_tab,width=676,height=650)
+        # self.stats_frame.grid_propagate(0)
         self.stats_frame.grid(row=0, column=0, padx=2, pady=0)
         self.stats_frame.grid_columnconfigure((0,1),weight=1) # Column 0 expands in the horizontal direction to fill blank space, effectively centering column1 in the frame. Weight=1 is how fast it expands; 2 is twice as fast, but it's all relative so no reason to change it with only one column
         self.stats_frame.grid_rowconfigure((0,1),weight=1) # Column 0 expands in the horizontal direction to fill blank space, effectively centering column1 in the frame. Weight=1 is how fast it expands; 2 is twice as fast, but it's all relative so no reason to change it with only one column
 
-    
-        self.wip_text = tk.Label(self.stats_frame,text="Work in progress.\n\n For now, just click the \"Show Stats\" button in the Inputs Tab to print a list of all of the player's stats in alphabetical order.\nIf the stat doesn't show up in the output, then the stat has zero value.")
-        self.wip_text.grid(row=0,column=0)
+        self.stats_frame1 = ttk.Frame(self.stats_frame)
+        self.stats_frame1.grid(row=0,column=0,pady=5,padx=5,sticky="nw")
+
+        self.base_parameters_frame = ttk.LabelFrame(self.stats_frame1,text="Base parameters",)
+        self.base_parameters_frame.grid(row=0,column=0,padx=5,pady=5,sticky="nw")
+
+        self.str_label = ttk.Label(self.base_parameters_frame, text="STR", anchor="w", width=4,font="Courier 11")
+        self.str_label.grid(row=0,column=0,padx=2,pady=2)
+        self.str_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.str_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.dex_label = ttk.Label(self.base_parameters_frame, text="DEX", anchor="w", width=4,font="Courier 11")
+        self.dex_label.grid(row=1,column=0,padx=2,pady=2)
+        self.dex_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.dex_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.vit_label = ttk.Label(self.base_parameters_frame, text="VIT", anchor="w", width=4,font="Courier 11")
+        self.vit_label.grid(row=2,column=0,padx=2,pady=2)
+        self.vit_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.vit_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.agi_label = ttk.Label(self.base_parameters_frame, text="AGI", anchor="w", width=4,font="Courier 11")
+        self.agi_label.grid(row=3,column=0,padx=2,pady=2)
+        self.agi_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.agi_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.int_label = ttk.Label(self.base_parameters_frame, text="INT", anchor="w", width=4,font="Courier 11")
+        self.int_label.grid(row=4,column=0,padx=2,pady=2)
+        self.int_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.int_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.mnd_label = ttk.Label(self.base_parameters_frame, text="MND", anchor="w", width=4,font="Courier 11")
+        self.mnd_label.grid(row=5,column=0,padx=2,pady=2)
+        self.mnd_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.mnd_value.grid(row=5,column=1,padx=2,pady=2)
+
+        self.chr_label = ttk.Label(self.base_parameters_frame, text="CHR", anchor="w", width=4,font="Courier 11")
+        self.chr_label.grid(row=6,column=0,padx=2,pady=2)
+        self.chr_value = ttk.Label(self.base_parameters_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.chr_value.grid(row=6,column=1,padx=2,pady=2)
+
+
+        self.basic_stats = ttk.LabelFrame(self.stats_frame1, text="Physical")
+        self.basic_stats.grid(row=0,column=1,sticky="nw",pady=5,padx=5)
+
+        self.acc1_label = ttk.Label(self.basic_stats, text="Accuracy1", anchor="w", width=17,font="Courier 11")
+        self.acc1_label.grid(row=0,column=0,padx=2,pady=2)
+        self.acc1_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.acc1_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.acc2_label = ttk.Label(self.basic_stats, text="Accuracy2", anchor="w", width=17,font="Courier 11")
+        self.acc2_label.grid(row=1,column=0,padx=2,pady=2)
+        self.acc2_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.acc2_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.atk1_label = ttk.Label(self.basic_stats, text="Attack1", anchor="w", width=17,font="Courier 11")
+        self.atk1_label.grid(row=2,column=0,padx=2,pady=2)
+        self.atk1_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.atk1_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.atk2_label = ttk.Label(self.basic_stats, text="Attack2", anchor="w", width=17,font="Courier 11")
+        self.atk2_label.grid(row=3,column=0,padx=2,pady=2)
+        self.atk2_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.atk2_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.racc_label = ttk.Label(self.basic_stats, text="Ranged Accuracy", anchor="w", width=17,font="Courier 11")
+        self.racc_label.grid(row=4,column=0,padx=2,pady=2)
+        self.racc_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.racc_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.ratk_label = ttk.Label(self.basic_stats, text="Ranged Attack", anchor="w", width=17,font="Courier 11")
+        self.ratk_label.grid(row=5,column=0,padx=2,pady=2)
+        self.ratk_value = ttk.Label(self.basic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.ratk_value.grid(row=5,column=1,padx=2,pady=2)
+
+
+        self.magic_stats = ttk.LabelFrame(self.stats_frame1, text="Magical")
+        self.magic_stats.grid(row=0,column=2,pady=5,padx=5,sticky="nw")
+
+        self.macc_label = ttk.Label(self.magic_stats, text="Magic Accuracy", anchor="w", width=20,font="Courier 11")
+        self.macc_label.grid(row=0,column=0,padx=2,pady=2)
+        self.macc_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.macc_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.matk_label = ttk.Label(self.magic_stats, text="Magic Attack", anchor="w", width=20,font="Courier 11")
+        self.matk_label.grid(row=1,column=0,padx=2,pady=2)
+        self.matk_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.matk_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.mdmg_label = ttk.Label(self.magic_stats, text="Magic Damage", anchor="w", width=20,font="Courier 11")
+        self.mdmg_label.grid(row=2,column=0,padx=2,pady=2)
+        self.mdmg_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.mdmg_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.mburst1_label = ttk.Label(self.magic_stats, text="Magic Burst Bonus", anchor="w", width=20,font="Courier 11")
+        self.mburst1_label.grid(row=3,column=0,padx=2,pady=2)
+        self.mburst1_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.mburst1_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.mburst2_label = ttk.Label(self.magic_stats, text="Magic Burst Bonus II", anchor="w", width=20,font="Courier 11")
+        self.mburst2_label.grid(row=4,column=0,padx=2,pady=2)
+        self.mburst2_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.mburst2_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.mburst3_label = ttk.Label(self.magic_stats, text="Magic Burst Trait", anchor="w", width=20,font="Courier 11")
+        self.mburst3_label.grid(row=5,column=0,padx=2,pady=2)
+        self.mburst3_value = ttk.Label(self.magic_stats, text="----", anchor="w", width=4,font="Courier 11")
+        self.mburst3_value.grid(row=5,column=1,padx=2,pady=2)
+
+
+        self.stats_frame2 = ttk.Frame(self.stats_frame)
+        self.stats_frame2.grid(row=1,column=0,pady=5,padx=5, sticky="nw")
+
+        self.ma_frame = ttk.LabelFrame(self.stats_frame2, text="Multi-Attack")
+        self.ma_frame.grid(row=0,column=0,sticky="nw", pady=2,padx=2)
+
+        self.daken_label = ttk.Label(self.ma_frame, text="Daken", anchor="w", width=15,font="Courier 11")
+        self.daken_label.grid(row=0,column=0,padx=2,pady=2)
+        self.daken_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.daken_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.zanshin_label = ttk.Label(self.ma_frame, text="Zanshin", anchor="w", width=15,font="Courier 11")
+        self.zanshin_label.grid(row=1,column=0,padx=2,pady=2)
+        self.zanshin_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.zanshin_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.kicks_label = ttk.Label(self.ma_frame, text="Kick Attacks", anchor="w", width=15,font="Courier 11")
+        self.kicks_label.grid(row=2,column=0,padx=2,pady=2)
+        self.kicks_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.kicks_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.da_label = ttk.Label(self.ma_frame, text="Double Attack", anchor="w", width=15,font="Courier 11")
+        self.da_label.grid(row=3,column=0,padx=2,pady=2)
+        self.da_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.da_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.ta_label = ttk.Label(self.ma_frame, text="Triple Attack", anchor="w", width=15,font="Courier 11")
+        self.ta_label.grid(row=4,column=0,padx=2,pady=2)
+        self.ta_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.ta_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.qa_label = ttk.Label(self.ma_frame, text="Quad. Attack", anchor="w", width=15,font="Courier 11")
+        self.qa_label.grid(row=5,column=0,padx=2,pady=2)
+        self.qa_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.qa_value.grid(row=5,column=1,padx=2,pady=2)
+
+        self.ds_label = ttk.Label(self.ma_frame, text="Double Shot", anchor="w", width=15,font="Courier 11")
+        self.ds_label.grid(row=6,column=0,padx=2,pady=2)
+        self.ds_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.ds_value.grid(row=6,column=1,padx=2,pady=2)
+
+        self.ts_label = ttk.Label(self.ma_frame, text="Triple Shot", anchor="w", width=15,font="Courier 11")
+        self.ts_label.grid(row=7,column=0,padx=2,pady=2)
+        self.ts_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.ts_value.grid(row=7,column=1,padx=2,pady=2)
+
+        self.qs_label = ttk.Label(self.ma_frame, text="Quad. Shot", anchor="w", width=15,font="Courier 11")
+        self.qs_label.grid(row=8,column=0,padx=2,pady=2)
+        self.qs_value = ttk.Label(self.ma_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.qs_value.grid(row=8,column=1,padx=2,pady=2)
+
+
+
+        self.tp_frame = ttk.LabelFrame(self.stats_frame2, text="Attack speed")
+        self.tp_frame.grid(row=0,column=1,sticky="nw", pady=5,padx=5)
+
+        self.dw_label = ttk.Label(self.tp_frame, text="Dual Wield", anchor="w", width=20,font="Courier 11")
+        self.dw_label.grid(row=0,column=0,padx=2,pady=2)
+        self.dw_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
+        self.dw_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.ma_label = ttk.Label(self.tp_frame, text="Martial Arts", anchor="w", width=20,font="Courier 11")
+        self.ma_label.grid(row=1,column=0,padx=2,pady=2)
+        self.ma_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
+        self.ma_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.gear_haste_label = ttk.Label(self.tp_frame, text="Gear Haste", anchor="w", width=20,font="Courier 11")
+        self.gear_haste_label.grid(row=2,column=0,padx=2,pady=2)
+        self.gear_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
+        self.gear_haste_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.magic_haste_label = ttk.Label(self.tp_frame, text="Magic Haste", anchor="w", width=20,font="Courier 11")
+        self.magic_haste_label.grid(row=3,column=0,padx=2,pady=2)
+        self.magic_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
+        self.magic_haste_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.ja_haste_label = ttk.Label(self.tp_frame, text="JA Haste", anchor="w", width=20,font="Courier 11")
+        self.ja_haste_label.grid(row=4,column=0,padx=2,pady=2)
+        self.ja_haste_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
+        self.ja_haste_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.delayreduction_label = ttk.Label(self.tp_frame, text="Delay Reduction", anchor="w", width=20,font="Courier 11")
+        self.delayreduction_label.grid(row=5,column=0,padx=2,pady=2)
+        self.delayreduction_value = ttk.Label(self.tp_frame, text="----", anchor="w", width=6,font="Courier 11")
+        self.delayreduction_value.grid(row=5,column=1,padx=2,pady=2)
+
+
+        self.stats_frame3 = ttk.Frame(self.stats_frame)
+        self.stats_frame3.grid(row=2,column=0,pady=5,padx=5, sticky="nw")
+
+        self.def_frame = ttk.LabelFrame(self.stats_frame3, text="Defensive")
+        self.def_frame.grid(row=0,column=0,sticky="nw", pady=5,padx=5)
+
+        self.pdt_label = ttk.Label(self.def_frame, text="PDT", anchor="w", width=20,font="Courier 11")
+        self.pdt_label.grid(row=0,column=0,padx=2,pady=2)
+        self.pdt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
+        self.pdt_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.mdt_label = ttk.Label(self.def_frame, text="MDT", anchor="w", width=20,font="Courier 11")
+        self.mdt_label.grid(row=1,column=0,padx=2,pady=2)
+        self.mdt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
+        self.mdt_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.dt_label = ttk.Label(self.def_frame, text="DT", anchor="w", width=20,font="Courier 11")
+        self.dt_label.grid(row=2,column=0,padx=2,pady=2)
+        self.dt_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
+        self.dt_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.eva_label = ttk.Label(self.def_frame, text="Evasion", anchor="w", width=20,font="Courier 11")
+        self.eva_label.grid(row=3,column=0,padx=2,pady=2)
+        self.eva_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
+        self.eva_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.meva_label = ttk.Label(self.def_frame, text="Magic Evasion", anchor="w", width=20,font="Courier 11")
+        self.meva_label.grid(row=4,column=0,padx=2,pady=2)
+        self.meva_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
+        self.meva_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.mdef_label = ttk.Label(self.def_frame, text="Magic Defense", anchor="w", width=20,font="Courier 11")
+        self.mdef_label.grid(row=5,column=0,padx=2,pady=2)
+        self.mdef_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
+        self.mdef_value.grid(row=5,column=1,padx=2,pady=2)
+
+        self.subtle_label = ttk.Label(self.def_frame, text="Subtle Blow", anchor="w", width=20,font="Courier 11")
+        self.subtle_label.grid(row=6,column=0,padx=2,pady=2)
+        self.subtle_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
+        self.subtle_value.grid(row=6,column=1,padx=2,pady=2)
+
+        self.subtle2_label = ttk.Label(self.def_frame, text="Subtle Blow II", anchor="w", width=20,font="Courier 11")
+        self.subtle2_label.grid(row=7,column=0,padx=2,pady=2)
+        self.subtle2_value = ttk.Label(self.def_frame, text="----", anchor="w", width=5,font="Courier 11")
+        self.subtle2_value.grid(row=7,column=1,padx=2,pady=2)
+
+
+        self.misc_frame = ttk.LabelFrame(self.stats_frame3, text="Misc.")
+        self.misc_frame.grid(row=0,column=1,sticky="nw", pady=5,padx=5)
+
+        self.regain_label = ttk.Label(self.misc_frame, text="Regain", anchor="w", width=20,font="Courier 11")
+        self.regain_label.grid(row=0,column=0,padx=2,pady=2)
+        self.regain_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.regain_value.grid(row=0,column=1,padx=2,pady=2)
+
+        self.stp_label = ttk.Label(self.misc_frame, text="Store TP", anchor="w", width=20,font="Courier 11")
+        self.stp_label.grid(row=1,column=0,padx=2,pady=2)
+        self.stp_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.stp_value.grid(row=1,column=1,padx=2,pady=2)
+
+        self.critrate_label = ttk.Label(self.misc_frame, text="Crit. Rate", anchor="w", width=20,font="Courier 11")
+        self.critrate_label.grid(row=2,column=0,padx=2,pady=2)
+        self.critrate_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.critrate_value.grid(row=2,column=1,padx=2,pady=2)
+
+        self.critdmg_label = ttk.Label(self.misc_frame, text="Crit. Damage", anchor="w", width=20,font="Courier 11")
+        self.critdmg_label.grid(row=3,column=0,padx=2,pady=2)
+        self.critdmg_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.critdmg_value.grid(row=3,column=1,padx=2,pady=2)
+
+        self.rangedcritdmg_label = ttk.Label(self.misc_frame, text="Ranged Crit. Damage", anchor="w", width=20,font="Courier 11")
+        self.rangedcritdmg_label.grid(row=4,column=0,padx=2,pady=2)
+        self.rangedcritdmg_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.rangedcritdmg_value.grid(row=4,column=1,padx=2,pady=2)
+
+        self.wsacc_label = ttk.Label(self.misc_frame, text="Weapon Skill Acc.", anchor="w", width=20,font="Courier 11")
+        self.wsacc_label.grid(row=5,column=0,padx=2,pady=2)
+        self.wsacc_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.wsacc_value.grid(row=5,column=1,padx=2,pady=2)
+
+        self.wsd_label = ttk.Label(self.misc_frame, text="Weapon Skill Damage", anchor="w", width=20,font="Courier 11")
+        self.wsd_label.grid(row=6,column=0,padx=2,pady=2)
+        self.wsd_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.wsd_value.grid(row=6,column=1,padx=2,pady=2)
+
+        self.wsdtrait_label = ttk.Label(self.misc_frame, text="Weapon Skill Trait", anchor="w", width=20,font="Courier 11")
+        self.wsdtrait_label.grid(row=7,column=0,padx=2,pady=2)
+        self.wsdtrait_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.wsdtrait_value.grid(row=7,column=1,padx=2,pady=2)
+
+        self.pdl_label = ttk.Label(self.misc_frame, text="PDL Gear", anchor="w", width=20,font="Courier 11")
+        self.pdl_label.grid(row=8,column=0,padx=2,pady=2)
+        self.pdl_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.pdl_value.grid(row=8,column=1,padx=2,pady=2)
+
+        self.pdltrait_label = ttk.Label(self.misc_frame, text="PDL Trait", anchor="w", width=20,font="Courier 11")
+        self.pdltrait_label.grid(row=9,column=0,padx=2,pady=2)
+        self.pdltrait_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.pdltrait_value.grid(row=9,column=1,padx=2,pady=2)
+
+
+        self.tp_bonus_label = ttk.Label(self.misc_frame, text="TP Bonus", anchor="w", width=20,font="Courier 11")
+        self.tp_bonus_label.grid(row=10,column=0,padx=2,pady=2)
+        self.tp_bonus_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.tp_bonus_value.grid(row=10,column=1,padx=2,pady=2)
+
+
+        self.skillchain_label = ttk.Label(self.misc_frame, text="Skillchain Bonus", anchor="w", width=20,font="Courier 11")
+        self.skillchain_label.grid(row=11,column=0,padx=2,pady=2)
+        self.skillchain_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.skillchain_value.grid(row=11,column=1,padx=2,pady=2)
+
+        # self.wip_text = tk.Label(self.stats_frame,text="Work in progress.\n\n For now, just click the \"Show Stats\" button in the Inputs Tab to print a list of all of the player's stats in alphabetical order.\nIf the stat doesn't show up in the output, then the stat has zero value.")
+        # self.wip_text.grid(row=0,column=0)
 
 
         melee_stats = ["Attack1","Attack2","Accuracy1","Accuracy2","DA","TA","QA","Zanshin","ZanHasso","Kick Attacks","Attack%"]
@@ -2503,6 +2908,1356 @@ class App(tk.Tk):
         delay_stats = ["Gear Haste","Magic Haste","JA Haste","Delay Reduction","Dual Wield","Martial Arts"]
         extra_stats = ["Store TP","Regain","Fencer","Occult Acumen","Recycle","True Shot"]
         skill_stats = ["Hand-to-Hand Skill","Dagger Skill","Sword Skill","Great Sword Skill","Axe Skill","Great Axe Skill","Scythe Skill","Polearm Skill","Katana Skill","Great Katana Skill","Club Skill","Staff Skill","Evasion Skill","Divine Magic Skill","Elemental Magic Skill","Dark Magic Skill","Ninjutsu Skill","Summoning Magic Skill","Blue Magic Skill"]
+
+
+
+
+
+
+
+
+# Simulations marker
+# Simulations tab marker
+# =============================================================================================================================
+# =============================================================================================================================
+#  Sim Frame1 (TP set): Contains the currently equipped TP gear and a radio list to equip new armor
+# =============================================================================================================================
+# =============================================================================================================================
+
+
+
+        self.equipped_gear_tp = {
+        'main' : Heishi,
+        'sub' : Crepuscular_Knife,
+        'ranged' : Empty,
+        'ammo' : Seki,
+        'head' : Malignance_Chapeau,
+        'body' : Tatenashi_Haramaki,
+        'hands' : Malignance_Gloves,
+        'legs' : Samnuha_Tights,
+        'feet' : Malignance_Boots,
+        'neck' : Ninja_Nodowa,
+        'waist' : Sailfi_Belt,
+        'ear1' : Dedition_Earring,
+        'ear2' : Telos_Earring,
+        'ring1' : Gere_Ring,
+        'ring2' : Epona_Ring,
+        'back' : np.random.choice([k for k in capes if self.mainjob.get().lower() in k["Jobs"] and "DEX Store TP" in k["Name2"] and "Ranged" not in k["Name2"]])}
+
+        self.selected_main_tp = tk.StringVar(value=self.equipped_gear_tp["main"])
+        self.selected_sub_tp = tk.StringVar(value=self.equipped_gear_tp["sub"])
+        self.selected_ranged_tp = tk.StringVar(value=self.equipped_gear_tp["ranged"])
+        self.selected_ammo_tp = tk.StringVar(value=self.equipped_gear_tp["ammo"])
+        self.selected_head_tp = tk.StringVar(value=self.equipped_gear_tp["head"])
+        self.selected_neck_tp = tk.StringVar(value=self.equipped_gear_tp["neck"])
+        self.selected_ear1_tp = tk.StringVar(value=self.equipped_gear_tp["ear1"])
+        self.selected_ear2_tp = tk.StringVar(value=self.equipped_gear_tp["ear2"])
+        self.selected_body_tp = tk.StringVar(value=self.equipped_gear_tp["body"])
+        self.selected_hands_tp = tk.StringVar(value=self.equipped_gear_tp["hands"])
+        self.selected_ring1_tp = tk.StringVar(value=self.equipped_gear_tp["ring1"])
+        self.selected_ring2_tp = tk.StringVar(value=self.equipped_gear_tp["ring2"])
+        self.selected_back_tp = tk.StringVar(value=self.equipped_gear_tp["back"])
+        self.selected_waist_tp = tk.StringVar(value=self.equipped_gear_tp["waist"])
+        self.selected_legs_tp = tk.StringVar(value=self.equipped_gear_tp["legs"])
+        self.selected_feet_tp = tk.StringVar(value=self.equipped_gear_tp["feet"])
+
+
+
+
+        # self.equipment_frame_tp = ttk.LabelFrame(self,borderwidth=3,width=676,height=250,text="Main Frame3")
+        self.equipment_frame_tp = ttk.Frame(self.sim_tab,width=676,height=250)
+        self.equipment_frame_tp.grid_propagate(0)
+        self.equipment_frame_tp.grid(row=0, column=0, padx=2, pady=10, sticky="w")
+
+
+        # self.frame3.grid_propagate(0)
+        self.frame31_tp = ttk.LabelFrame(self.equipment_frame_tp,borderwidth=3,width=250,height=250,text="  Equipped TP set  ")
+        # self.frame31_tp = ttk.Frame(self.equipment_frame_tp,width=250,height=340)
+        self.frame31_tp.grid(row=0, column=0, padx=0, pady=0, sticky="w")
+        self.frame31_tp.grid_propagate(0)
+        self.frame31_tp.grid_columnconfigure((0),weight=1) # Column 0 expands in the horizontal direction to fill blank space, effectively centering column1 in the frame. Weight=1 is how fast it expands; 2 is twice as fast, but it's all relative so no reason to change it with only one column
+
+        if True:
+            self.main_img_tp = self.item2image(self.equipped_gear_tp["main"]["Name"])
+            self.sub_img_tp = self.item2image(self.equipped_gear_tp["sub"]["Name"])
+            self.ranged_img_tp = self.item2image(self.equipped_gear_tp["ranged"]["Name"])
+            self.ammo_img_tp = self.item2image(self.equipped_gear_tp["ammo"]["Name"])
+            self.head_img_tp = self.item2image(self.equipped_gear_tp["head"]["Name"])
+            self.neck_img_tp = self.item2image(self.equipped_gear_tp["neck"]["Name"])
+            self.ear1_img_tp = self.item2image(self.equipped_gear_tp["ear1"]["Name"])
+            self.ear2_img_tp = self.item2image(self.equipped_gear_tp["ear2"]["Name"])
+            self.body_img_tp = self.item2image(self.equipped_gear_tp["body"]["Name"])
+            self.hands_img_tp = self.item2image(self.equipped_gear_tp["hands"]["Name"])
+            self.ring1_img_tp = self.item2image(self.equipped_gear_tp["ring1"]["Name"])
+            self.ring2_img_tp = self.item2image(self.equipped_gear_tp["ring2"]["Name"])
+            self.back_img_tp = self.item2image(self.equipped_gear_tp["back"]["Name"])
+            self.waist_img_tp = self.item2image(self.equipped_gear_tp["waist"]["Name"])
+            self.legs_img_tp = self.item2image(self.equipped_gear_tp["legs"]["Name"])
+            self.feet_img_tp = self.item2image(self.equipped_gear_tp["feet"]["Name"])
+            
+            self.copy_set_frame_tp = ttk.Frame(self.frame31_tp)
+            self.copy_set_frame_tp.grid(row=0,column=0,padx=0,pady=1)
+
+            self.copy_tp2main = ttk.Button(self.copy_set_frame_tp,text="Copy set to inputs tab",width=32,command=lambda: self.copy_to("tp2main"))
+            self.copy_tp2main_tip = Hovertip(self.copy_tp2main,"Copy the currently displayed TP gear to the inputs tab.",hover_delay=500)
+            self.copy_tp2main.grid(row=0,column=0,padx=0,pady=1,columnspan=2)
+
+            self.export_gearswap_tp = ttk.Button(self.copy_set_frame_tp,text="Copy set to clipboard",width=32,command=lambda: self.export2gearswap("tp"))
+            self.export_gearswap_tp_tip = Hovertip(self.export_gearswap_tp,"Copy the currently displayed gear to clipboard with a gearswap.lua format.",hover_delay=500)
+            self.export_gearswap_tp.grid(row=1,column=0,padx=0,pady=1,columnspan=2)
+
+            self.eframe_tp = ttk.Frame(self.frame31_tp,)
+            self.eframe_tp.grid(row=1,column=0,padx=0,pady=0)
+
+            self.button_main_tp = ttk.Button(self.eframe_tp, image=self.main_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.main_radio_frame_tp,"tp")) # self.radio_main_tp.tkraise()
+            self.button_main_tp.grid(row=0,column=0,padx=0,pady=0,)
+            self.button_sub_tp = ttk.Button(self.eframe_tp, image=self.sub_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.sub_radio_frame_tp,"tp"))
+            self.button_sub_tp.grid(row=0,column=1,padx=0,pady=0,)
+            self.button_ranged_tp = ttk.Button(self.eframe_tp, image=self.ranged_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.ranged_radio_frame_tp,"tp"))
+            self.button_ranged_tp.grid(row=0,column=2,padx=0,pady=0,)
+            self.button_ammo_tp = ttk.Button(self.eframe_tp, image=self.ammo_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.ammo_radio_frame_tp,"tp"))
+            self.button_ammo_tp.grid(row=0,column=3,padx=0,pady=0,)
+            # -----------------------------------
+            self.button_head_tp = ttk.Button(self.eframe_tp, image=self.head_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.head_radio_frame_tp,"tp"))
+            self.button_head_tp.grid(row=1,column=0,padx=0,pady=0,)
+            self.button_neck_tp = ttk.Button(self.eframe_tp, image=self.neck_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.neck_radio_frame_tp,"tp"))
+            self.button_neck_tp.grid(row=1,column=1,padx=0,pady=0,)
+            self.button_ear1_tp = ttk.Button(self.eframe_tp, image=self.ear1_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.ear1_radio_frame_tp,"tp"))
+            self.button_ear1_tp.grid(row=1,column=2,padx=0,pady=0,)
+            self.button_ear2_tp = ttk.Button(self.eframe_tp, image=self.ear2_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.ear2_radio_frame_tp,"tp"))
+            self.button_ear2_tp.grid(row=1,column=3,padx=0,pady=0,)
+            # self.ear2Tip = Hovertip(self.button_ear2,"Novio Earring",hover_delay=100)
+            # -----------------------------------
+            self.button_body_tp = ttk.Button(self.eframe_tp, image=self.body_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.body_radio_frame_tp,"tp"))
+            self.button_body_tp.grid(row=2,column=0,padx=0,pady=0,)
+            self.button_hands_tp = ttk.Button(self.eframe_tp, image=self.hands_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.hands_radio_frame_tp,"tp"))
+            self.button_hands_tp.grid(row=2,column=1,padx=0,pady=0,)
+            self.button_ring1_tp = ttk.Button(self.eframe_tp, image=self.ring1_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.ring1_radio_frame_tp,"tp"))
+            self.button_ring1_tp.grid(row=2,column=2,padx=0,pady=0,)
+            self.button_ring2_tp = ttk.Button(self.eframe_tp, image=self.ring2_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.ring2_radio_frame_tp,"tp"))
+            self.button_ring2_tp.grid(row=2,column=3,padx=0,pady=0,)
+            # -----------------------------------
+            self.button_back_tp = ttk.Button(self.eframe_tp, image=self.back_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.back_radio_frame_tp,"tp"))
+            self.button_back_tp.grid(row=3,column=0,padx=0,pady=0,)
+            self.button_waist_tp = ttk.Button(self.eframe_tp, image=self.waist_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.waist_radio_frame_tp,"tp"))
+            self.button_waist_tp.grid(row=3,column=1,padx=0,pady=0,)
+            self.button_legs_tp = ttk.Button(self.eframe_tp, image=self.legs_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.legs_radio_frame_tp,"tp"))
+            self.button_legs_tp.grid(row=3,column=2,padx=0,pady=0,)
+            self.button_feet_tp = ttk.Button(self.eframe_tp, image=self.feet_img_tp, text=None,compound="image",command=lambda: self.update_radio_list(self.feet_radio_frame_tp,"tp"))
+            self.button_feet_tp.grid(row=3,column=3,padx=0,pady=0,)
+
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+
+        # This frame holds all of the LabelFrames (one for each slot)
+        self.radio_frame_tp = ttk.Frame(self.equipment_frame_tp,borderwidth=3,width=310)
+        self.radio_frame_tp.grid(row=0, column=1, padx=0, pady=0, sticky="n")
+
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text. We simply forget and re-place it when we want to see another slot's frame
+        self.main_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select main  ")
+        self.main_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+
+        # Scrollable base frame for the main-hand slot
+        self.main_scrollframe_tp = ttk.Frame(self.main_radio_frame_tp)
+        self.main_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The main-hand canvas
+        self.main_canvas_tp = tk.Canvas(self.main_scrollframe_tp,height=220,width=390)
+        self.main_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.main_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.main_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.main_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.main_canvas_tp)) 
+
+        self.main_radio_scrollbar_tp = ttk.Scrollbar(self.main_scrollframe_tp, orient=tk.VERTICAL, command=self.main_canvas_tp.yview)
+        self.main_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.main_canvas_tp.configure(yscrollcommand=self.main_radio_scrollbar_tp.set)
+        self.main_canvas_tp.bind("<Configure>", lambda event: self.main_canvas_tp.configure(scrollregion=self.main_canvas_tp.bbox("all")))
+
+        self.radio_main_tp = ttk.Frame(self.main_canvas_tp)
+        self.update_buttons_tp("main")
+        self.x_main = [] # List to contain all of the individual radio button widgets for the main slot
+        for n,k in enumerate(sorted(mains, key=lambda d: d["Name2"])):
+            self.x_main.append(ttk.Radiobutton(self.radio_main_tp, text=k["Name2"], value=k, variable=self.selected_main_tp,command=lambda: self.update_buttons_tp("main"))) # width=-60  sets the MINIMUM text length at 60 average font characters
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_main[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.main_canvas_tp.create_window((0,0),window=self.radio_main_tp, anchor="nw")
+
+
+
+
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.sub_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select sub  ")
+        self.sub_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.sub_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the sub-hand slot
+        self.sub_scrollframe_tp = ttk.Frame(self.sub_radio_frame_tp)
+        self.sub_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The sub-hand canvas
+        self.sub_canvas_tp = tk.Canvas(self.sub_scrollframe_tp,height=220,width=390)
+        self.sub_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.sub_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.sub_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.sub_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.sub_canvas_tp)) 
+
+        self.sub_radio_scrollbar_tp = ttk.Scrollbar(self.sub_scrollframe_tp, orient=tk.VERTICAL, command=self.sub_canvas_tp.yview)
+        self.sub_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.sub_canvas_tp.configure(yscrollcommand=self.sub_radio_scrollbar_tp.set)
+        self.sub_canvas_tp.bind("<Configure>", lambda event: self.sub_canvas_tp.configure(scrollregion=self.sub_canvas_tp.bbox("all")))
+
+
+        self.radio_sub_tp = ttk.Frame(self.sub_canvas_tp)
+        self.update_buttons_tp("sub")
+        self.x_sub = []
+        for n,k in enumerate(sorted(subs+grips, key=lambda d: d["Name2"])):
+            self.x_sub.append(ttk.Radiobutton(self.radio_sub_tp, text=k["Name2"], value=k, variable=self.selected_sub_tp,command=lambda: self.update_buttons_tp("sub")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_sub[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.sub_canvas_tp.create_window((0,0),window=self.radio_sub_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ranged_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select ranged  ")
+        self.ranged_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.ranged_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the ranged-hand slot
+        self.ranged_scrollframe_tp = ttk.Frame(self.ranged_radio_frame_tp)
+        self.ranged_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The ranged-hand canvas
+        self.ranged_canvas_tp = tk.Canvas(self.ranged_scrollframe_tp,height=220,width=390)
+        self.ranged_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ranged_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ranged_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ranged_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ranged_canvas_tp)) 
+
+        self.ranged_radio_scrollbar_tp = ttk.Scrollbar(self.ranged_scrollframe_tp, orient=tk.VERTICAL, command=self.ranged_canvas_tp.yview)
+        self.ranged_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ranged_canvas_tp.configure(yscrollcommand=self.ranged_radio_scrollbar_tp.set)
+        self.ranged_canvas_tp.bind("<Configure>", lambda event: self.ranged_canvas_tp.configure(scrollregion=self.ranged_canvas_tp.bbox("all")))
+
+
+        self.radio_ranged_tp = ttk.Frame(self.ranged_canvas_tp)
+        self.update_buttons_tp("ranged")
+        self.x_ranged = []
+        for n,k in enumerate(sorted(ranged, key=lambda d: d["Name2"])):
+            self.x_ranged.append(ttk.Radiobutton(self.radio_ranged_tp, text=k["Name2"], value=k, variable=self.selected_ranged_tp,command=lambda: self.update_buttons_tp("ranged")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ranged[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ranged_canvas_tp.create_window((0,0),window=self.radio_ranged_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ammo_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select ammo  ")
+        self.ammo_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.ammo_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the ammo-hand slot
+        self.ammo_scrollframe_tp = ttk.Frame(self.ammo_radio_frame_tp)
+        self.ammo_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The ammo-hand canvas
+        self.ammo_canvas_tp = tk.Canvas(self.ammo_scrollframe_tp,height=220,width=390)
+        self.ammo_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ammo_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ammo_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ammo_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ammo_canvas_tp)) 
+
+        self.ammo_radio_scrollbar_tp = ttk.Scrollbar(self.ammo_scrollframe_tp, orient=tk.VERTICAL, command=self.ammo_canvas_tp.yview)
+        self.ammo_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ammo_canvas_tp.configure(yscrollcommand=self.ammo_radio_scrollbar_tp.set)
+        self.ammo_canvas_tp.bind("<Configure>", lambda event: self.ammo_canvas_tp.configure(scrollregion=self.ammo_canvas_tp.bbox("all")))
+
+
+        self.radio_ammo_tp = ttk.Frame(self.ammo_canvas_tp)
+        self.update_buttons_tp("ammo")
+        self.x_ammo = []
+        for n,k in enumerate(sorted(ammos, key=lambda d: d["Name2"])):
+            self.x_ammo.append(ttk.Radiobutton(self.radio_ammo_tp, text=k["Name2"], value=k, variable=self.selected_ammo_tp,command=lambda: self.update_buttons_tp("ammo")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ammo[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ammo_canvas_tp.create_window((0,0),window=self.radio_ammo_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.head_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select head  ")
+        self.head_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.head_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the head-hand slot
+        self.head_scrollframe_tp = ttk.Frame(self.head_radio_frame_tp)
+        self.head_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The head-hand canvas
+        self.head_canvas_tp = tk.Canvas(self.head_scrollframe_tp,height=220,width=390)
+        self.head_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.head_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.head_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.head_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.head_canvas_tp)) 
+
+        self.head_radio_scrollbar_tp = ttk.Scrollbar(self.head_scrollframe_tp, orient=tk.VERTICAL, command=self.head_canvas_tp.yview)
+        self.head_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.head_canvas_tp.configure(yscrollcommand=self.head_radio_scrollbar_tp.set)
+        self.head_canvas_tp.bind("<Configure>", lambda event: self.head_canvas_tp.configure(scrollregion=self.head_canvas_tp.bbox("all")))
+
+
+        self.radio_head_tp = ttk.Frame(self.head_canvas_tp)
+        self.update_buttons_tp("head")
+        self.x_head = []
+        for n,k in enumerate(sorted(heads, key=lambda d: d["Name2"])):
+            self.x_head.append(ttk.Radiobutton(self.radio_head_tp, text=k["Name2"], value=k, variable=self.selected_head_tp,command=lambda: self.update_buttons_tp("head")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_head[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.head_canvas_tp.create_window((0,0),window=self.radio_head_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.neck_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select neck  ")
+        self.neck_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.neck_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the neck-hand slot
+        self.neck_scrollframe_tp = ttk.Frame(self.neck_radio_frame_tp)
+        self.neck_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The neck-hand canvas
+        self.neck_canvas_tp = tk.Canvas(self.neck_scrollframe_tp,height=220,width=390)
+        self.neck_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.neck_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.neck_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.neck_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.neck_canvas_tp)) 
+
+        self.neck_radio_scrollbar_tp = ttk.Scrollbar(self.neck_scrollframe_tp, orient=tk.VERTICAL, command=self.neck_canvas_tp.yview)
+        self.neck_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.neck_canvas_tp.configure(yscrollcommand=self.neck_radio_scrollbar_tp.set)
+        self.neck_canvas_tp.bind("<Configure>", lambda event: self.neck_canvas_tp.configure(scrollregion=self.neck_canvas_tp.bbox("all")))
+
+
+        self.radio_neck_tp = ttk.Frame(self.neck_canvas_tp)
+        self.update_buttons_tp("neck")
+        self.x_neck = []
+        for n,k in enumerate(sorted(necks, key=lambda d: d["Name2"])):
+            self.x_neck.append(ttk.Radiobutton(self.radio_neck_tp, text=k["Name2"], value=k, variable=self.selected_neck_tp,command=lambda: self.update_buttons_tp("neck")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_neck[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.neck_canvas_tp.create_window((0,0),window=self.radio_neck_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ear1_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select ear1  ")
+        self.ear1_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.ear1_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the ear1-hand slot
+        self.ear1_scrollframe_tp = ttk.Frame(self.ear1_radio_frame_tp)
+        self.ear1_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The ear1-hand canvas
+        self.ear1_canvas_tp = tk.Canvas(self.ear1_scrollframe_tp,height=220,width=390)
+        self.ear1_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ear1_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ear1_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ear1_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ear1_canvas_tp)) 
+
+        self.ear1_radio_scrollbar_tp = ttk.Scrollbar(self.ear1_scrollframe_tp, orient=tk.VERTICAL, command=self.ear1_canvas_tp.yview)
+        self.ear1_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ear1_canvas_tp.configure(yscrollcommand=self.ear1_radio_scrollbar_tp.set)
+        self.ear1_canvas_tp.bind("<Configure>", lambda event: self.ear1_canvas_tp.configure(scrollregion=self.ear1_canvas_tp.bbox("all")))
+
+
+        self.radio_ear1_tp = ttk.Frame(self.ear1_canvas_tp)
+        self.update_buttons_tp("ear1")
+        self.x_ear1 = []
+        for n,k in enumerate(sorted(ears, key=lambda d: d["Name2"])):
+            self.x_ear1.append(ttk.Radiobutton(self.radio_ear1_tp, text=k["Name2"], value=k, variable=self.selected_ear1_tp,command=lambda: self.update_buttons_tp("ear1")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ear1[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ear1_canvas_tp.create_window((0,0),window=self.radio_ear1_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ear2_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select ear2  ")
+        self.ear2_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.ear2_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the ear2-hand slot
+        self.ear2_scrollframe_tp = ttk.Frame(self.ear2_radio_frame_tp)
+        self.ear2_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The ear2-hand canvas
+        self.ear2_canvas_tp = tk.Canvas(self.ear2_scrollframe_tp,height=220,width=390)
+        self.ear2_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ear2_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ear2_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ear2_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ear2_canvas_tp)) 
+
+        self.ear2_radio_scrollbar_tp = ttk.Scrollbar(self.ear2_scrollframe_tp, orient=tk.VERTICAL, command=self.ear2_canvas_tp.yview)
+        self.ear2_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ear2_canvas_tp.configure(yscrollcommand=self.ear2_radio_scrollbar_tp.set)
+        self.ear2_canvas_tp.bind("<Configure>", lambda event: self.ear2_canvas_tp.configure(scrollregion=self.ear2_canvas_tp.bbox("all")))
+
+
+        self.radio_ear2_tp = ttk.Frame(self.ear2_canvas_tp)
+        self.update_buttons_tp("ear2")
+        self.x_ear2 = []
+        for n,k in enumerate(sorted(ears2, key=lambda d: d["Name2"])):
+            self.x_ear2.append(ttk.Radiobutton(self.radio_ear2_tp, text=k["Name2"], value=k, variable=self.selected_ear2_tp,command=lambda: self.update_buttons_tp("ear2")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ear2[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ear2_canvas_tp.create_window((0,0),window=self.radio_ear2_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.body_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select body  ")
+        self.body_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.body_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the body-hand slot
+        self.body_scrollframe_tp = ttk.Frame(self.body_radio_frame_tp)
+        self.body_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The body-hand canvas
+        self.body_canvas_tp = tk.Canvas(self.body_scrollframe_tp,height=220,width=390)
+        self.body_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.body_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.body_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.body_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.body_canvas_tp)) 
+
+        self.body_radio_scrollbar_tp = ttk.Scrollbar(self.body_scrollframe_tp, orient=tk.VERTICAL, command=self.body_canvas_tp.yview)
+        self.body_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.body_canvas_tp.configure(yscrollcommand=self.body_radio_scrollbar_tp.set)
+        self.body_canvas_tp.bind("<Configure>", lambda event: self.body_canvas_tp.configure(scrollregion=self.body_canvas_tp.bbox("all")))
+
+
+        self.radio_body_tp = ttk.Frame(self.body_canvas_tp)
+        self.update_buttons_tp("body")
+        self.x_body = []
+        for n,k in enumerate(sorted(bodies, key=lambda d: d["Name2"])):
+            self.x_body.append(ttk.Radiobutton(self.radio_body_tp, text=k["Name2"], value=k, variable=self.selected_body_tp,command=lambda: self.update_buttons_tp("body")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_body[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.body_canvas_tp.create_window((0,0),window=self.radio_body_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.hands_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select hands  ")
+        self.hands_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.hands_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the hands-hand slot
+        self.hands_scrollframe_tp = ttk.Frame(self.hands_radio_frame_tp)
+        self.hands_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The hands-hand canvas
+        self.hands_canvas_tp = tk.Canvas(self.hands_scrollframe_tp,height=220,width=390)
+        self.hands_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.hands_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.hands_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.hands_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.hands_canvas_tp)) 
+
+        self.hands_radio_scrollbar_tp = ttk.Scrollbar(self.hands_scrollframe_tp, orient=tk.VERTICAL, command=self.hands_canvas_tp.yview)
+        self.hands_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.hands_canvas_tp.configure(yscrollcommand=self.hands_radio_scrollbar_tp.set)
+        self.hands_canvas_tp.bind("<Configure>", lambda event: self.hands_canvas_tp.configure(scrollregion=self.hands_canvas_tp.bbox("all")))
+
+
+        self.radio_hands_tp = ttk.Frame(self.hands_canvas_tp)
+        self.update_buttons_tp("hands")
+        self.x_hands = []
+        for n,k in enumerate(sorted(hands, key=lambda d: d["Name2"])):
+            self.x_hands.append(ttk.Radiobutton(self.radio_hands_tp, text=k["Name2"], value=k, variable=self.selected_hands_tp,command=lambda: self.update_buttons_tp("hands")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_hands[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.hands_canvas_tp.create_window((0,0),window=self.radio_hands_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ring1_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select ring1  ")
+        self.ring1_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.ring1_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the ring1-hand slot
+        self.ring1_scrollframe_tp = ttk.Frame(self.ring1_radio_frame_tp)
+        self.ring1_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The ring1-hand canvas
+        self.ring1_canvas_tp = tk.Canvas(self.ring1_scrollframe_tp,height=220,width=390)
+        self.ring1_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ring1_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ring1_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ring1_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ring1_canvas_tp)) 
+
+        self.ring1_radio_scrollbar_tp = ttk.Scrollbar(self.ring1_scrollframe_tp, orient=tk.VERTICAL, command=self.ring1_canvas_tp.yview)
+        self.ring1_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ring1_canvas_tp.configure(yscrollcommand=self.ring1_radio_scrollbar_tp.set)
+        self.ring1_canvas_tp.bind("<Configure>", lambda event: self.ring1_canvas_tp.configure(scrollregion=self.ring1_canvas_tp.bbox("all")))
+
+
+        self.radio_ring1_tp = ttk.Frame(self.ring1_canvas_tp)
+        self.update_buttons_tp("ring1")
+        self.x_ring1 = []
+        for n,k in enumerate(sorted(rings, key=lambda d: d["Name2"])):
+            self.x_ring1.append(ttk.Radiobutton(self.radio_ring1_tp, text=k["Name2"], value=k, variable=self.selected_ring1_tp,command=lambda: self.update_buttons_tp("ring1")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ring1[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ring1_canvas_tp.create_window((0,0),window=self.radio_ring1_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ring2_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select ring2  ")
+        self.ring2_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.ring2_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the ring2-hand slot
+        self.ring2_scrollframe_tp = ttk.Frame(self.ring2_radio_frame_tp)
+        self.ring2_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The ring2-hand canvas
+        self.ring2_canvas_tp = tk.Canvas(self.ring2_scrollframe_tp,height=220,width=390)
+        self.ring2_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ring2_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ring2_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ring2_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ring2_canvas_tp)) 
+
+        self.ring2_radio_scrollbar_tp = ttk.Scrollbar(self.ring2_scrollframe_tp, orient=tk.VERTICAL, command=self.ring2_canvas_tp.yview)
+        self.ring2_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ring2_canvas_tp.configure(yscrollcommand=self.ring2_radio_scrollbar_tp.set)
+        self.ring2_canvas_tp.bind("<Configure>", lambda event: self.ring2_canvas_tp.configure(scrollregion=self.ring2_canvas_tp.bbox("all")))
+
+
+        self.radio_ring2_tp = ttk.Frame(self.ring2_canvas_tp)
+        self.update_buttons_tp("ring2")
+        self.x_ring2 = []
+        for n,k in enumerate(sorted(rings2, key=lambda d: d["Name2"])):
+            self.x_ring2.append(ttk.Radiobutton(self.radio_ring2_tp, text=k["Name2"], value=k, variable=self.selected_ring2_tp,command=lambda: self.update_buttons_tp("ring2")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ring2[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ring2_canvas_tp.create_window((0,0),window=self.radio_ring2_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.back_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select back  ")
+        self.back_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.back_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the back-hand slot
+        self.back_scrollframe_tp = ttk.Frame(self.back_radio_frame_tp)
+        self.back_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The back-hand canvas
+        self.back_canvas_tp = tk.Canvas(self.back_scrollframe_tp,height=220,width=390)
+        self.back_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.back_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.back_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.back_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.back_canvas_tp)) 
+
+        self.back_radio_scrollbar_tp = ttk.Scrollbar(self.back_scrollframe_tp, orient=tk.VERTICAL, command=self.back_canvas_tp.yview)
+        self.back_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.back_canvas_tp.configure(yscrollcommand=self.back_radio_scrollbar_tp.set)
+        self.back_canvas_tp.bind("<Configure>", lambda event: self.back_canvas_tp.configure(scrollregion=self.back_canvas_tp.bbox("all")))
+
+
+        self.radio_back_tp = ttk.Frame(self.back_canvas_tp)
+        self.update_buttons_tp("back")
+        self.x_back = []
+        for n,k in enumerate(sorted(capes, key=lambda d: d["Name2"])):
+            self.x_back.append(ttk.Radiobutton(self.radio_back_tp, text=k["Name2"], value=k, variable=self.selected_back_tp,command=lambda: self.update_buttons_tp("back")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_back[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.back_canvas_tp.create_window((0,0),window=self.radio_back_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.waist_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select waist  ")
+        self.waist_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.waist_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the waist-hand slot
+        self.waist_scrollframe_tp = ttk.Frame(self.waist_radio_frame_tp)
+        self.waist_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The waist-hand canvas
+        self.waist_canvas_tp = tk.Canvas(self.waist_scrollframe_tp,height=220,width=390)
+        self.waist_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.waist_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.waist_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.waist_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.waist_canvas_tp)) 
+
+        self.waist_radio_scrollbar_tp = ttk.Scrollbar(self.waist_scrollframe_tp, orient=tk.VERTICAL, command=self.waist_canvas_tp.yview)
+        self.waist_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.waist_canvas_tp.configure(yscrollcommand=self.waist_radio_scrollbar_tp.set)
+        self.waist_canvas_tp.bind("<Configure>", lambda event: self.waist_canvas_tp.configure(scrollregion=self.waist_canvas_tp.bbox("all")))
+
+
+        self.radio_waist_tp = ttk.Frame(self.waist_canvas_tp)
+        self.update_buttons_tp("waist")
+        self.x_waist = []
+        for n,k in enumerate(sorted(waists, key=lambda d: d["Name2"])):
+            self.x_waist.append(ttk.Radiobutton(self.radio_waist_tp, text=k["Name2"], value=k, variable=self.selected_waist_tp,command=lambda: self.update_buttons_tp("waist")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_waist[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.waist_canvas_tp.create_window((0,0),window=self.radio_waist_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        self.legs_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select legs  ")
+        self.legs_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.legs_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the legs-hand slot
+        self.legs_scrollframe_tp = ttk.Frame(self.legs_radio_frame_tp)
+        self.legs_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The legs-hand canvas
+        self.legs_canvas_tp = tk.Canvas(self.legs_scrollframe_tp,height=220,width=390)
+        self.legs_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.legs_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.legs_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.legs_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.legs_canvas_tp)) 
+
+        self.legs_radio_scrollbar_tp = ttk.Scrollbar(self.legs_scrollframe_tp, orient=tk.VERTICAL, command=self.legs_canvas_tp.yview)
+        self.legs_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.legs_canvas_tp.configure(yscrollcommand=self.legs_radio_scrollbar_tp.set)
+        self.legs_canvas_tp.bind("<Configure>", lambda event: self.legs_canvas_tp.configure(scrollregion=self.legs_canvas_tp.bbox("all")))
+
+
+        self.radio_legs_tp = ttk.Frame(self.legs_canvas_tp)
+        self.update_buttons_tp("legs")
+        self.x_legs = []
+        for n,k in enumerate(sorted(legs, key=lambda d: d["Name2"])):
+            self.x_legs.append(ttk.Radiobutton(self.radio_legs_tp, text=k["Name2"], value=k, variable=self.selected_legs_tp,command=lambda: self.update_buttons_tp("legs")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_legs[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.legs_canvas_tp.create_window((0,0),window=self.radio_legs_tp, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        self.feet_radio_frame_tp = ttk.LabelFrame(self.radio_frame_tp, text="  select feet  ")
+        self.feet_radio_frame_tp.pack(fill=tk.BOTH, expand=1)
+        self.feet_radio_frame_tp.pack_forget()
+
+        # Scrollable base frame for the feet-hand slot
+        self.feet_scrollframe_tp = ttk.Frame(self.feet_radio_frame_tp)
+        self.feet_scrollframe_tp.pack(fill=tk.BOTH, expand=1)
+
+        # The feet-hand canvas
+        self.feet_canvas_tp = tk.Canvas(self.feet_scrollframe_tp,height=220,width=390)
+        self.feet_canvas_tp.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.feet_scrollframe_tp.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.feet_canvas_tp)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.feet_scrollframe_tp.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.feet_canvas_tp)) 
+
+        self.feet_radio_scrollbar_tp = ttk.Scrollbar(self.feet_scrollframe_tp, orient=tk.VERTICAL, command=self.feet_canvas_tp.yview)
+        self.feet_radio_scrollbar_tp.pack(side=tk.RIGHT, fill=tk.Y)
+        self.feet_canvas_tp.configure(yscrollcommand=self.feet_radio_scrollbar_tp.set)
+        self.feet_canvas_tp.bind("<Configure>", lambda event: self.feet_canvas_tp.configure(scrollregion=self.feet_canvas_tp.bbox("all")))
+
+
+        self.radio_feet_tp = ttk.Frame(self.feet_canvas_tp)
+        self.update_buttons_tp("feet")
+        self.x_feet = []
+        for n,k in enumerate(sorted(feet, key=lambda d: d["Name2"])):
+            self.x_feet.append(ttk.Radiobutton(self.radio_feet_tp, text=k["Name2"], value=k, variable=self.selected_feet_tp,command=lambda: self.update_buttons_tp("feet")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_feet[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.feet_canvas_tp.create_window((0,0),window=self.radio_feet_tp, anchor="nw")
+# ====================================================================================================================================================================================
+
+
+
+# Simulations tab marker
+# =============================================================================================================================
+# =============================================================================================================================
+#  Sim Frame1 (TP set): Contains the currently equipped TP gear and a radio list to equip new armor
+# =============================================================================================================================
+# =============================================================================================================================
+
+
+
+
+        self.equipped_gear_ws = {
+        'main' : Heishi,
+        'sub' : Crepuscular_Knife,
+        'ranged' : Empty,
+        'ammo' : Seki,
+        'head' : Malignance_Chapeau,
+        'body' : Tatenashi_Haramaki,
+        'hands' : Malignance_Gloves,
+        'legs' : Samnuha_Tights,
+        'feet' : Malignance_Boots,
+        'neck' : Ninja_Nodowa,
+        'waist' : Sailfi_Belt,
+        'ear1' : Dedition_Earring,
+        'ear2' : Telos_Earring,
+        'ring1' : Gere_Ring,
+        'ring2' : Epona_Ring,
+        'back' : np.random.choice([k for k in capes if self.mainjob.get().lower() in k["Jobs"] and "DEX Store TP" in k["Name2"] and "Ranged" not in k["Name2"]])}
+
+        self.selected_main_ws = tk.StringVar(value=self.equipped_gear_ws["main"])
+        self.selected_sub_ws = tk.StringVar(value=self.equipped_gear_ws["sub"])
+        self.selected_ranged_ws = tk.StringVar(value=self.equipped_gear_ws["ranged"])
+        self.selected_ammo_ws = tk.StringVar(value=self.equipped_gear_ws["ammo"])
+        self.selected_head_ws = tk.StringVar(value=self.equipped_gear_ws["head"])
+        self.selected_neck_ws = tk.StringVar(value=self.equipped_gear_ws["neck"])
+        self.selected_ear1_ws = tk.StringVar(value=self.equipped_gear_ws["ear1"])
+        self.selected_ear2_ws = tk.StringVar(value=self.equipped_gear_ws["ear2"])
+        self.selected_body_ws = tk.StringVar(value=self.equipped_gear_ws["body"])
+        self.selected_hands_ws = tk.StringVar(value=self.equipped_gear_ws["hands"])
+        self.selected_ring1_ws = tk.StringVar(value=self.equipped_gear_ws["ring1"])
+        self.selected_ring2_ws = tk.StringVar(value=self.equipped_gear_ws["ring2"])
+        self.selected_back_ws = tk.StringVar(value=self.equipped_gear_ws["back"])
+        self.selected_waist_ws = tk.StringVar(value=self.equipped_gear_ws["waist"])
+        self.selected_legs_ws = tk.StringVar(value=self.equipped_gear_ws["legs"])
+        self.selected_feet_ws = tk.StringVar(value=self.equipped_gear_ws["feet"])
+
+
+
+
+        # self.equipment_frame_ws = ttk.LabelFrame(self,borderwidth=3,width=676,height=250,text="Main Frame3")
+        self.equipment_frame_ws = ttk.Frame(self.sim_tab,width=676,height=250)
+        self.equipment_frame_ws.grid_propagate(0)
+        self.equipment_frame_ws.grid(row=1, column=0, padx=2, pady=10, sticky="w")
+
+
+        # self.frame3.grid_propagate(0)
+        self.frame31_ws = ttk.LabelFrame(self.equipment_frame_ws,borderwidth=3,width=250,height=250,text=f"  Equipped WS set  ")
+        # self.frame31_ws = ttk.Frame(self.equipment_frame_ws,width=250,height=340)
+        self.frame31_ws.grid(row=0, column=0, padx=0, pady=0, sticky="w")
+        self.frame31_ws.grid_propagate(0)
+        self.frame31_ws.grid_columnconfigure((0),weight=1) # Column 0 expands in the horizontal direction to fill blank space, effectively centering column1 in the frame. Weight=1 is how fast it expands; 2 is twice as fast, but it's all relative so no reason to change it with only one column
+
+        if True:
+            self.main_img_ws = self.item2image(self.equipped_gear_ws["main"]["Name"])
+            self.sub_img_ws = self.item2image(self.equipped_gear_ws["sub"]["Name"])
+            self.ranged_img_ws = self.item2image(self.equipped_gear_ws["ranged"]["Name"])
+            self.ammo_img_ws = self.item2image(self.equipped_gear_ws["ammo"]["Name"])
+            self.head_img_ws = self.item2image(self.equipped_gear_ws["head"]["Name"])
+            self.neck_img_ws = self.item2image(self.equipped_gear_ws["neck"]["Name"])
+            self.ear1_img_ws = self.item2image(self.equipped_gear_ws["ear1"]["Name"])
+            self.ear2_img_ws = self.item2image(self.equipped_gear_ws["ear2"]["Name"])
+            self.body_img_ws = self.item2image(self.equipped_gear_ws["body"]["Name"])
+            self.hands_img_ws = self.item2image(self.equipped_gear_ws["hands"]["Name"])
+            self.ring1_img_ws = self.item2image(self.equipped_gear_ws["ring1"]["Name"])
+            self.ring2_img_ws = self.item2image(self.equipped_gear_ws["ring2"]["Name"])
+            self.back_img_ws = self.item2image(self.equipped_gear_ws["back"]["Name"])
+            self.waist_img_ws = self.item2image(self.equipped_gear_ws["waist"]["Name"])
+            self.legs_img_ws = self.item2image(self.equipped_gear_ws["legs"]["Name"])
+            self.feet_img_ws = self.item2image(self.equipped_gear_ws["feet"]["Name"])
+            
+            self.copy_set_frame_ws = ttk.Frame(self.frame31_ws)
+            self.copy_set_frame_ws.grid(row=0,column=0,padx=0,pady=1)
+
+            self.copy_ws2main = ttk.Button(self.copy_set_frame_ws,text="Copy set to inputs tab",width=32,command=lambda: self.copy_to("ws2main"))
+            self.copy_ws2main_tip = Hovertip(self.copy_ws2main,"Copy the currently displayed WS gear to the inputs tab.",hover_delay=500)
+            self.copy_ws2main.grid(row=0,column=0,padx=0,pady=1,columnspan=2)
+
+            self.export_gearswap_ws = ttk.Button(self.copy_set_frame_ws,text="Copy set to clipboard",width=32,command=lambda: self.export2gearswap("ws"))
+            self.export_gearswap_ws_tip = Hovertip(self.export_gearswap_ws,"Copy the currently displayed gear to clipboard with a gearswap.lua format.",hover_delay=500)
+            self.export_gearswap_ws.grid(row=1,column=0,padx=0,pady=1,columnspan=2)
+
+            self.eframe_ws = ttk.Frame(self.frame31_ws,)
+            self.eframe_ws.grid(row=1,column=0,padx=0,pady=0)
+
+            self.button_main_ws = ttk.Button(self.eframe_ws, image=self.main_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.main_radio_frame_ws,"ws")) # self.radio_main_ws.tkraise()
+            self.button_main_ws.grid(row=0,column=0,padx=0,pady=0,)
+            self.button_sub_ws = ttk.Button(self.eframe_ws, image=self.sub_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.sub_radio_frame_ws,"ws"))
+            self.button_sub_ws.grid(row=0,column=1,padx=0,pady=0,)
+            self.button_ranged_ws = ttk.Button(self.eframe_ws, image=self.ranged_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.ranged_radio_frame_ws,"ws"))
+            self.button_ranged_ws.grid(row=0,column=2,padx=0,pady=0,)
+            self.button_ammo_ws = ttk.Button(self.eframe_ws, image=self.ammo_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.ammo_radio_frame_ws,"ws"))
+            self.button_ammo_ws.grid(row=0,column=3,padx=0,pady=0,)
+            # -----------------------------------
+            self.button_head_ws = ttk.Button(self.eframe_ws, image=self.head_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.head_radio_frame_ws,"ws"))
+            self.button_head_ws.grid(row=1,column=0,padx=0,pady=0,)
+            self.button_neck_ws = ttk.Button(self.eframe_ws, image=self.neck_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.neck_radio_frame_ws,"ws"))
+            self.button_neck_ws.grid(row=1,column=1,padx=0,pady=0,)
+            self.button_ear1_ws = ttk.Button(self.eframe_ws, image=self.ear1_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.ear1_radio_frame_ws,"ws"))
+            self.button_ear1_ws.grid(row=1,column=2,padx=0,pady=0,)
+            self.button_ear2_ws = ttk.Button(self.eframe_ws, image=self.ear2_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.ear2_radio_frame_ws,"ws"))
+            self.button_ear2_ws.grid(row=1,column=3,padx=0,pady=0,)
+            # self.ear2Tip = Hovertip(self.button_ear2,"Novio Earring",hover_delay=100)
+            # -----------------------------------
+            self.button_body_ws = ttk.Button(self.eframe_ws, image=self.body_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.body_radio_frame_ws,"ws"))
+            self.button_body_ws.grid(row=2,column=0,padx=0,pady=0,)
+            self.button_hands_ws = ttk.Button(self.eframe_ws, image=self.hands_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.hands_radio_frame_ws,"ws"))
+            self.button_hands_ws.grid(row=2,column=1,padx=0,pady=0,)
+            self.button_ring1_ws = ttk.Button(self.eframe_ws, image=self.ring1_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.ring1_radio_frame_ws,"ws"))
+            self.button_ring1_ws.grid(row=2,column=2,padx=0,pady=0,)
+            self.button_ring2_ws = ttk.Button(self.eframe_ws, image=self.ring2_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.ring2_radio_frame_ws,"ws"))
+            self.button_ring2_ws.grid(row=2,column=3,padx=0,pady=0,)
+            # -----------------------------------
+            self.button_back_ws = ttk.Button(self.eframe_ws, image=self.back_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.back_radio_frame_ws,"ws"))
+            self.button_back_ws.grid(row=3,column=0,padx=0,pady=0,)
+            self.button_waist_ws = ttk.Button(self.eframe_ws, image=self.waist_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.waist_radio_frame_ws,"ws"))
+            self.button_waist_ws.grid(row=3,column=1,padx=0,pady=0,)
+            self.button_legs_ws = ttk.Button(self.eframe_ws, image=self.legs_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.legs_radio_frame_ws,"ws"))
+            self.button_legs_ws.grid(row=3,column=2,padx=0,pady=0,)
+            self.button_feet_ws = ttk.Button(self.eframe_ws, image=self.feet_img_ws, text=None,compound="image",command=lambda: self.update_radio_list(self.feet_radio_frame_ws,"ws"))
+            self.button_feet_ws.grid(row=3,column=3,padx=0,pady=0,)
+
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+
+        # This frame holds all of the LabelFrames (one for each slot)
+        self.radio_frame_ws = ttk.Frame(self.equipment_frame_ws,borderwidth=3,width=310)
+        self.radio_frame_ws.grid(row=0, column=1, padx=0, pady=0, sticky="n")
+
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text. We simply forget and re-place it when we want to see another slot's frame
+        self.main_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select main  ")
+        self.main_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+
+        # Scrollable base frame for the main-hand slot
+        self.main_scrollframe_ws = ttk.Frame(self.main_radio_frame_ws)
+        self.main_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The main-hand canvas
+        self.main_canvas_ws = tk.Canvas(self.main_scrollframe_ws,height=220,width=390)
+        self.main_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.main_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.main_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.main_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.main_canvas_ws)) 
+
+        self.main_radio_scrollbar_ws = ttk.Scrollbar(self.main_scrollframe_ws, orient=tk.VERTICAL, command=self.main_canvas_ws.yview)
+        self.main_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.main_canvas_ws.configure(yscrollcommand=self.main_radio_scrollbar_ws.set)
+        self.main_canvas_ws.bind("<Configure>", lambda event: self.main_canvas_ws.configure(scrollregion=self.main_canvas_ws.bbox("all")))
+
+        self.radio_main_ws = ttk.Frame(self.main_canvas_ws)
+        self.update_buttons_ws("main")
+        self.x_main = [] # List to contain all of the individual radio button widgets for the main slot
+        for n,k in enumerate(sorted(mains, key=lambda d: d["Name2"])):
+            self.x_main.append(ttk.Radiobutton(self.radio_main_ws, text=k["Name2"], value=k, variable=self.selected_main_ws,command=lambda: self.update_buttons_ws("main"))) # width=-60  sets the MINIMUM text length at 60 average font characters
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_main[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.main_canvas_ws.create_window((0,0),window=self.radio_main_ws, anchor="nw")
+
+
+
+
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.sub_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select sub  ")
+        self.sub_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.sub_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the sub-hand slot
+        self.sub_scrollframe_ws = ttk.Frame(self.sub_radio_frame_ws)
+        self.sub_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The sub-hand canvas
+        self.sub_canvas_ws = tk.Canvas(self.sub_scrollframe_ws,height=220,width=390)
+        self.sub_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.sub_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.sub_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.sub_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.sub_canvas_ws)) 
+
+        self.sub_radio_scrollbar_ws = ttk.Scrollbar(self.sub_scrollframe_ws, orient=tk.VERTICAL, command=self.sub_canvas_ws.yview)
+        self.sub_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.sub_canvas_ws.configure(yscrollcommand=self.sub_radio_scrollbar_ws.set)
+        self.sub_canvas_ws.bind("<Configure>", lambda event: self.sub_canvas_ws.configure(scrollregion=self.sub_canvas_ws.bbox("all")))
+
+
+        self.radio_sub_ws = ttk.Frame(self.sub_canvas_ws)
+        self.update_buttons_ws("sub")
+        self.x_sub = []
+        for n,k in enumerate(sorted(subs+grips, key=lambda d: d["Name2"])):
+            self.x_sub.append(ttk.Radiobutton(self.radio_sub_ws, text=k["Name2"], value=k, variable=self.selected_sub_ws,command=lambda: self.update_buttons_ws("sub")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_sub[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.sub_canvas_ws.create_window((0,0),window=self.radio_sub_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ranged_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select ranged  ")
+        self.ranged_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.ranged_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the ranged-hand slot
+        self.ranged_scrollframe_ws = ttk.Frame(self.ranged_radio_frame_ws)
+        self.ranged_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The ranged-hand canvas
+        self.ranged_canvas_ws = tk.Canvas(self.ranged_scrollframe_ws,height=220,width=390)
+        self.ranged_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ranged_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ranged_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ranged_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ranged_canvas_ws)) 
+
+        self.ranged_radio_scrollbar_ws = ttk.Scrollbar(self.ranged_scrollframe_ws, orient=tk.VERTICAL, command=self.ranged_canvas_ws.yview)
+        self.ranged_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ranged_canvas_ws.configure(yscrollcommand=self.ranged_radio_scrollbar_ws.set)
+        self.ranged_canvas_ws.bind("<Configure>", lambda event: self.ranged_canvas_ws.configure(scrollregion=self.ranged_canvas_ws.bbox("all")))
+
+
+        self.radio_ranged_ws = ttk.Frame(self.ranged_canvas_ws)
+        self.update_buttons_ws("ranged")
+        self.x_ranged = []
+        for n,k in enumerate(sorted(ranged, key=lambda d: d["Name2"])):
+            self.x_ranged.append(ttk.Radiobutton(self.radio_ranged_ws, text=k["Name2"], value=k, variable=self.selected_ranged_ws,command=lambda: self.update_buttons_ws("ranged")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ranged[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ranged_canvas_ws.create_window((0,0),window=self.radio_ranged_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ammo_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select ammo  ")
+        self.ammo_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.ammo_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the ammo-hand slot
+        self.ammo_scrollframe_ws = ttk.Frame(self.ammo_radio_frame_ws)
+        self.ammo_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The ammo-hand canvas
+        self.ammo_canvas_ws = tk.Canvas(self.ammo_scrollframe_ws,height=220,width=390)
+        self.ammo_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ammo_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ammo_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ammo_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ammo_canvas_ws)) 
+
+        self.ammo_radio_scrollbar_ws = ttk.Scrollbar(self.ammo_scrollframe_ws, orient=tk.VERTICAL, command=self.ammo_canvas_ws.yview)
+        self.ammo_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ammo_canvas_ws.configure(yscrollcommand=self.ammo_radio_scrollbar_ws.set)
+        self.ammo_canvas_ws.bind("<Configure>", lambda event: self.ammo_canvas_ws.configure(scrollregion=self.ammo_canvas_ws.bbox("all")))
+
+
+        self.radio_ammo_ws = ttk.Frame(self.ammo_canvas_ws)
+        self.update_buttons_ws("ammo")
+        self.x_ammo = []
+        for n,k in enumerate(sorted(ammos, key=lambda d: d["Name2"])):
+            self.x_ammo.append(ttk.Radiobutton(self.radio_ammo_ws, text=k["Name2"], value=k, variable=self.selected_ammo_ws,command=lambda: self.update_buttons_ws("ammo")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ammo[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ammo_canvas_ws.create_window((0,0),window=self.radio_ammo_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.head_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select head  ")
+        self.head_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.head_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the head-hand slot
+        self.head_scrollframe_ws = ttk.Frame(self.head_radio_frame_ws)
+        self.head_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The head-hand canvas
+        self.head_canvas_ws = tk.Canvas(self.head_scrollframe_ws,height=220,width=390)
+        self.head_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.head_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.head_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.head_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.head_canvas_ws)) 
+
+        self.head_radio_scrollbar_ws = ttk.Scrollbar(self.head_scrollframe_ws, orient=tk.VERTICAL, command=self.head_canvas_ws.yview)
+        self.head_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.head_canvas_ws.configure(yscrollcommand=self.head_radio_scrollbar_ws.set)
+        self.head_canvas_ws.bind("<Configure>", lambda event: self.head_canvas_ws.configure(scrollregion=self.head_canvas_ws.bbox("all")))
+
+
+        self.radio_head_ws = ttk.Frame(self.head_canvas_ws)
+        self.update_buttons_ws("head")
+        self.x_head = []
+        for n,k in enumerate(sorted(heads, key=lambda d: d["Name2"])):
+            self.x_head.append(ttk.Radiobutton(self.radio_head_ws, text=k["Name2"], value=k, variable=self.selected_head_ws,command=lambda: self.update_buttons_ws("head")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_head[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.head_canvas_ws.create_window((0,0),window=self.radio_head_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.neck_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select neck  ")
+        self.neck_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.neck_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the neck-hand slot
+        self.neck_scrollframe_ws = ttk.Frame(self.neck_radio_frame_ws)
+        self.neck_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The neck-hand canvas
+        self.neck_canvas_ws = tk.Canvas(self.neck_scrollframe_ws,height=220,width=390)
+        self.neck_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.neck_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.neck_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.neck_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.neck_canvas_ws)) 
+
+        self.neck_radio_scrollbar_ws = ttk.Scrollbar(self.neck_scrollframe_ws, orient=tk.VERTICAL, command=self.neck_canvas_ws.yview)
+        self.neck_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.neck_canvas_ws.configure(yscrollcommand=self.neck_radio_scrollbar_ws.set)
+        self.neck_canvas_ws.bind("<Configure>", lambda event: self.neck_canvas_ws.configure(scrollregion=self.neck_canvas_ws.bbox("all")))
+
+
+        self.radio_neck_ws = ttk.Frame(self.neck_canvas_ws)
+        self.update_buttons_ws("neck")
+        self.x_neck = []
+        for n,k in enumerate(sorted(necks, key=lambda d: d["Name2"])):
+            self.x_neck.append(ttk.Radiobutton(self.radio_neck_ws, text=k["Name2"], value=k, variable=self.selected_neck_ws,command=lambda: self.update_buttons_ws("neck")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_neck[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.neck_canvas_ws.create_window((0,0),window=self.radio_neck_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ear1_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select ear1  ")
+        self.ear1_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.ear1_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the ear1-hand slot
+        self.ear1_scrollframe_ws = ttk.Frame(self.ear1_radio_frame_ws)
+        self.ear1_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The ear1-hand canvas
+        self.ear1_canvas_ws = tk.Canvas(self.ear1_scrollframe_ws,height=220,width=390)
+        self.ear1_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ear1_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ear1_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ear1_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ear1_canvas_ws)) 
+
+        self.ear1_radio_scrollbar_ws = ttk.Scrollbar(self.ear1_scrollframe_ws, orient=tk.VERTICAL, command=self.ear1_canvas_ws.yview)
+        self.ear1_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ear1_canvas_ws.configure(yscrollcommand=self.ear1_radio_scrollbar_ws.set)
+        self.ear1_canvas_ws.bind("<Configure>", lambda event: self.ear1_canvas_ws.configure(scrollregion=self.ear1_canvas_ws.bbox("all")))
+
+
+        self.radio_ear1_ws = ttk.Frame(self.ear1_canvas_ws)
+        self.update_buttons_ws("ear1")
+        self.x_ear1 = []
+        for n,k in enumerate(sorted(ears, key=lambda d: d["Name2"])):
+            self.x_ear1.append(ttk.Radiobutton(self.radio_ear1_ws, text=k["Name2"], value=k, variable=self.selected_ear1_ws,command=lambda: self.update_buttons_ws("ear1")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ear1[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ear1_canvas_ws.create_window((0,0),window=self.radio_ear1_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ear2_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select ear2  ")
+        self.ear2_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.ear2_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the ear2-hand slot
+        self.ear2_scrollframe_ws = ttk.Frame(self.ear2_radio_frame_ws)
+        self.ear2_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The ear2-hand canvas
+        self.ear2_canvas_ws = tk.Canvas(self.ear2_scrollframe_ws,height=220,width=390)
+        self.ear2_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ear2_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ear2_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ear2_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ear2_canvas_ws)) 
+
+        self.ear2_radio_scrollbar_ws = ttk.Scrollbar(self.ear2_scrollframe_ws, orient=tk.VERTICAL, command=self.ear2_canvas_ws.yview)
+        self.ear2_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ear2_canvas_ws.configure(yscrollcommand=self.ear2_radio_scrollbar_ws.set)
+        self.ear2_canvas_ws.bind("<Configure>", lambda event: self.ear2_canvas_ws.configure(scrollregion=self.ear2_canvas_ws.bbox("all")))
+
+
+        self.radio_ear2_ws = ttk.Frame(self.ear2_canvas_ws)
+        self.update_buttons_ws("ear2")
+        self.x_ear2 = []
+        for n,k in enumerate(sorted(ears2, key=lambda d: d["Name2"])):
+            self.x_ear2.append(ttk.Radiobutton(self.radio_ear2_ws, text=k["Name2"], value=k, variable=self.selected_ear2_ws,command=lambda: self.update_buttons_ws("ear2")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ear2[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ear2_canvas_ws.create_window((0,0),window=self.radio_ear2_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.body_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select body  ")
+        self.body_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.body_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the body-hand slot
+        self.body_scrollframe_ws = ttk.Frame(self.body_radio_frame_ws)
+        self.body_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The body-hand canvas
+        self.body_canvas_ws = tk.Canvas(self.body_scrollframe_ws,height=220,width=390)
+        self.body_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.body_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.body_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.body_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.body_canvas_ws)) 
+
+        self.body_radio_scrollbar_ws = ttk.Scrollbar(self.body_scrollframe_ws, orient=tk.VERTICAL, command=self.body_canvas_ws.yview)
+        self.body_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.body_canvas_ws.configure(yscrollcommand=self.body_radio_scrollbar_ws.set)
+        self.body_canvas_ws.bind("<Configure>", lambda event: self.body_canvas_ws.configure(scrollregion=self.body_canvas_ws.bbox("all")))
+
+
+        self.radio_body_ws = ttk.Frame(self.body_canvas_ws)
+        self.update_buttons_ws("body")
+        self.x_body = []
+        for n,k in enumerate(sorted(bodies, key=lambda d: d["Name2"])):
+            self.x_body.append(ttk.Radiobutton(self.radio_body_ws, text=k["Name2"], value=k, variable=self.selected_body_ws,command=lambda: self.update_buttons_ws("body")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_body[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.body_canvas_ws.create_window((0,0),window=self.radio_body_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.hands_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select hands  ")
+        self.hands_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.hands_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the hands-hand slot
+        self.hands_scrollframe_ws = ttk.Frame(self.hands_radio_frame_ws)
+        self.hands_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The hands-hand canvas
+        self.hands_canvas_ws = tk.Canvas(self.hands_scrollframe_ws,height=220,width=390)
+        self.hands_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.hands_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.hands_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.hands_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.hands_canvas_ws)) 
+
+        self.hands_radio_scrollbar_ws = ttk.Scrollbar(self.hands_scrollframe_ws, orient=tk.VERTICAL, command=self.hands_canvas_ws.yview)
+        self.hands_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.hands_canvas_ws.configure(yscrollcommand=self.hands_radio_scrollbar_ws.set)
+        self.hands_canvas_ws.bind("<Configure>", lambda event: self.hands_canvas_ws.configure(scrollregion=self.hands_canvas_ws.bbox("all")))
+
+
+        self.radio_hands_ws = ttk.Frame(self.hands_canvas_ws)
+        self.update_buttons_ws("hands")
+        self.x_hands = []
+        for n,k in enumerate(sorted(hands, key=lambda d: d["Name2"])):
+            self.x_hands.append(ttk.Radiobutton(self.radio_hands_ws, text=k["Name2"], value=k, variable=self.selected_hands_ws,command=lambda: self.update_buttons_ws("hands")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_hands[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.hands_canvas_ws.create_window((0,0),window=self.radio_hands_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ring1_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select ring1  ")
+        self.ring1_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.ring1_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the ring1-hand slot
+        self.ring1_scrollframe_ws = ttk.Frame(self.ring1_radio_frame_ws)
+        self.ring1_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The ring1-hand canvas
+        self.ring1_canvas_ws = tk.Canvas(self.ring1_scrollframe_ws,height=220,width=390)
+        self.ring1_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ring1_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ring1_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ring1_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ring1_canvas_ws)) 
+
+        self.ring1_radio_scrollbar_ws = ttk.Scrollbar(self.ring1_scrollframe_ws, orient=tk.VERTICAL, command=self.ring1_canvas_ws.yview)
+        self.ring1_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ring1_canvas_ws.configure(yscrollcommand=self.ring1_radio_scrollbar_ws.set)
+        self.ring1_canvas_ws.bind("<Configure>", lambda event: self.ring1_canvas_ws.configure(scrollregion=self.ring1_canvas_ws.bbox("all")))
+
+
+        self.radio_ring1_ws = ttk.Frame(self.ring1_canvas_ws)
+        self.update_buttons_ws("ring1")
+        self.x_ring1 = []
+        for n,k in enumerate(sorted(rings, key=lambda d: d["Name2"])):
+            self.x_ring1.append(ttk.Radiobutton(self.radio_ring1_ws, text=k["Name2"], value=k, variable=self.selected_ring1_ws,command=lambda: self.update_buttons_ws("ring1")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ring1[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ring1_canvas_ws.create_window((0,0),window=self.radio_ring1_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.ring2_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select ring2  ")
+        self.ring2_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.ring2_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the ring2-hand slot
+        self.ring2_scrollframe_ws = ttk.Frame(self.ring2_radio_frame_ws)
+        self.ring2_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The ring2-hand canvas
+        self.ring2_canvas_ws = tk.Canvas(self.ring2_scrollframe_ws,height=220,width=390)
+        self.ring2_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.ring2_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.ring2_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.ring2_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.ring2_canvas_ws)) 
+
+        self.ring2_radio_scrollbar_ws = ttk.Scrollbar(self.ring2_scrollframe_ws, orient=tk.VERTICAL, command=self.ring2_canvas_ws.yview)
+        self.ring2_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.ring2_canvas_ws.configure(yscrollcommand=self.ring2_radio_scrollbar_ws.set)
+        self.ring2_canvas_ws.bind("<Configure>", lambda event: self.ring2_canvas_ws.configure(scrollregion=self.ring2_canvas_ws.bbox("all")))
+
+
+        self.radio_ring2_ws = ttk.Frame(self.ring2_canvas_ws)
+        self.update_buttons_ws("ring2")
+        self.x_ring2 = []
+        for n,k in enumerate(sorted(rings2, key=lambda d: d["Name2"])):
+            self.x_ring2.append(ttk.Radiobutton(self.radio_ring2_ws, text=k["Name2"], value=k, variable=self.selected_ring2_ws,command=lambda: self.update_buttons_ws("ring2")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_ring2[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.ring2_canvas_ws.create_window((0,0),window=self.radio_ring2_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.back_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select back  ")
+        self.back_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.back_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the back-hand slot
+        self.back_scrollframe_ws = ttk.Frame(self.back_radio_frame_ws)
+        self.back_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The back-hand canvas
+        self.back_canvas_ws = tk.Canvas(self.back_scrollframe_ws,height=220,width=390)
+        self.back_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.back_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.back_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.back_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.back_canvas_ws)) 
+
+        self.back_radio_scrollbar_ws = ttk.Scrollbar(self.back_scrollframe_ws, orient=tk.VERTICAL, command=self.back_canvas_ws.yview)
+        self.back_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.back_canvas_ws.configure(yscrollcommand=self.back_radio_scrollbar_ws.set)
+        self.back_canvas_ws.bind("<Configure>", lambda event: self.back_canvas_ws.configure(scrollregion=self.back_canvas_ws.bbox("all")))
+
+
+        self.radio_back_ws = ttk.Frame(self.back_canvas_ws)
+        self.update_buttons_ws("back")
+        self.x_back = []
+        for n,k in enumerate(sorted(capes, key=lambda d: d["Name2"])):
+            self.x_back.append(ttk.Radiobutton(self.radio_back_ws, text=k["Name2"], value=k, variable=self.selected_back_ws,command=lambda: self.update_buttons_ws("back")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_back[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.back_canvas_ws.create_window((0,0),window=self.radio_back_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        # Label frame unique to main-hand slot. It remains fixed to always view the label text
+        self.waist_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select waist  ")
+        self.waist_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.waist_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the waist-hand slot
+        self.waist_scrollframe_ws = ttk.Frame(self.waist_radio_frame_ws)
+        self.waist_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The waist-hand canvas
+        self.waist_canvas_ws = tk.Canvas(self.waist_scrollframe_ws,height=220,width=390)
+        self.waist_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.waist_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.waist_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.waist_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.waist_canvas_ws)) 
+
+        self.waist_radio_scrollbar_ws = ttk.Scrollbar(self.waist_scrollframe_ws, orient=tk.VERTICAL, command=self.waist_canvas_ws.yview)
+        self.waist_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.waist_canvas_ws.configure(yscrollcommand=self.waist_radio_scrollbar_ws.set)
+        self.waist_canvas_ws.bind("<Configure>", lambda event: self.waist_canvas_ws.configure(scrollregion=self.waist_canvas_ws.bbox("all")))
+
+
+        self.radio_waist_ws = ttk.Frame(self.waist_canvas_ws)
+        self.update_buttons_ws("waist")
+        self.x_waist = []
+        for n,k in enumerate(sorted(waists, key=lambda d: d["Name2"])):
+            self.x_waist.append(ttk.Radiobutton(self.radio_waist_ws, text=k["Name2"], value=k, variable=self.selected_waist_ws,command=lambda: self.update_buttons_ws("waist")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_waist[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.waist_canvas_ws.create_window((0,0),window=self.radio_waist_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        self.legs_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select legs  ")
+        self.legs_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.legs_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the legs-hand slot
+        self.legs_scrollframe_ws = ttk.Frame(self.legs_radio_frame_ws)
+        self.legs_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The legs-hand canvas
+        self.legs_canvas_ws = tk.Canvas(self.legs_scrollframe_ws,height=220,width=390)
+        self.legs_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.legs_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.legs_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.legs_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.legs_canvas_ws)) 
+
+        self.legs_radio_scrollbar_ws = ttk.Scrollbar(self.legs_scrollframe_ws, orient=tk.VERTICAL, command=self.legs_canvas_ws.yview)
+        self.legs_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.legs_canvas_ws.configure(yscrollcommand=self.legs_radio_scrollbar_ws.set)
+        self.legs_canvas_ws.bind("<Configure>", lambda event: self.legs_canvas_ws.configure(scrollregion=self.legs_canvas_ws.bbox("all")))
+
+
+        self.radio_legs_ws = ttk.Frame(self.legs_canvas_ws)
+        self.update_buttons_ws("legs")
+        self.x_legs = []
+        for n,k in enumerate(sorted(legs, key=lambda d: d["Name2"])):
+            self.x_legs.append(ttk.Radiobutton(self.radio_legs_ws, text=k["Name2"], value=k, variable=self.selected_legs_ws,command=lambda: self.update_buttons_ws("legs")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_legs[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.legs_canvas_ws.create_window((0,0),window=self.radio_legs_ws, anchor="nw")
+# ====================================================================================================================================================================================
+# ====================================================================================================================================================================================
+        self.feet_radio_frame_ws = ttk.LabelFrame(self.radio_frame_ws, text="  select feet  ")
+        self.feet_radio_frame_ws.pack(fill=tk.BOTH, expand=1)
+        self.feet_radio_frame_ws.pack_forget()
+
+        # Scrollable base frame for the feet-hand slot
+        self.feet_scrollframe_ws = ttk.Frame(self.feet_radio_frame_ws)
+        self.feet_scrollframe_ws.pack(fill=tk.BOTH, expand=1)
+
+        # The feet-hand canvas
+        self.feet_canvas_ws = tk.Canvas(self.feet_scrollframe_ws,height=220,width=390)
+        self.feet_canvas_ws.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
+
+        self.feet_scrollframe_ws.bind('<Enter>', lambda event: self._bound_to_mousewheel(event, self.feet_canvas_ws)) # We must mouse-over the scrollable frame to use the mousewheel
+        self.feet_scrollframe_ws.bind('<Leave>', lambda event: self._unbound_to_mousewheel(event, self.feet_canvas_ws)) 
+
+        self.feet_radio_scrollbar_ws = ttk.Scrollbar(self.feet_scrollframe_ws, orient=tk.VERTICAL, command=self.feet_canvas_ws.yview)
+        self.feet_radio_scrollbar_ws.pack(side=tk.RIGHT, fill=tk.Y)
+        self.feet_canvas_ws.configure(yscrollcommand=self.feet_radio_scrollbar_ws.set)
+        self.feet_canvas_ws.bind("<Configure>", lambda event: self.feet_canvas_ws.configure(scrollregion=self.feet_canvas_ws.bbox("all")))
+
+
+        self.radio_feet_ws = ttk.Frame(self.feet_canvas_ws)
+        self.update_buttons_ws("feet")
+        self.x_feet = []
+        for n,k in enumerate(sorted(feet, key=lambda d: d["Name2"])):
+            self.x_feet.append(ttk.Radiobutton(self.radio_feet_ws, text=k["Name2"], value=k, variable=self.selected_feet_ws,command=lambda: self.update_buttons_ws("feet")))
+            if self.mainjob.get().lower() in k["Jobs"]:
+                self.x_feet[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
+        self.feet_canvas_ws.create_window((0,0),window=self.radio_feet_ws, anchor="nw")
+# ====================================================================================================================================================================================
+
+
+
+        self.sim_frame = ttk.LabelFrame(self.sim_tab, text="Damage Simulation", width=676, height=250)
+        self.sim_frame.grid_propagate(0)
+        self.sim_frame.grid(row=2, column=0, padx=2, pady=10, sticky="w")
+
+        self.sim_button = tk.Button(self.sim_frame, text="Run weapon skill simulations",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("damage simulation"))
+        self.sim_button_tip = Hovertip(self.sim_button,f"Simulate 10 hours of weapon skills using the above TP and WS sets.\nWeapon skills are used after reaching Minimum TP through normal attack rounds with the selected buffs.")
+        self.sim_button.grid(row=1,column=0,columnspan=2,padx=5,pady=5)
+
+        self.build_dist = tk.Button(self.sim_frame, text="Create weapon skill\ndistribution plot",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("build distribution"))
+        self.build_dist_tip = Hovertip(self.build_dist,f"Simulate 50,000 weapon skills using the current buffs and the equipped WS set and plot the resulting damage distribution.")
+        self.build_dist.grid(row=2,column=0,columnspan=2,padx=5,pady=5)
+
+        self.plot_dps = tk.BooleanVar(value=False)
+        self.plot_dps_cbox = ttk.Checkbutton(self.sim_frame,variable=self.plot_dps,text="Plot DPS")
+        self.plot_dps_cbox.grid(row=0,column=0,padx=5,pady=5)
+
+        # Run Simulation button under the WS set where the quicklook buttons are.
+        # Damage simulations store Time, Total TP Damage, Total WS damage, (Total SC Damage), 
+        # Output plot: DPS vs Time
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2531,7 +4286,7 @@ class App(tk.Tk):
         #
         if job_type=="main":
             count = 0
-            for radio_subframe in [self.radio_main,self.radio_sub,self.radio_ranged,self.radio_ammo,self.radio_head,self.radio_neck,self.radio_ear1,self.radio_ear2,self.radio_body,self.radio_hands,self.radio_ring1,self.radio_ring2,self.radio_back,self.radio_waist,self.radio_legs,self.radio_feet]:
+            for radio_subframe in [self.radio_main,self.radio_sub,self.radio_ranged,self.radio_ammo,self.radio_head,self.radio_neck,self.radio_ear1,self.radio_ear2,self.radio_body,self.radio_hands,self.radio_ring1,self.radio_ring2,self.radio_back,self.radio_waist,self.radio_legs,self.radio_feet,self.radio_main_tp,self.radio_sub_tp,self.radio_ranged_tp,self.radio_ammo_tp,self.radio_head_tp,self.radio_neck_tp,self.radio_ear1_tp,self.radio_ear2_tp,self.radio_body_tp,self.radio_hands_tp,self.radio_ring1_tp,self.radio_ring2_tp,self.radio_back_tp,self.radio_waist_tp,self.radio_legs_tp,self.radio_feet_tp,self.radio_main_ws,self.radio_sub_ws,self.radio_ranged_ws,self.radio_ammo_ws,self.radio_head_ws,self.radio_neck_ws,self.radio_ear1_ws,self.radio_ear2_ws,self.radio_body_ws,self.radio_hands_ws,self.radio_ring1_ws,self.radio_ring2_ws,self.radio_back_ws,self.radio_waist_ws,self.radio_legs_ws,self.radio_feet_ws]:
                 for x in radio_subframe.winfo_children(): # winfo_children(): https://stackoverflow.com/questions/7290071/getting-every-child-widget-of-a-tkinter-window
                     item_dict = eval(x.cget("value")) #  using cget() to get the value: https://www.tutorialspoint.com/get-the-text-of-a-button-widget-in-tkinter
                     if event.lower() not in item_dict["Jobs"]:
@@ -2587,7 +4342,7 @@ class App(tk.Tk):
         # TODO: Dictionary these buttons/checkboxes/radio
         #
         tvr_rings = ["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's"]
-        jse_ear_names = {"nin":"Hattori","drk":"Heathen","blm":"Wicce","rdm":"Lethargy","drg":"Peltast","whm":"Ebers","sam":"Kasuga","sch":"Arbatel","war":"Boii","cor":"Chasseur","brd":"Fili","thf":"Skulker","mnk":"Bhikku","dnc":"Maculele","bst":"Nukumi","geo":"Azimuth","pld":"Chevalier","rng":"Amini","blu":"Hashishin","run":"Erilaz","pup":"Karagoz"}
+        jse_ear_names = {"nin":"Hattori","drk":"Heathen","blm":"Wicce","rdm":"Lethargy","drg":"Peltast","whm":"Ebers","sam":"Kasuga","sch":"Arbatel","war":"Boii","cor":"Chasseur","brd":"Fili","thf":"Skulker","mnk":"Bhikku","dnc":"Maculele","bst":"Nukumi","geo":"Azimuth","pld":"Chevalier","rng":"Amini","blu":"Hashishin","run":"Erilaz","pup":"Karagoz","smn":"Beckoner"}
 
         cbox_lists = {"main":[self.main_cbox_frame,self.x_main2,self.x_main2_var],
                         "sub":[self.sub_cbox_frame,self.x_sub2,self.x_sub2_var],
@@ -2891,13 +4646,26 @@ class App(tk.Tk):
         whm_on = self.whm_on.get()
 
         whm_haste = whm_on*(whm["Haste"]["Magic Haste"]*(self.whm_spell2.get() == "Haste") + whm["Haste II"]["Magic Haste"]*(self.whm_spell2.get() == "Haste II"))
-        whm_str   = whm_on*(whm["Boost-STR"]["STR"]*(self.whm_spell3.get()=="Boost-STR") + 7*(self.whm_spell4.get()=="Firestorm II")    + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_dex   = whm_on*(whm["Boost-DEX"]["DEX"]*(self.whm_spell3.get()=="Boost-DEX") + 7*(self.whm_spell4.get()=="Thunderstorm II") + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_vit   = whm_on*(whm["Boost-VIT"]["VIT"]*(self.whm_spell3.get()=="Boost-VIT") + 7*(self.whm_spell4.get()=="Sandstorm II")    + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_agi   = whm_on*(whm["Boost-AGI"]["AGI"]*(self.whm_spell3.get()=="Boost-AGI") + 7*(self.whm_spell4.get()=="Windstorm II")    + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_int   = whm_on*(whm["Boost-INT"]["INT"]*(self.whm_spell3.get()=="Boost-INT") + 7*(self.whm_spell4.get()=="Hailstorm II")    + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_mnd   = whm_on*(whm["Boost-MND"]["MND"]*(self.whm_spell3.get()=="Boost-MND") + 7*(self.whm_spell4.get()=="Rainstorm II")    + 3*(self.whm_spell4.get()=="Voidstorm II"))
-        whm_chr   = whm_on*(whm["Boost-CHR"]["CHR"]*(self.whm_spell3.get()=="Boost-CHR") + 7*(self.whm_spell4.get()=="Aurorastorm II")  + 3*(self.whm_spell4.get()=="Voidstorm II"))
+        self.boost_potency = (self.enh_skill.get() - 300)/10 + 5 if (self.enh_skill.get() - 300)/10 + 5 < 25 else 25 # Cap at +25 (500 skill)
+        self.boost_potency = 5 if self.boost_potency < 5 else self.boost_potency # Floor at +5
+        self.gain_potency = (self.enh_skill.get() - 300)/10 + 5 + 30 if (self.enh_skill.get() - 300)/10 + 5 + 30 < 55 else 55 # Cap at +55 (500 skill plus relic+3 hands)
+        self.gain_potency = 5+30 if self.gain_potency < 5+30 else self.gain_potency # Floor at +35 (with relic+3 hands)
+
+        whm_str   = whm_on*( (self.whm_spell3.get()=="Boost-STR")*(self.boost_potency) + 7*(self.whm_spell4.get() in ["Firestorm", "Firestorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-STR"))
+        whm_dex   = whm_on*( (self.whm_spell3.get()=="Boost-DEX")*(self.boost_potency) + 7*(self.whm_spell4.get() in ["Thunderstorm", "Thunderstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-DEX"))
+        whm_vit   = whm_on*( (self.boost_potency)*(self.whm_spell3.get()=="Boost-VIT") + 7*(self.whm_spell4.get() in ["Sandstorm", "Sandstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-VIT"))
+        whm_agi   = whm_on*( (self.boost_potency)*(self.whm_spell3.get()=="Boost-AGI") + 7*(self.whm_spell4.get() in ["Windstorm", "Windstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-AGI"))
+        whm_int   = whm_on*( (self.boost_potency)*(self.whm_spell3.get()=="Boost-INT") + 7*(self.whm_spell4.get() in ["Hailstorm", "Hailstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-INT"))
+        whm_mnd   = whm_on*( (self.boost_potency)*(self.whm_spell3.get()=="Boost-MND") + 7*(self.whm_spell4.get() in ["Rainstorm", "Rainstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-MND"))
+        whm_chr   = whm_on*( (self.boost_potency)*(self.whm_spell3.get()=="Boost-CHR") + 7*(self.whm_spell4.get() in ["Aurorastorm", "Aurorastorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + (self.gain_potency)*(self.whm_spell3.get()=="Gain-CHR"))
+
+        # whm_str   = whm_on*(whm["Boost-STR"]["STR"]*(self.whm_spell3.get()=="Boost-STR") + 7*(self.whm_spell4.get() in ["Firestorm", "Firestorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-STR"]["STR"]*(self.whm_spell3.get()=="Gain-STR"))
+        # whm_dex   = whm_on*(whm["Boost-DEX"]["DEX"]*(self.whm_spell3.get()=="Boost-DEX") + 7*(self.whm_spell4.get() in ["Thunderstorm", "Thunderstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-DEX"]["DEX"]*(self.whm_spell3.get()=="Gain-DEX"))
+        # whm_vit   = whm_on*(whm["Boost-VIT"]["VIT"]*(self.whm_spell3.get()=="Boost-VIT") + 7*(self.whm_spell4.get() in ["Sandstorm", "Sandstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-VIT"]["VIT"]*(self.whm_spell3.get()=="Gain-VIT"))
+        # whm_agi   = whm_on*(whm["Boost-AGI"]["AGI"]*(self.whm_spell3.get()=="Boost-AGI") + 7*(self.whm_spell4.get() in ["Windstorm", "Windstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-AGI"]["AGI"]*(self.whm_spell3.get()=="Gain-AGI"))
+        # whm_int   = whm_on*(whm["Boost-INT"]["INT"]*(self.whm_spell3.get()=="Boost-INT") + 7*(self.whm_spell4.get() in ["Hailstorm", "Hailstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-INT"]["INT"]*(self.whm_spell3.get()=="Gain-INT"))
+        # whm_mnd   = whm_on*(whm["Boost-MND"]["MND"]*(self.whm_spell3.get()=="Boost-MND") + 7*(self.whm_spell4.get() in ["Rainstorm", "Rainstorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-MND"]["MND"]*(self.whm_spell3.get()=="Gain-MND"))
+        # whm_chr   = whm_on*(whm["Boost-CHR"]["CHR"]*(self.whm_spell3.get()=="Boost-CHR") + 7*(self.whm_spell4.get() in ["Aurorastorm", "Aurorastorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-CHR"]["CHR"]*(self.whm_spell3.get()=="Gain-CHR"))
 
 
         buffs = {"brd": {"Attack": brd_attack, "Accuracy": brd_accuracy, "Ranged Accuracy": brd_rangedaccuracy, "Ranged Attack": brd_attack,"Magic Haste":brd_haste, "STR":brd_str,"DEX":brd_dex, "VIT":brd_vit, "AGI":brd_agi, "INT":brd_int, "MND":brd_mnd, "CHR":brd_chr,},
@@ -2958,8 +4726,6 @@ class App(tk.Tk):
         enemy.stats["Evasion"] -= (torpor_potency + 280*self.distract3_value.get())
         enemy.stats["Magic Evasion"] -= languor_potency
 
-        # TODO: update tooltip for enemy stats when changing Dia and Geomany comboboxes
-
         return(buffs, enemy)
 
     def run_optimize(self,trigger):
@@ -3012,7 +4778,10 @@ class App(tk.Tk):
                      "Haste Samba":self.haste_samba_value.get(),
                      "Klimaform":self.klimaform_value.get(),
                      "Overwhelm":self.overwhelm_value.get(),
-                     "Distract III":self.distract3_value.get()}
+                     "Distract III":self.distract3_value.get(),
+                     "Temper":self.temper1_value.get(),
+                     "Temper II":self.temper2_value.get(),
+                     "Enh. Skill":self.enh_skill.get() if self.enh_skill.get() > 0 else 0}
 
 
         gearset = {
@@ -3033,10 +4802,49 @@ class App(tk.Tk):
             "legs":eval(self.selected_legs.get()),
             "feet":eval(self.selected_feet.get()),
         }
+        gearset_tp = { # Gearset saved in the TP set
+            "main":eval(self.selected_main_tp.get()),
+            "sub":eval(self.selected_sub_tp.get()),
+            "ranged":eval(self.selected_ranged_tp.get()),
+            "ammo":eval(self.selected_ammo_tp.get()),
+            "head":eval(self.selected_head_tp.get()),
+            "neck":eval(self.selected_neck_tp.get()),
+            "ear1":eval(self.selected_ear1_tp.get()),
+            "ear2":eval(self.selected_ear2_tp.get()),
+            "body":eval(self.selected_body_tp.get()),
+            "hands":eval(self.selected_hands_tp.get()),
+            "ring1":eval(self.selected_ring1_tp.get()),
+            "ring2":eval(self.selected_ring2_tp.get()),
+            "back":eval(self.selected_back_tp.get()),
+            "waist":eval(self.selected_waist_tp.get()),
+            "legs":eval(self.selected_legs_tp.get()),
+            "feet":eval(self.selected_feet_tp.get()),
+        }
+
+        gearset_ws = { # Gearset saved in the WS set
+            "main":eval(self.selected_main_ws.get()),
+            "sub":eval(self.selected_sub_ws.get()),
+            "ranged":eval(self.selected_ranged_ws.get()),
+            "ammo":eval(self.selected_ammo_ws.get()),
+            "head":eval(self.selected_head_ws.get()),
+            "neck":eval(self.selected_neck_ws.get()),
+            "ear1":eval(self.selected_ear1_ws.get()),
+            "ear2":eval(self.selected_ear2_ws.get()),
+            "body":eval(self.selected_body_ws.get()),
+            "hands":eval(self.selected_hands_ws.get()),
+            "ring1":eval(self.selected_ring1_ws.get()),
+            "ring2":eval(self.selected_ring2_ws.get()),
+            "back":eval(self.selected_back_ws.get()),
+            "waist":eval(self.selected_waist_ws.get()),
+            "legs":eval(self.selected_legs_ws.get()),
+            "feet":eval(self.selected_feet_ws.get()),
+        }
 
         buffs, enemy = self.collect_buffs() # The enemy is defined with the buffs to easily handle debuffs like Dia and Frailty
 
         player = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset, buffs, abilities)
+        player_tpset = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset_tp, buffs, abilities)
+        player_wsset = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset_ws, buffs, abilities)
 
         effective_tp = (self.tp2.get() + self.tp1.get()) / 2 + player.stats.get("TP Bonus",0)
         effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
@@ -3056,12 +4864,14 @@ class App(tk.Tk):
 
         ws_name = self.ws_name.get()
 
-        if trigger in ["quicklook ws","quicklook spell"]:
+        if trigger in ["quicklook ws","quicklook spell", "build_distribution"]:
             if trigger=="quicklook ws":
                 if ws_name=="None":
                     print("No weapon skill selected.")
                     return
                 ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
+                x = []
+                y = []
                 outputs = average_ws(player, enemy, ws_name, effective_tp, ws_type, "Damage dealt")
             elif trigger=="quicklook spell":
                 if spell_name=="None":
@@ -3081,15 +4891,109 @@ class App(tk.Tk):
             self.quickdamage.configure(text=f"{'Time per WS = ':>17}{avg_time:>7.3f} s")
             self.quicktp.configure(text=f"{'Avg TP/Round = ':>17}{avg_tp:>9.1f}")
 
+        elif trigger=="build distribution":
+            damage_list = []
+            tp_list = []
+            ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
+            for k in range(50000):
+
+                # Randomly sample TP between the upper and lower limits.
+                effective_tp = np.random.uniform(self.tp1.get(), self.tp2.get()) + player_wsset.stats.get("TP Bonus",0)
+                effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
+
+                outputs = average_ws(player_wsset, enemy, ws_name, effective_tp, ws_type, "Damage dealt", simulation=True)
+                damage_list.append(outputs[0])
+                tp_list.append(outputs[1])
+            plot_final(damage_list, player_wsset, self.tp1.get(), self.tp2.get(), ws_name)
+
+        elif trigger=="damage simulation":
+            ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
+            run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, self.plot_dps.get())
+
+
+
         elif trigger=="stats":
+            self.notebook.select(self.stats_tab)
             player = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset, buffs, abilities)
             s = ["STR","DEX","VIT","AGI","INT","MND","CHR","Accuracy1","Accuracy2","Attack1","Attack2","Ranged Accuracy","Ranged Attack","DA","TA","QA","Store TP","Weapon Skill Damage","Double Shot","Triple Shot","Quad Shot","Gear Haste","Magic Haste","JA Haste","Dual Wield","Delay Reduction"]
             # for stat in s:
             #     print(stat+":",player.stats.get(stat,0))
-            print("======================= Player stats =======================")
-            for stat in player.stats:
-                print(f"{stat:>30s}  =  {player.stats[stat]}")
-            print("============================================================")
+            self.str_value.config(text=f"{int(player.stats.get('STR',0)):>4d}")
+            self.dex_value.config(text=f"{int(player.stats.get('DEX',0)):>4d}")
+            self.vit_value.config(text=f"{int(player.stats.get('VIT',0)):>4d}")
+            self.agi_value.config(text=f"{int(player.stats.get('AGI',0)):>4d}")
+            self.int_value.config(text=f"{int(player.stats.get('INT',0)):>4d}")
+            self.mnd_value.config(text=f"{int(player.stats.get('MND',0)):>4d}")
+            self.chr_value.config(text=f"{int(player.stats.get('CHR',0)):>4d}")
+            self.atk1_value.config(text=f"{int(player.stats.get('Attack1',0)):>4d}")
+            self.atk2_value.config(text=f"{int(player.stats.get('Attack2',0)):>4d}")
+            self.ratk_value.config(text=f"{int(player.stats.get('Ranged Attack',0)):>4d}")
+            self.acc1_value.config(text=f"{int(player.stats.get('Accuracy1',0)):>4d}")
+            self.acc2_value.config(text=f"{int(player.stats.get('Accuracy2',0)):>4d}")
+            self.racc_value.config(text=f"{int(player.stats.get('Ranged Accuracy',0)):>4d}")
+
+            self.da_value.config(text=f"{int(player.stats.get('DA',0)):>3d}%")
+            self.ta_value.config(text=f"{int(player.stats.get('TA',0)):>3d}%")
+            self.qa_value.config(text=f"{int(player.stats.get('QA',0)):>3d}%")
+
+            self.ds_value.config(text=f"{int(player.stats.get('Double Shot',0)):>3d}%")
+            self.ts_value.config(text=f"{int(player.stats.get('Triple Shot',0)):>3d}%")
+            self.qs_value.config(text=f"{int(player.stats.get('Quad Shot',0)):>3d}%")
+
+            self.kicks_value.config(text=f"{int(player.stats.get('Kick Attacks',0)):>3d}%")
+            self.daken_value.config(text=f"{int(player.stats.get('Daken',0)):>3d}%")
+            self.zanshin_value.config(text=f"{int(player.stats.get('Zanshin',0)):>3d}%")
+
+            self.gear_haste_value.config(text=f"{float(player.stats.get('Gear Haste',0))*100:>4.1f}%")
+            self.ja_haste_value.config(text=f"{float(player.stats.get('JA Haste',0))*100:>4.1f}%")
+            self.magic_haste_value.config(text=f"{float(player.stats.get('Magic Haste',0))*100:>4.1f}%")
+            self.delayreduction_value.config(text=f"{float(player.stats.get('Delay Reduction',0))*100:>4.1f}%")
+
+            self.dw_value.config(text=f"{int(player.stats.get('Dual Wield',0)):>4d}")
+            self.ma_value.config(text=f"{int(player.stats.get('Martial Arts',0)):>4d}")
+
+            self.regain_value.config(text=f"{int(player.stats.get('Regain',0)) + (player.gearset['main']['Name']=='Gokotai')*player.stats.get('Dual Wield',0):>4d}")
+
+            self.critrate_value.config(text=f"{int(player.stats.get('Crit Rate',0)):>3d}%")
+            self.critdmg_value.config(text=f"{int(player.stats.get('Crit Damage',0)):>3d}%")
+
+            self.rangedcritdmg_value.config(text=f"{int(player.stats.get('Ranged Crit Damage',0)):>3d}%")
+
+            self.stp_value.config(text=f"{int(player.stats.get('Store TP',0)):>4d}")
+            self.wsd_value.config(text=f"{int(player.stats.get('Weapon Skill Damage',0)):>3d}%")
+            self.wsacc_value.config(text=f"{int(player.stats.get('Weapon Skill Accuracy',0)):>4d}")
+            self.wsdtrait_value.config(text=f"{int(player.stats.get('Weapon Skill Damage Trait',0)):>3d}%")
+
+            self.pdl_value.config(text=f"{int(player.stats.get('PDL',0)):>3d}%")
+            self.pdltrait_value.config(text=f"{int(player.stats.get('PDL Trait',0)):>3d}%")
+
+            self.skillchain_value.config(text=f"{int(player.stats.get('Skillchain Bonus',0)):>3d}%")
+
+            self.tp_bonus_value.config(text=f"{int(player.stats.get('TP Bonus',0)):>4d}")
+
+            self.dt_value.config(text=f"{int(player.stats.get('DT',0)):>4d}%")
+            self.mdt_value.config(text=f"{int(player.stats.get('MDT',0)):>4d}%")
+            self.pdt_value.config(text=f"{int(player.stats.get('PDT',0)):>4d}%")
+
+            self.subtle_value.config(text=f"{int(player.stats.get('Subtle Blow',0)):>4d}")
+            self.subtle2_value.config(text=f"{int(player.stats.get('Subtle Blow II',0)):>4d}")
+
+            self.eva_value.config(text=f"{int(player.stats.get('Evasion',0)):>4d}")
+            self.meva_value.config(text=f"{int(player.stats.get('Magic Evasion',0)):>4d}")
+            self.mdef_value.config(text=f"{int(player.stats.get('Magic Defense',0)):>4d}")
+
+            self.macc_value.config(text=f"{int(player.stats.get('Magic Accuracy',0)):>4d}")
+            self.mdmg_value.config(text=f"{int(player.stats.get('Magic Damage',0)):>4d}")
+            self.matk_value.config(text=f"{int(player.stats.get('Magic Attack',0)):>4d}")
+            self.mburst1_value.config(text=f"{int(player.stats.get('Magic Burst Damage',0)):>4d}")
+            self.mburst2_value.config(text=f"{int(player.stats.get('Magic Burst Damage II',0)):>4d}")
+            self.mburst3_value.config(text=f"{int(player.stats.get('Magic Burst Damage Trait',0)):>4d}")
+
+
+            # print("======================= Player stats =======================")
+            # for stat in player.stats:
+            #     print(f"{stat:>30s}  =  {player.stats[stat]}")
+            # print("============================================================")
             print("======================= Enemy  stats =======================")
             for stat in enemy.stats:
                 print(f"{stat:>15s}  =  {enemy.stats[stat]}")
@@ -3200,26 +5104,61 @@ class App(tk.Tk):
         short_name = items[2][np.where(np.array([k.lower() for k in items[1]])==item_name.lower())][0]
         return(short_name)
 
-    def export2gearswap(self,):
+    def export2gearswap(self,settype="default"):
         #
         # Print the equipped gear in a copy/pastable lua format.
         #
-        main = f"main=\"{self.get_short_name(eval(self.selected_main.get())['Name'])}\",\n"
-        sub = f"sub=\"{self.get_short_name(eval(self.selected_sub.get())['Name'])}\",\n"
-        ranged = f"ranged=\"{self.get_short_name(eval(self.selected_ranged.get())['Name'])}\",\n"
-        ammo = f"ammo=\"{self.get_short_name(eval(self.selected_ammo.get())['Name'])}\",\n"
-        head = f"head=\"{self.get_short_name(eval(self.selected_head.get())['Name'])}\",\n"
-        neck = f"neck=\"{self.get_short_name(eval(self.selected_neck.get())['Name'])}\",\n"
-        ear1 = f"ear1=\"{self.get_short_name(eval(self.selected_ear1.get())['Name'])}\",\n"
-        ear2 = f"ear2=\"{self.get_short_name(eval(self.selected_ear2.get())['Name'])}\",\n"
-        body = f"body=\"{self.get_short_name(eval(self.selected_body.get())['Name'])}\",\n"
-        hands = f"hands=\"{self.get_short_name(eval(self.selected_hands.get())['Name'])}\",\n"
-        ring1 = f"ring1=\"{self.get_short_name(eval(self.selected_ring1.get())['Name'])}\",\n"
-        ring2 = f"ring2=\"{self.get_short_name(eval(self.selected_ring2.get())['Name'])}\",\n"
-        back = f"back=\"{self.get_short_name(eval(self.selected_back.get())['Name'])}\",\n"
-        waist = f"waist=\"{self.get_short_name(eval(self.selected_waist.get())['Name'])}\",\n"
-        legs = f"legs=\"{self.get_short_name(eval(self.selected_legs.get())['Name'])}\",\n"
-        feet = f"feet=\"{self.get_short_name(eval(self.selected_feet.get())['Name'])}\",\n"
+        if settype=="tp":
+            main = f"main=\"{self.get_short_name(eval(self.selected_main_tp.get())['Name'])}\",\n"
+            sub = f"sub=\"{self.get_short_name(eval(self.selected_sub_tp.get())['Name'])}\",\n"
+            ranged = f"ranged=\"{self.get_short_name(eval(self.selected_ranged_tp.get())['Name'])}\",\n"
+            ammo = f"ammo=\"{self.get_short_name(eval(self.selected_ammo_tp.get())['Name'])}\",\n"
+            head = f"head=\"{self.get_short_name(eval(self.selected_head_tp.get())['Name'])}\",\n"
+            neck = f"neck=\"{self.get_short_name(eval(self.selected_neck_tp.get())['Name'])}\",\n"
+            ear1 = f"ear1=\"{self.get_short_name(eval(self.selected_ear1_tp.get())['Name'])}\",\n"
+            ear2 = f"ear2=\"{self.get_short_name(eval(self.selected_ear2_tp.get())['Name'])}\",\n"
+            body = f"body=\"{self.get_short_name(eval(self.selected_body_tp.get())['Name'])}\",\n"
+            hands = f"hands=\"{self.get_short_name(eval(self.selected_hands_tp.get())['Name'])}\",\n"
+            ring1 = f"ring1=\"{self.get_short_name(eval(self.selected_ring1_tp.get())['Name'])}\",\n"
+            ring2 = f"ring2=\"{self.get_short_name(eval(self.selected_ring2_tp.get())['Name'])}\",\n"
+            back = f"back=\"{self.get_short_name(eval(self.selected_back_tp.get())['Name'])}\",\n"
+            waist = f"waist=\"{self.get_short_name(eval(self.selected_waist_tp.get())['Name'])}\",\n"
+            legs = f"legs=\"{self.get_short_name(eval(self.selected_legs_tp.get())['Name'])}\",\n"
+            feet = f"feet=\"{self.get_short_name(eval(self.selected_feet_tp.get())['Name'])}\",\n"
+        elif settype=="ws":
+            main = f"main=\"{self.get_short_name(eval(self.selected_main_ws.get())['Name'])}\",\n"
+            sub = f"sub=\"{self.get_short_name(eval(self.selected_sub_ws.get())['Name'])}\",\n"
+            ranged = f"ranged=\"{self.get_short_name(eval(self.selected_ranged_ws.get())['Name'])}\",\n"
+            ammo = f"ammo=\"{self.get_short_name(eval(self.selected_ammo_ws.get())['Name'])}\",\n"
+            head = f"head=\"{self.get_short_name(eval(self.selected_head_ws.get())['Name'])}\",\n"
+            neck = f"neck=\"{self.get_short_name(eval(self.selected_neck_ws.get())['Name'])}\",\n"
+            ear1 = f"ear1=\"{self.get_short_name(eval(self.selected_ear1_ws.get())['Name'])}\",\n"
+            ear2 = f"ear2=\"{self.get_short_name(eval(self.selected_ear2_ws.get())['Name'])}\",\n"
+            body = f"body=\"{self.get_short_name(eval(self.selected_body_ws.get())['Name'])}\",\n"
+            hands = f"hands=\"{self.get_short_name(eval(self.selected_hands_ws.get())['Name'])}\",\n"
+            ring1 = f"ring1=\"{self.get_short_name(eval(self.selected_ring1_ws.get())['Name'])}\",\n"
+            ring2 = f"ring2=\"{self.get_short_name(eval(self.selected_ring2_ws.get())['Name'])}\",\n"
+            back = f"back=\"{self.get_short_name(eval(self.selected_back_ws.get())['Name'])}\",\n"
+            waist = f"waist=\"{self.get_short_name(eval(self.selected_waist_ws.get())['Name'])}\",\n"
+            legs = f"legs=\"{self.get_short_name(eval(self.selected_legs_ws.get())['Name'])}\",\n"
+            feet = f"feet=\"{self.get_short_name(eval(self.selected_feet_ws.get())['Name'])}\",\n"
+        else:
+            main = f"main=\"{self.get_short_name(eval(self.selected_main.get())['Name'])}\",\n"
+            sub = f"sub=\"{self.get_short_name(eval(self.selected_sub.get())['Name'])}\",\n"
+            ranged = f"ranged=\"{self.get_short_name(eval(self.selected_ranged.get())['Name'])}\",\n"
+            ammo = f"ammo=\"{self.get_short_name(eval(self.selected_ammo.get())['Name'])}\",\n"
+            head = f"head=\"{self.get_short_name(eval(self.selected_head.get())['Name'])}\",\n"
+            neck = f"neck=\"{self.get_short_name(eval(self.selected_neck.get())['Name'])}\",\n"
+            ear1 = f"ear1=\"{self.get_short_name(eval(self.selected_ear1.get())['Name'])}\",\n"
+            ear2 = f"ear2=\"{self.get_short_name(eval(self.selected_ear2.get())['Name'])}\",\n"
+            body = f"body=\"{self.get_short_name(eval(self.selected_body.get())['Name'])}\",\n"
+            hands = f"hands=\"{self.get_short_name(eval(self.selected_hands.get())['Name'])}\",\n"
+            ring1 = f"ring1=\"{self.get_short_name(eval(self.selected_ring1.get())['Name'])}\",\n"
+            ring2 = f"ring2=\"{self.get_short_name(eval(self.selected_ring2.get())['Name'])}\",\n"
+            back = f"back=\"{self.get_short_name(eval(self.selected_back.get())['Name'])}\",\n"
+            waist = f"waist=\"{self.get_short_name(eval(self.selected_waist.get())['Name'])}\",\n"
+            legs = f"legs=\"{self.get_short_name(eval(self.selected_legs.get())['Name'])}\",\n"
+            feet = f"feet=\"{self.get_short_name(eval(self.selected_feet.get())['Name'])}\",\n"
 
         line = (main+sub+ranged+ammo+head+body+hands+legs+feet+neck+waist+ear1+ear2+ring1+ring2+back).replace("\"empty\"","Empty")
         # print("==========")
@@ -3234,14 +5173,21 @@ class App(tk.Tk):
     def select_aftermath(self,value):
         print(value)
 
-    def update_radio_list(self, frame0):
+    def update_radio_list(self, frame0, settype="default"):
         #
         # Hide all radio button frames, then show frame0
         #
-        frames = [self.main_radio_frame, self.sub_radio_frame, self.ranged_radio_frame, self.ammo_radio_frame, self.head_radio_frame, self.neck_radio_frame, self.ear1_radio_frame, self.ear2_radio_frame, self.body_radio_frame, self.hands_radio_frame, self.ring1_radio_frame, self.ring2_radio_frame, self.back_radio_frame, self.waist_radio_frame, self.legs_radio_frame, self.feet_radio_frame,]
+        if settype=="tp":
+            frames = [self.main_radio_frame_tp, self.sub_radio_frame_tp, self.ranged_radio_frame_tp, self.ammo_radio_frame_tp, self.head_radio_frame_tp, self.neck_radio_frame_tp, self.ear1_radio_frame_tp, self.ear2_radio_frame_tp, self.body_radio_frame_tp, self.hands_radio_frame_tp, self.ring1_radio_frame_tp, self.ring2_radio_frame_tp, self.back_radio_frame_tp, self.waist_radio_frame_tp, self.legs_radio_frame_tp, self.feet_radio_frame_tp,]
+        elif settype=="ws":
+            frames = [self.main_radio_frame_ws, self.sub_radio_frame_ws, self.ranged_radio_frame_ws, self.ammo_radio_frame_ws, self.head_radio_frame_ws, self.neck_radio_frame_ws, self.ear1_radio_frame_ws, self.ear2_radio_frame_ws, self.body_radio_frame_ws, self.hands_radio_frame_ws, self.ring1_radio_frame_ws, self.ring2_radio_frame_ws, self.back_radio_frame_ws, self.waist_radio_frame_ws, self.legs_radio_frame_ws, self.feet_radio_frame_ws,]
+        else:
+            frames = [self.main_radio_frame, self.sub_radio_frame, self.ranged_radio_frame, self.ammo_radio_frame, self.head_radio_frame, self.neck_radio_frame, self.ear1_radio_frame, self.ear2_radio_frame, self.body_radio_frame, self.hands_radio_frame, self.ring1_radio_frame, self.ring2_radio_frame, self.back_radio_frame, self.waist_radio_frame, self.legs_radio_frame, self.feet_radio_frame,]
+
         for frame in frames:
             frame.pack_forget()
         frame0.pack(fill=tk.BOTH, expand=1)
+        
         return
 
     def update_cbox_list(self, frame0):
@@ -3529,6 +5475,298 @@ class App(tk.Tk):
             if self.ws_name.get() not in self.ws_list:
                 self.ws_name.set(self.ws_list[0])
 
+# Update TP buttons marker
+    def update_buttons_tp(self, slot):
+        #
+        # Refresh the image and tooltip for one of the gear slot buttons.
+        #
+        if slot=="main":
+            # Update the displayed icon first
+            self.main_img_tp = self.item2image(eval(self.selected_main_tp.get())["Name"]) 
+            self.button_main_tp.configure(image=self.main_img_tp)
+            
+            # Update the tooltip next.
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_main_tp.get()))
+            self.maintip_tp = Hovertip(self.button_main_tp,new_tooltip,hover_delay=100)
+
+            # Unequip off-hand weapon/shield if equipping main-hand 2-handed weapon.
+            if (eval(self.selected_main_tp.get()).get("Skill Type","None") in ["Great Sword", "Great Katana", "Great Axe", "Polearm", "Scythe", "Staff", "Hand-to-Hand"]) and (eval(self.selected_sub_tp.get()).get("Type","None")!="Grip"):
+                self.sub_img_tp = self.item2image("Empty")
+                self.button_sub_tp.configure(image=self.sub_img_tp)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.subtip_tp = Hovertip(self.button_sub_tp,new_tooltip,hover_delay=100)
+                self.selected_sub_tp.set(Empty)
+
+            # Unequip off-hand grip if equipping main-hand 1-handed weapon.
+            if (eval(self.selected_main_tp.get()).get("Skill Type","None") in ["Axe", "Club", "Dagger", "Sword", "Katana",]) and (eval(self.selected_sub_tp.get()).get("Type","None")=="Grip"):
+                self.sub_img_tp = self.item2image("Empty")
+                self.button_sub_tp.configure(image=self.sub_img_tp)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.subtip_tp = Hovertip(self.button_sub_tp,new_tooltip,hover_delay=100)
+                self.selected_sub_tp.set(Empty)
+
+        elif slot=="sub":
+            self.sub_img_tp = self.item2image(eval(self.selected_sub_tp.get())["Name"]) 
+            self.button_sub_tp.configure(image=self.sub_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_sub_tp.get()))
+            self.subtip_tp = Hovertip(self.button_sub_tp,new_tooltip,hover_delay=100)
+        elif slot=="ranged":
+            self.ranged_img_tp = self.item2image(eval(self.selected_ranged_tp.get())["Name"]) 
+            self.button_ranged_tp.configure(image=self.ranged_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ranged_tp.get()))
+            self.rangedtip_tp = Hovertip(self.button_ranged_tp,new_tooltip,hover_delay=100)
+
+            # Unequip non-bullets when equipping a gun.
+            if (eval(self.selected_ranged_tp.get()).get("Type","None")=="Gun") and (eval(self.selected_ammo_tp.get()).get("Type","None")!="Bullet"):
+                self.ammo_img_tp = self.item2image("Empty")
+                self.button_ammo_tp.configure(image=self.ammo_img_tp)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.ammotip_tp = Hovertip(self.button_ammo_tp,new_tooltip,hover_delay=100)
+                self.selected_ammo_tp.set(Empty)
+            # Unequip non-arrows when equipping a bow.
+            if (eval(self.selected_ranged_tp.get()).get("Type","None")=="Bow") and (eval(self.selected_ammo_tp.get()).get("Type","None")!="Arrow"):
+                self.ammo_img_tp = self.item2image("Empty")
+                self.button_ammo_tp.configure(image=self.ammo_img_tp)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.ammotip_tp = Hovertip(self.button_ammo_tp,new_tooltip,hover_delay=100)
+                self.selected_ammo_tp.set(Empty)
+            # Unequip non-bolts when equipping a crossbow.
+            if (eval(self.selected_ranged_tp.get()).get("Type","None")=="Crossbow") and (eval(self.selected_ammo_tp.get()).get("Type","None")!="Bolt"):
+                self.ammo_img_tp = self.item2image("Empty")
+                self.button_ammo_tp.configure(image=self.ammo_img_tp)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.ammotip_tp = Hovertip(self.button_ammo_tp,new_tooltip,hover_delay=100)
+                self.selected_ammo_tp.set(Empty)
+
+
+        elif slot=="ammo":
+            self.ammo_img_tp = self.item2image(eval(self.selected_ammo_tp.get())["Name"]) 
+            self.button_ammo_tp.configure(image=self.ammo_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ammo_tp.get()))
+            self.ammotip_tp = Hovertip(self.button_ammo_tp,new_tooltip,hover_delay=100)
+        elif slot=="head":
+            self.head_img_tp = self.item2image(eval(self.selected_head_tp.get())["Name"]) 
+            self.button_head_tp.configure(image=self.head_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_head_tp.get()))
+            self.headtip_tp = Hovertip(self.button_head_tp,new_tooltip,hover_delay=100)
+            # Unequip the body slot when equipping headgear with a cloak equipped.
+            if ("Cloak" in eval(self.selected_body_tp.get())["Name"]) and (eval(self.selected_head_tp.get())["Name"]!="Empty"):
+                self.body_img_tp = self.item2image("Empty")
+                self.button_body_tp.configure(image=self.body_img_tp)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.bodytip_tp = Hovertip(self.button_head_tp,new_tooltip,hover_delay=100)
+                self.selected_body_tp.set(Empty)
+        elif slot=="neck":
+            self.neck_img_tp = self.item2image(eval(self.selected_neck_tp.get())["Name"]) 
+            self.button_neck_tp.configure(image=self.neck_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_neck_tp.get()))
+            self.necktip_tp = Hovertip(self.button_neck_tp,new_tooltip,hover_delay=100)
+        elif slot=="ear1":
+            self.ear1_img_tp = self.item2image(eval(self.selected_ear1_tp.get())["Name"]) 
+            self.button_ear1_tp.configure(image=self.ear1_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ear1_tp.get()))
+            self.ear1tip_tp = Hovertip(self.button_ear1_tp,new_tooltip,hover_delay=100)
+        elif slot=="ear2":
+            self.ear2_img_tp = self.item2image(eval(self.selected_ear2_tp.get())["Name"]) 
+            self.button_ear2_tp.configure(image=self.ear2_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ear2_tp.get()))
+            self.ear2tip_tp = Hovertip(self.button_ear2_tp,new_tooltip,hover_delay=100)
+        elif slot=="body":
+            self.body_img_tp = self.item2image(eval(self.selected_body_tp.get())["Name"]) 
+            self.button_body_tp.configure(image=self.body_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_body_tp.get()))
+            self.bodytip_tp = Hovertip(self.button_body_tp,new_tooltip,hover_delay=100)
+            # Unequip the head slot when equipping cloaks.
+            if ("Cloak" in eval(self.selected_body_tp.get())["Name"]):
+                self.head_img_tp = self.item2image("Empty")
+                self.button_head_tp.configure(image=self.head_img_tp)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.headtip_tp = Hovertip(self.button_head_tp,new_tooltip,hover_delay=100)
+                self.selected_head_tp.set(Empty)
+
+        elif slot=="hands":
+            self.hands_img_tp = self.item2image(eval(self.selected_hands_tp.get())["Name"]) 
+            self.button_hands_tp.configure(image=self.hands_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_hands_tp.get()))
+            self.handstip_tp = Hovertip(self.button_hands_tp,new_tooltip,hover_delay=100)
+        elif slot=="ring1":
+            self.ring1_img_tp = self.item2image(eval(self.selected_ring1_tp.get())["Name"]) 
+            self.button_ring1_tp.configure(image=self.ring1_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ring1_tp.get()))
+            self.ring1tip_tp = Hovertip(self.button_ring1_tp,new_tooltip,hover_delay=100)
+        elif slot=="ring2":
+            self.ring2_img_tp = self.item2image(eval(self.selected_ring2_tp.get())["Name"]) 
+            self.button_ring2_tp.configure(image=self.ring2_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ring2_tp.get()))
+            self.ring2tip_tp = Hovertip(self.button_ring2_tp,new_tooltip,hover_delay=100)
+        elif slot=="back":
+            self.back_img_tp = self.item2image(eval(self.selected_back_tp.get())["Name"]) 
+            self.button_back_tp.configure(image=self.back_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_back_tp.get()))
+            self.backtip_tp = Hovertip(self.button_back_tp,new_tooltip,hover_delay=100)
+        elif slot=="waist":
+            self.waist_img_tp = self.item2image(eval(self.selected_waist_tp.get())["Name"]) 
+            self.button_waist_tp.configure(image=self.waist_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_waist_tp.get()))
+            self.waisttip_tp = Hovertip(self.button_waist_tp,new_tooltip,hover_delay=100)
+        elif slot=="legs":
+            self.legs_img_tp = self.item2image(eval(self.selected_legs_tp.get())["Name"]) 
+            self.button_legs_tp.configure(image=self.legs_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_legs_tp.get()))
+            self.legstip_tp = Hovertip(self.button_legs_tp,new_tooltip,hover_delay=100)
+        elif slot=="feet":
+            self.feet_img_tp = self.item2image(eval(self.selected_feet_tp.get())["Name"]) 
+            self.button_feet_tp.configure(image=self.feet_img_tp)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_feet_tp.get()))
+            self.feettip_tp = Hovertip(self.button_feet_tp,new_tooltip,hover_delay=100)
+
+    def update_buttons_ws(self, slot):
+        #
+        # Refresh the image and tooltip for one of the gear slot buttons.
+        #
+        if slot=="main":
+            # Update the displayed icon first
+            self.main_img_ws = self.item2image(eval(self.selected_main_ws.get())["Name"]) 
+            self.button_main_ws.configure(image=self.main_img_ws)
+            
+            # Update the tooltip next.
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_main_ws.get()))
+            self.maintip_ws = Hovertip(self.button_main_ws,new_tooltip,hover_delay=100)
+
+            # Unequip off-hand weapon/shield if equipping main-hand 2-handed weapon.
+            if (eval(self.selected_main_ws.get()).get("Skill Type","None") in ["Great Sword", "Great Katana", "Great Axe", "Polearm", "Scythe", "Staff", "Hand-to-Hand"]) and (eval(self.selected_sub_ws.get()).get("Type","None")!="Grip"):
+                self.sub_img_ws = self.item2image("Empty")
+                self.button_sub_ws.configure(image=self.sub_img_ws)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.subtip_ws = Hovertip(self.button_sub_ws,new_tooltip,hover_delay=100)
+                self.selected_sub_ws.set(Empty)
+
+            # Unequip off-hand grip if equipping main-hand 1-handed weapon.
+            if (eval(self.selected_main_ws.get()).get("Skill Type","None") in ["Axe", "Club", "Dagger", "Sword", "Katana",]) and (eval(self.selected_sub_ws.get()).get("Type","None")=="Grip"):
+                self.sub_img_ws = self.item2image("Empty")
+                self.button_sub_ws.configure(image=self.sub_img_ws)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.subtip_ws = Hovertip(self.button_sub_ws,new_tooltip,hover_delay=100)
+                self.selected_sub_ws.set(Empty)
+
+        elif slot=="sub":
+            self.sub_img_ws = self.item2image(eval(self.selected_sub_ws.get())["Name"]) 
+            self.button_sub_ws.configure(image=self.sub_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_sub_ws.get()))
+            self.subtip_ws = Hovertip(self.button_sub_ws,new_tooltip,hover_delay=100)
+        elif slot=="ranged":
+            self.ranged_img_ws = self.item2image(eval(self.selected_ranged_ws.get())["Name"]) 
+            self.button_ranged_ws.configure(image=self.ranged_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ranged_ws.get()))
+            self.rangedtip_ws = Hovertip(self.button_ranged_ws,new_tooltip,hover_delay=100)
+
+            # Unequip non-bullets when equipping a gun.
+            if (eval(self.selected_ranged_ws.get()).get("Type","None")=="Gun") and (eval(self.selected_ammo_ws.get()).get("Type","None")!="Bullet"):
+                self.ammo_img_ws = self.item2image("Empty")
+                self.button_ammo_ws.configure(image=self.ammo_img_ws)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.ammotip_ws = Hovertip(self.button_ammo_ws,new_tooltip,hover_delay=100)
+                self.selected_ammo_ws.set(Empty)
+            # Unequip non-arrows when equipping a bow.
+            if (eval(self.selected_ranged_ws.get()).get("Type","None")=="Bow") and (eval(self.selected_ammo_ws.get()).get("Type","None")!="Arrow"):
+                self.ammo_img_ws = self.item2image("Empty")
+                self.button_ammo_ws.configure(image=self.ammo_img_ws)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.ammotip_ws = Hovertip(self.button_ammo_ws,new_tooltip,hover_delay=100)
+                self.selected_ammo_ws.set(Empty)
+            # Unequip non-bolts when equipping a crossbow.
+            if (eval(self.selected_ranged_ws.get()).get("Type","None")=="Crossbow") and (eval(self.selected_ammo_ws.get()).get("Type","None")!="Bolt"):
+                self.ammo_img_ws = self.item2image("Empty")
+                self.button_ammo_ws.configure(image=self.ammo_img_ws)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.ammotip_ws = Hovertip(self.button_ammo_ws,new_tooltip,hover_delay=100)
+                self.selected_ammo_ws.set(Empty)
+
+
+        elif slot=="ammo":
+            self.ammo_img_ws = self.item2image(eval(self.selected_ammo_ws.get())["Name"]) 
+            self.button_ammo_ws.configure(image=self.ammo_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ammo_ws.get()))
+            self.ammotip_ws = Hovertip(self.button_ammo_ws,new_tooltip,hover_delay=100)
+        elif slot=="head":
+            self.head_img_ws = self.item2image(eval(self.selected_head_ws.get())["Name"]) 
+            self.button_head_ws.configure(image=self.head_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_head_ws.get()))
+            self.headtip_ws = Hovertip(self.button_head_ws,new_tooltip,hover_delay=100)
+            # Unequip the body slot when equipping headgear with a cloak equipped.
+            if ("Cloak" in eval(self.selected_body_ws.get())["Name"]) and (eval(self.selected_head_ws.get())["Name"]!="Empty"):
+                self.body_img_ws = self.item2image("Empty")
+                self.button_body_ws.configure(image=self.body_img_ws)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.bodytip_ws = Hovertip(self.button_head_ws,new_tooltip,hover_delay=100)
+                self.selected_body_ws.set(Empty)
+        elif slot=="neck":
+            self.neck_img_ws = self.item2image(eval(self.selected_neck_ws.get())["Name"]) 
+            self.button_neck_ws.configure(image=self.neck_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_neck_ws.get()))
+            self.necktip_ws = Hovertip(self.button_neck_ws,new_tooltip,hover_delay=100)
+        elif slot=="ear1":
+            self.ear1_img_ws = self.item2image(eval(self.selected_ear1_ws.get())["Name"]) 
+            self.button_ear1_ws.configure(image=self.ear1_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ear1_ws.get()))
+            self.ear1tip_ws = Hovertip(self.button_ear1_ws,new_tooltip,hover_delay=100)
+        elif slot=="ear2":
+            self.ear2_img_ws = self.item2image(eval(self.selected_ear2_ws.get())["Name"]) 
+            self.button_ear2_ws.configure(image=self.ear2_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ear2_ws.get()))
+            self.ear2tip_ws = Hovertip(self.button_ear2_ws,new_tooltip,hover_delay=100)
+        elif slot=="body":
+            self.body_img_ws = self.item2image(eval(self.selected_body_ws.get())["Name"]) 
+            self.button_body_ws.configure(image=self.body_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_body_ws.get()))
+            self.bodytip_ws = Hovertip(self.button_body_ws,new_tooltip,hover_delay=100)
+            # Unequip the head slot when equipping cloaks.
+            if ("Cloak" in eval(self.selected_body_ws.get())["Name"]):
+                self.head_img_ws = self.item2image("Empty")
+                self.button_head_ws.configure(image=self.head_img_ws)
+                new_tooltip = self.format_tooltip_stats(Empty)
+                self.headtip_ws = Hovertip(self.button_head_ws,new_tooltip,hover_delay=100)
+                self.selected_head_ws.set(Empty)
+
+        elif slot=="hands":
+            self.hands_img_ws = self.item2image(eval(self.selected_hands_ws.get())["Name"]) 
+            self.button_hands_ws.configure(image=self.hands_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_hands_ws.get()))
+            self.handstip_ws = Hovertip(self.button_hands_ws,new_tooltip,hover_delay=100)
+        elif slot=="ring1":
+            self.ring1_img_ws = self.item2image(eval(self.selected_ring1_ws.get())["Name"]) 
+            self.button_ring1_ws.configure(image=self.ring1_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ring1_ws.get()))
+            self.ring1tip_ws = Hovertip(self.button_ring1_ws,new_tooltip,hover_delay=100)
+        elif slot=="ring2":
+            self.ring2_img_ws = self.item2image(eval(self.selected_ring2_ws.get())["Name"]) 
+            self.button_ring2_ws.configure(image=self.ring2_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_ring2_ws.get()))
+            self.ring2tip_ws = Hovertip(self.button_ring2_ws,new_tooltip,hover_delay=100)
+        elif slot=="back":
+            self.back_img_ws = self.item2image(eval(self.selected_back_ws.get())["Name"]) 
+            self.button_back_ws.configure(image=self.back_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_back_ws.get()))
+            self.backtip_ws = Hovertip(self.button_back_ws,new_tooltip,hover_delay=100)
+        elif slot=="waist":
+            self.waist_img_ws = self.item2image(eval(self.selected_waist_ws.get())["Name"]) 
+            self.button_waist_ws.configure(image=self.waist_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_waist_ws.get()))
+            self.waisttip_ws = Hovertip(self.button_waist_ws,new_tooltip,hover_delay=100)
+        elif slot=="legs":
+            self.legs_img_ws = self.item2image(eval(self.selected_legs_ws.get())["Name"]) 
+            self.button_legs_ws.configure(image=self.legs_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_legs_ws.get()))
+            self.legstip_ws = Hovertip(self.button_legs_ws,new_tooltip,hover_delay=100)
+        elif slot=="feet":
+            self.feet_img_ws = self.item2image(eval(self.selected_feet_ws.get())["Name"]) 
+            self.button_feet_ws.configure(image=self.feet_img_ws)
+            new_tooltip = self.format_tooltip_stats(eval(self.selected_feet_ws.get()))
+            self.feettip_ws = Hovertip(self.button_feet_ws,new_tooltip,hover_delay=100)
+
+
+
+
     def format_tooltip_stats(self, item):
         #
         # Given a dictionary containing an item's stats, create a tooltip string to display with that item's icon
@@ -3601,7 +5839,7 @@ class App(tk.Tk):
                                     [self.natures_meditation_toggle, self.natures_meditation_value,"blu",0],
                                     [self.overwhelm_toggle, self.overwhelm_value,"sam",999],
                                     [self.saber_dance_toggle, self.saber_dance_value,"dnc",999],[self.sange_toggle, self.sange_value,"nin",999], [self.sharpshot_toggle, self.sharpshot_value,"rng",0],[self.sneak_attack_toggle, self.sneak_attack_value,"thf",0], [self.striking_flourish_toggle, self.striking_flourish_value,"dnc",999],[self.swordplay_toggle, self.swordplay_value,"run",0], 
-                                    [self.ternary_flourish_toggle, self.ternary_flourish_value,"dnc",999], [self.theurgic_focus_toggle, self.theurgic_focus_value,"geo",999],[self.trick_attack_toggle, self.trick_attack_value,"thf",0],[self.triple_shot_toggle, self.triple_shot_value,"cor",999],
+                                    [self.ternary_flourish_toggle, self.ternary_flourish_value,"dnc",999], [self.temper1_toggle, self.temper1_value,"run",999], [self.temper2_toggle, self.temper2_value,"rdm",999],[self.theurgic_focus_toggle, self.theurgic_focus_value,"geo",999],[self.trick_attack_toggle, self.trick_attack_value,"thf",0],[self.triple_shot_toggle, self.triple_shot_value,"cor",999],
                                     [self.velocity_shot_toggle, self.velocity_shot_value,"rng",999], 
                                     [self.warcry_toggle, self.warcry_value,"war",0],]
 
@@ -3616,29 +5854,62 @@ class App(tk.Tk):
                 k[1].set(False)
                 k[0].grid_forget()
 
-                mb_jobs = ["whm","blm","rdm","pld","drk","nin","blu","sch","geo"] # Magic Burst jobs
-                ts_jobs = ["rng","cor"] # True Shot jobs
-                if self.mainjob.get().lower() in mb_jobs or self.subjob.get().lower() in mb_jobs:
-                    self.magic_burst_toggle.grid(row=2,column=0,sticky="n")
-                else:
-                    self.magic_burst_toggle.grid_forget()
-                    self.magic_burst_value.set(False)
-                if self.mainjob.get().lower() in ts_jobs or self.subjob.get().lower() in ts_jobs:
-                    self.true_shot_toggle.grid(row=3,column=0,sticky="n")
-                else:
-                    self.true_shot_toggle.grid_forget()
-                    self.true_shot_value.set(False)
-
-                self.angon_value.set(False) # All jobs can use Angon, but disable it when swapping jobs just to be consistent.
-                self.angon_toggle.grid(row=0,column=0,sticky="n")
-
-                self.distract3_value.set(False) 
-                self.distract3_toggle.grid(row=1,column=0,sticky="n")
-
-
                 # Re-display checkboxes that can be used by the selected main/subjob combination
                 if (k[2].upper()==self.mainjob.get()) or (k[2].upper()==self.subjob.get() and int(self.masterlevel.get())>=k[3]):
-                    k[0].grid(row=i+2,column=0,sticky="n")
+                    k[0].grid(row=i+4,column=0,sticky="n") # Update this i+4 for each permanent checkbox added. Right now we have MB, TS, Distract3, Angon, so we use +4
+
+            mb_jobs = ["whm","blm","rdm","pld","drk","nin","blu","sch","geo"] # Magic Burst jobs
+            ts_jobs = ["rng","cor"] # True Shot jobs
+            if self.mainjob.get().lower() in mb_jobs or self.subjob.get().lower() in mb_jobs:
+                self.magic_burst_toggle.grid(row=2,column=0,sticky="n")
+            else:
+                self.magic_burst_toggle.grid_forget()
+                self.magic_burst_value.set(False)
+            if self.mainjob.get().lower() in ts_jobs or self.subjob.get().lower() in ts_jobs:
+                self.true_shot_toggle.grid(row=3,column=0,sticky="n")
+            else:
+                self.true_shot_toggle.grid_forget()
+                self.true_shot_value.set(False)
+
+            self.angon_value.set(False) # All jobs can use Angon, but disable it when swapping jobs just to be consistent.
+            self.angon_toggle.grid(row=0,column=0,sticky="n")
+
+            self.distract3_value.set(False) 
+            self.distract3_toggle.grid(row=1,column=0,sticky="n")
+
+
+
+            # Swap Boost-spells for Gain-spells when using RDM main.
+            if self.mainjob.get().lower() == "rdm":
+                self.current_boost = self.whm_spell3.get()
+                self.new_boost = self.current_boost.replace("Boost","Gain")
+                self.whm_stat_spells = ["None"] + ["Gain-STR","Gain-DEX","Gain-VIT","Gain-AGI","Gain-INT","Gain-MND","Gain-CHR"]
+                self.whm_spell3 = tk.StringVar(value=self.new_boost)
+                self.whm_combo3 = ttk.Combobox(self.whm_frame, values=self.whm_stat_spells, textvariable=self.whm_spell3,state="readonly")
+                self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2)
+            else:
+                self.current_boost = self.whm_spell3.get()
+                self.new_boost = self.current_boost.replace("Gain","Boost")
+                self.whm_stat_spells = ["None"] + ["Boost-STR","Boost-DEX","Boost-VIT","Boost-AGI","Boost-INT","Boost-MND","Boost-CHR"]
+                self.whm_spell3 = tk.StringVar(value=self.new_boost)
+                self.whm_combo3 = ttk.Combobox(self.whm_frame, values=self.whm_stat_spells, textvariable=self.whm_spell3,state="readonly")
+                self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2)
+
+            if self.mainjob.get().lower() == "rdm":
+                self.enh_skill.set(value=650)
+            elif self.mainjob.get().lower() == "run":
+                self.enh_skill.set(value=570)
+            elif self.mainjob.get().lower() == "drk":
+                self.enh_skill.set(value=600)
+            elif self.mainjob.get().lower() == "pld":
+                self.enh_skill.set(value=600)
+            else:
+                self.enh_skill.set(value=500)
+                
+            if self.mainjob.get().lower() == "rdm":
+                self.temper2_value.set(True)
+            if self.mainjob.get().lower() == "run":
+                self.temper1_value.set(True)
 
 
         # Climactic/Striking/Ternary flourishes can not exist together. Disable the others when one is enabled.
@@ -3666,6 +5937,98 @@ class App(tk.Tk):
 
         # # Update the scroll region of the box
         # self.ja_canvas.configure(scrollregion=self.ja_canvas.bbox("all"))
+
+
+# ==========================================================================================
+# Copy the displayed input tab gearset to either the TP set or WS set in the Simulations tab
+    def copy_to(self, settype):
+        
+        slots = ["main","sub","ranged","ammo","head","neck","ear1","ear2","body","hands","ring1","ring2","back","waist","legs","feet"]
+        if settype=="tp":
+            # Change the radio-button selections for the TP set to match the inputs tab set, then run update_buttons_tp to update the button image and tooltip
+            self.selected_main_tp.set(self.selected_main.get())
+            self.selected_sub_tp.set(self.selected_sub.get())
+            self.selected_ranged_tp.set(self.selected_ranged.get())
+            self.selected_ammo_tp.set(self.selected_ammo.get())
+            self.selected_head_tp.set(self.selected_head.get())
+            self.selected_neck_tp.set(self.selected_neck.get())
+            self.selected_ear1_tp.set(self.selected_ear1.get())
+            self.selected_ear2_tp.set(self.selected_ear2.get())
+            self.selected_body_tp.set(self.selected_body.get())
+            self.selected_hands_tp.set(self.selected_hands.get())
+            self.selected_ring1_tp.set(self.selected_ring1.get())
+            self.selected_ring2_tp.set(self.selected_ring2.get())
+            self.selected_back_tp.set(self.selected_back.get())
+            self.selected_waist_tp.set(self.selected_waist.get())
+            self.selected_legs_tp.set(self.selected_legs.get())
+            self.selected_feet_tp.set(self.selected_feet.get())
+            for slot in slots:
+                self.update_buttons_tp(slot)
+            self.notebook.select(self.sim_tab)
+
+        elif settype=="ws":
+            # Change the radio-button selections for the WS set to match the inputs tab set, then run update_buttons_ws to update the button image and tooltip
+            self.selected_main_ws.set(self.selected_main.get())
+            self.selected_sub_ws.set(self.selected_sub.get())
+            self.selected_ranged_ws.set(self.selected_ranged.get())
+            self.selected_ammo_ws.set(self.selected_ammo.get())
+            self.selected_head_ws.set(self.selected_head.get())
+            self.selected_neck_ws.set(self.selected_neck.get())
+            self.selected_ear1_ws.set(self.selected_ear1.get())
+            self.selected_ear2_ws.set(self.selected_ear2.get())
+            self.selected_body_ws.set(self.selected_body.get())
+            self.selected_hands_ws.set(self.selected_hands.get())
+            self.selected_ring1_ws.set(self.selected_ring1.get())
+            self.selected_ring2_ws.set(self.selected_ring2.get())
+            self.selected_back_ws.set(self.selected_back.get())
+            self.selected_waist_ws.set(self.selected_waist.get())
+            self.selected_legs_ws.set(self.selected_legs.get())
+            self.selected_feet_ws.set(self.selected_feet.get())
+            for slot in slots:
+                self.update_buttons_ws(slot)
+            self.notebook.select(self.sim_tab)
+
+        elif settype=="ws2main":
+            self.selected_main.set(self.selected_main_ws.get())
+            self.selected_sub.set(self.selected_sub_ws.get())
+            self.selected_ranged.set(self.selected_ranged_ws.get())
+            self.selected_ammo.set(self.selected_ammo_ws.get())
+            self.selected_head.set(self.selected_head_ws.get())
+            self.selected_neck.set(self.selected_neck_ws.get())
+            self.selected_ear1.set(self.selected_ear1_ws.get())
+            self.selected_ear2.set(self.selected_ear2_ws.get())
+            self.selected_body.set(self.selected_body_ws.get())
+            self.selected_hands.set(self.selected_hands_ws.get())
+            self.selected_ring1.set(self.selected_ring1_ws.get())
+            self.selected_ring2.set(self.selected_ring2_ws.get())
+            self.selected_back.set(self.selected_back_ws.get())
+            self.selected_waist.set(self.selected_waist_ws.get())
+            self.selected_legs.set(self.selected_legs_ws.get())
+            self.selected_feet.set(self.selected_feet_ws.get())
+            for slot in slots:
+                self.update_buttons(slot)
+            self.notebook.select(self.inputs_tab)
+        elif settype=="tp2main":
+            self.selected_main.set(self.selected_main_tp.get())
+            self.selected_sub.set(self.selected_sub_tp.get())
+            self.selected_ranged.set(self.selected_ranged_tp.get())
+            self.selected_ammo.set(self.selected_ammo_tp.get())
+            self.selected_head.set(self.selected_head_tp.get())
+            self.selected_neck.set(self.selected_neck_tp.get())
+            self.selected_ear1.set(self.selected_ear1_tp.get())
+            self.selected_ear2.set(self.selected_ear2_tp.get())
+            self.selected_body.set(self.selected_body_tp.get())
+            self.selected_hands.set(self.selected_hands_tp.get())
+            self.selected_ring1.set(self.selected_ring1_tp.get())
+            self.selected_ring2.set(self.selected_ring2_tp.get())
+            self.selected_back.set(self.selected_back_tp.get())
+            self.selected_waist.set(self.selected_waist_tp.get())
+            self.selected_legs.set(self.selected_legs_tp.get())
+            self.selected_feet.set(self.selected_feet_tp.get())
+            for slot in slots:
+                self.update_buttons(slot)
+            self.notebook.select(self.inputs_tab)
+
 
 if __name__ == "__main__":
     from create_player import *

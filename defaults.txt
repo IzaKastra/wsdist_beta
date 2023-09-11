@@ -3,10 +3,12 @@ ml=50
 mainjob=BRD
 subjob=NIN
 aftermath=0
+
 mintp=1000
 maxtp=1500
 spell=None
 ws=Savage Blade
+
 initialtp=0
 odyrank=30
 tvrring=Lehko Habhoka's
@@ -62,6 +64,7 @@ elocation=Hyrule
 elevel=1
 eevasion=1
 edevense=1
+
 emagicevasion=0
 emagicdefense=0
 eagi=1
@@ -87,6 +90,41 @@ back=Intarabus's Cape DEX DA
 waist=Shetal Stone
 legs=Volte Tights
 feet=Ayanmo Gambieras +2
+
+
+# Simulation inputs
+tp_main=Heishi Shorinken R15
+tp_sub=Crepuscular Knife
+tp_ranged=Empty
+tp_ammo=Seki Shuriken
+tp_head=Malignance Chapeau
+tp_neck=Ninja Nodowa +2 R25
+tp_ear1=Dedition Earring
+tp_ear2=Telos Earring
+tp_body=Mpaca's Doublet R25
+tp_hands=Malignance Gloves
+tp_ring1=Gere Ring
+tp_ring2=Lehko Habhoka's ring
+tp_back=Andartia's Mantle AGI Store TP (Ranged)
+tp_waist=Windbuffet Belt +1
+tp_legs=Samnuha Tights
+tp_feet=Malignance Boots
+ws_main=Heishi Shorinken R15
+ws_sub=Crepuscular Knife
+ws_ranged=Empty
+ws_ammo=Seeth. Bomblet +1 R15
+ws_head=Mpaca's Cap R25
+ws_neck=Republican Platinum Medal
+ws_ear1=Moonshade Earring
+ws_ear2=Lugra Earring +1 R15 (day)
+ws_body=Nyame Mail R25B
+ws_hands=Nyame Gauntlets R25B
+ws_ring1=Gere Ring
+ws_ring2=Regal Ring
+ws_back=Andartia's Mantle STR Weapon Skill Damage
+ws_waist=Sailfi Belt +1 R15
+ws_legs=Nyame Flanchard R25B
+ws_feet=Hattori Kyahan +3
 
 # Window size:  widthxheight
 dimensions=1210x1010
