@@ -1,12 +1,12 @@
 # Basic inputs
-ml=35
-mainjob=NIN
-subjob=WAR
+ml=50
+mainjob=BRD
+subjob=NIN
 aftermath=0
-mintp=1500
+mintp=1000
 maxtp=1500
-spell=Doton: Ichi
-ws=Blade: Ten
+spell=None
+ws=Savage Blade
 initialtp=0
 odyrank=30
 tvrring=Lehko Habhoka's
@@ -18,8 +18,8 @@ mdtreq=0
 
 # WHM inputs
 whm=True
-shell5=True
-dia=Dia II
+shell5=False
+dia=Dia III
 haste=Haste II
 boost=None
 storm=None
@@ -36,14 +36,14 @@ marcato=False
 soulvoice=False
 
 # COR inputs
-cor=True
+cor=False
 nrolls=Rolls +7
 roll1value=X
 roll1=Chaos
 roll2v=IX
 roll2=Samurai
-crookedcards=True
-jobbonus=True
+crookedcards=False
+jobbonus=False
 lightshot=False
 
 # GEO inputs
@@ -57,36 +57,36 @@ blaze=False
 bolster=False
 
 # Enemy inputs
-ename=Lugcrawler Hunter
-elocation=Crawler's Nest [S]
-elevel=138
-eevasion=1314
-edevense=1446
+ename=Octorok
+elocation=Hyrule
+elevel=1
+eevasion=1
+edevense=1
 emagicevasion=0
 emagicdefense=0
-eagi=346
-evit=325
-eint=284
-emnd=284
+eagi=1
+evit=1
+eint=1
+emnd=1
 
 # Equipment and food inputs
 food=Grape Daifuku
-main=Heishi Shorinken R15
-sub=Crepuscular Knife
+main=Naegling
+sub=Centovente2
 ranged=Empty
-ammo=Seki Shuriken
-head=Malignance Chapeau
-neck=Ninja Nodowa +2 R25
-ear1=Dedition Earring
-ear2=Telos Earring
-body=Tatenashi Haramaki +1 R15
-hands=Malignance Gloves
-ring1=Gere Ring
-ring2=Epona's Ring
-back=Andartia's Mantle DEX Store TP
-waist=Sailfi Belt +1 R15
-legs=Samnuha Tights
-feet=Malignance Boots
+ammo=Coiste Bodhar R0
+head=Ayanmo Zucchetto +2
+neck=Bard's Charm R15
+ear1=Brutal Earring
+ear2=Suppanomimi
+body=Ayanmo Corazza +2
+hands=Bunzi's Gloves R
+ring1=Lehko Habhoka's ring
+ring2=Rajas Ring
+back=Intarabus's Cape DEX DA
+waist=Shetal Stone
+legs=Volte Tights
+feet=Ayanmo Gambieras +2
 
 # Window size:  widthxheight
-dimensions=700x885
+dimensions=1210x1010
