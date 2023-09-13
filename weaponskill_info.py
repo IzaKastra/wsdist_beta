@@ -326,11 +326,11 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = False
         wsc = 0.8*player_agi
         nhits = 1
-    elif ws_name == "Zesho Meppo":
-        base_ftp = [1, 2, 3] 
+    elif ws_name == "Zesho Meppo":  # https://www.ffxiah.com/forum/topic/57318/prime-ws-information-testing-discussion/27/#3677860
+        base_ftp = [4.0, 10.0, 18.715] 
         ftp = np.interp(tp, base_tp, base_ftp)
-        ftp_rep = True 
-        wsc = 0.0*player_dex 
+        ftp_rep = False
+        wsc = 0.25*(player_dex + player_agi)
         nhits = 4
 
 
@@ -975,7 +975,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         crit_rate += crit_bonus
         crit_rate += get_dex_crit(player_dex, enemy_agi)
         ftp = 1.0
-        ftp_rep = True
+        ftp_rep = False
         wsc = 0.5*player_str
         nhits = 3
     elif ws_name == "Full Break":
