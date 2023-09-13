@@ -67,7 +67,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                     "Coronach":"Annihilator",
                     "Fast Blade II":"Onion Sword III",
                     "Imperator":"Caliburnus",
-                    "Jijin Kaimetsu":"Dokoku",
+                    "Zesho Meppo":"Dokoku",
                     "Terminus":"Earp",
                     "Origin":"Foenaria",
                     "Diarmuid":"Gae Buide",
@@ -335,7 +335,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                                 print(f"Unknown action_type  ({action_type})")
                                 import sys; sys.exit()
 
-                            metric = 0.01 if metric <= 0 else metric # Prevent divide-by-zero errors
+                            metric = 0.0001 if metric <= 0 else metric # Prevent divide-by-zero errors
                             if (metric > best_metric):
                                 if item1==item2:
                                     print(f"[{slot1:<15s}]: [{best_set[slot1]['Name2']} ->  {item1['Name2']}   [{best_metric**invert:>{nondecimals}.{decimals}f} -> {metric**invert:>{nondecimals}.{decimals}f}]")
