@@ -10588,9 +10588,6 @@
 21530;Tokkosho;Tokkosho
 21531;Prime Fists;Prime Fists
 21532;Varga Purnikawa;Varga Purnikawa
-21533;Varga Purnikawa;Varga Purnikawa
-21534;Varga Purnikawa;Varga Purnikawa
-21535;Varga Purnikawa;Varga Purnikawa
 21554;arasy knife;Arasy Knife
 21555;arasy knife +1;Arasy Knife +1
 21556;beryllium kris;Beryllium Kris
@@ -10623,9 +10620,6 @@
 21585;crepuscular knife;Crepuscular Knife
 21586;Prime Dagger;Prime Dagger
 21587;Mpu Gandring;Mpu Gandring
-21588;Mpu Gandring;Mpu Gandring
-21589;Mpu Gandring;Mpu Gandring
-21590;Mpu Gandring;Mpu Gandring
 21604;arasy sword;Arasy Sword
 21605;arasy sword +1;Arasy Sword +1
 21606;enriching sword;Enriching Sword
@@ -10662,14 +10656,8 @@
 21641;Save the Queen III;Save the Queen III
 21642;Prime Sword;Prime Sword
 21643;Caliburnus;Caliburnus
-21644;Caliburnus;Caliburnus
-21645;Caliburnus;Caliburnus
-21646;Caliburnus;Caliburnus
 21649;Helheim;Helheim
 21650;Prime Blade;Prime Blade
-21651;Helheim;Helheim
-21652;Helheim;Helheim
-21653;Helheim;Helheim
 21654;arasy claymore;Arasy Claymore
 21655;arasy claymore +1;Arasy Claymore +1
 21656;Dyrnwyn;Dyrnwyn
@@ -10737,9 +10725,6 @@
 21725;malefic axe;Malefic Axe
 21726;Prime Pickaxe;Prime Pickaxe
 21727;Spalirisos;Spalirisos
-21728;Spalirisos;Spalirisos
-21729;Spalirisos;Spalirisos
-21730;Spalirisos;Spalirisos
 21741;demonic axe;Demonic Axe
 21742;Aern axe;Aern Axe
 21743;aern axe II;Aern Axe II
@@ -10780,9 +10765,6 @@
 21780;Bunzi's chopper;Bunzi's Chopper
 21781;Prime Great Axe;Prime Great Axe
 21782;Laphria;Laphria
-21783;Laphria;Laphria
-21784;Laphria;Laphria
-21785;Laphria;Laphria
 21804;Obschine;Obschine
 21805;pixquizpan;Pixquizpan
 21806;pixquizpan +1;Pixquizpan +1
@@ -10812,9 +10794,6 @@
 21832;Agwu's scythe;Agwu's Scythe
 21833;Prime Scythe;Prime Scythe
 21834;Foenaria;Foenaria
-21835;Foenaria;Foenaria
-21836;Foenaria;Foenaria
-21837;Foenaria;Foenaria
 21854;Reienkyo;Reienkyo
 21855;Lembing;Lembing
 21856;Geirrothr;Geirrothr
@@ -10847,9 +10826,6 @@
 21886;Iapetus;Iapetus
 21887;Prime Lance;Prime Lance
 21888;Gae Buide;Gae Buide
-21889;Gae Buide;Gae Buide
-21890;Gae Buide;Gae Buide
-21891;Gae Buide;Gae Buide
 21904;Kanaria;Kanaria
 21905;Taka;Taka
 21906;Kikoku;Kikoku
@@ -10873,9 +10849,6 @@
 21927;Yagyu Darkblade;Yagyu Darkblade
 21928;Genshitanto;Genshitanto
 21929;Dokoku;Dokoku
-21930;Dokoku;Dokoku
-21931;Dokoku;Dokoku
-21932;Dokoku;Dokoku
 21954;Amanomurakumo;Amanomurakumo
 21955;Kogarasumaru;Kogarasumaru
 21956;Masamune;Masamune
@@ -10902,14 +10875,8 @@
 21981;Mutsu-no-Kami Yoshiyuki;Mutsu. Yoshi.
 21982;Genshito;Genshito
 21983;Kusanagi-no-Tsurugi;Kusanagi
-21984;Kusanagi-no-Tsurugi;Kusanagi
-21985;Kusanagi-no-Tsurugi;Kusanagi
-21986;Kusanagi-no-Tsurugi;Kusanagi
 21998;Lorg Mor;Lorg Mor
 21999;Prime Maul;Prime Maul
-22000;Lorg Mor;Lorg Mor
-22001;Lorg Mor;Lorg Mor
-22002;Lorg Mor;Lorg Mor
 22004;soulflayer's wand;Soulflayer's Wand
 22005;burrower's wand;Burrower's Wand
 22006;Voluspa hammer;Voluspa Hammer
@@ -10998,9 +10965,6 @@
 22101;pandit's staff;Pandit's Staff
 22102;Prime Staff;Prime Staff
 22103;Opashoro;Opashoro
-22104;Opashoro;Opashoro
-22105;Opashoro;Opashoro
-22106;Opashoro;Opashoro
 22107;Ullr;Ullr
 22108;tokko bow;Tokko Bow
 22109;ajja bow;Ajja Bow
@@ -11050,14 +11014,8 @@
 22154;silver gun +1;Silver Gun +1
 22155;Prime Bow;Prime Bow
 22156;Pinaka;Pinaka
-22157;Pinaka;Pinaka
-22158;Pinaka;Pinaka
 22159;Prime Gun;Prime Gun
 22160;Earp;Earp
-22161;Earp;Earp
-22162;Earp;Earp
-22163;Pinaka;Pinaka
-22164;Earp;Earp
 22195;flanged grip;Flanged Grip
 22196;alber strap;Alber Strap
 22197;niobid strap;Niobid Strap
