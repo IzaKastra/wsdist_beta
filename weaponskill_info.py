@@ -74,6 +74,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep  = False
         wsc      = 0.4*(player_str + player_dex) # Stat modifiers, including things like Utu Grip if applicable.
         nhits    = 2
+        sc = ["Scission"]
     elif ws_name == "Burning Blade":
         base_ftp = [1.0, 2.09765625, 3.3984375]
         ftp = np.interp(tp, base_tp, base_ftp)
@@ -83,6 +84,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         magical = True
         element = "Fire"
         dSTAT = 32 if (player_int - enemy_int)/2 + 8 > 32 else (player_int - enemy_int)/2 + 8
+        sc = ["Liquifaction"]
     elif ws_name == "Red Lotus Blade":
         base_ftp = [1.0, 2.3828125, 3.75]
         ftp = np.interp(tp, base_tp, base_ftp)
@@ -92,6 +94,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         magical = True
         element = "Fire"
         dSTAT = 32 if (player_int - enemy_int)/2 + 8 > 32 else (player_int - enemy_int)/2 + 8
+        sc = ["Liquifaction","Detonation"]
     elif ws_name == "Shining Blade":
         base_ftp = [1.125, 2.22265625, 3.5234375] 
         ftp = np.interp(tp, base_tp, base_ftp)
@@ -101,6 +104,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         magical = True
         element = "Light"
         dSTAT = 0
+        sc = ["Scission"]
     elif ws_name == "Seraph Blade":
         base_ftp = [1.125, 2.625, 4.125] 
         ftp = np.interp(tp, base_tp, base_ftp)
@@ -110,11 +114,13 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         magical = True
         element = "Light"
         dSTAT = 0
+        sc = ["Scission"]
     elif ws_name == "Circle Blade":
         ftp  = 1.0
         ftp_rep = False
         wsc = 1.0*player_str
         nhits = 1
+        sc = ["Reverberation","Impaction"]
     elif ws_name == "Swift Blade":
         acc_boost = [0, 20, 40] # I made these numbers up since I could not find published testing results.
         acc_bonus = np.interp(tp, base_tp, acc_boost)
@@ -124,12 +130,14 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = True
         wsc = 0.5*(player_str + player_mnd)
         nhits = 3
+        sc = ["Gravitation"]
     elif ws_name == "Savage Blade":
         base_ftp = [4.0, 10.25, 13.75] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False
         wsc = 0.5*(player_str + player_mnd)
         nhits = 2
+        sc = ["Fragmentation","Scission"]
     elif ws_name == "Sanguine Blade":
         ftp  = 2.75
         ftp_rep = False
@@ -138,6 +146,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         magical = True
         element = "Dark"
         dSTAT = (player_int - enemy_int)*2
+        sc = ["None"]
     elif ws_name == "Requiescat":
         # Certain weapon skills increase/decrease attack by some percentage. We need to recalculate the player's attack when this happens.
         # Here, we simply remove attack from food, multiply by the ratio of the new/old attack% buff, and then re-add attack from food. 
@@ -156,11 +165,13 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = True
         wsc = 0.85*player_mnd
         nhits = 5
+        sc = ["Gravitation","Scission"]
     elif ws_name == "Knights of Round":
         ftp  = 5.0
         ftp_rep = False
         wsc = 0.4*(player_mnd + player_str)
         nhits = 1
+        sc = ["Light","Fusion"]
     elif ws_name == "Chant du Cygne":
         crit_ws = True
         crit_rate += player.stats["Crit Rate"]/100
@@ -172,29 +183,34 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = True
         wsc = 0.8*player_dex
         nhits = 3
+        sc = ["Light","Distortion"]
     elif ws_name == "Death Blossom":
         ftp  = 4.0
         ftp_rep = False
         wsc = 0.5*player_mnd + 0.3*player_str
         nhits = 3
+        sc = ["Fragmentation","Distortion"]
     elif ws_name == "Expiacion":
         base_ftp = [3.796875,9.390625,12.1875] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False
         wsc = 0.3*(player_str + player_int) + 0.2*player_dex
         nhits = 2
+        sc = ["Distortion","Scission"]
     elif ws_name == "Fast Blade II":
         base_ftp = [1.8, 3.5, 5.0] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.8*player_dex 
-        nhits = 2 
+        nhits = 2
+        sc = ["Fusion"]
     elif ws_name == "Imperator":
         base_ftp = [1, 2, 3] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = True 
         wsc = 0.0*player_dex 
-        nhits = 1 
+        nhits = 1
+        sc = ["Detonation","Compression","Distortion"]
 
 
     # Katana weapon skills
