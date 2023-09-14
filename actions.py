@@ -1549,8 +1549,8 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
             base_magical_damage = (physical_damage*ftp_hybrid + magic_damage_stat)
         elif magical: # Magical WSs use a purely magical approach to base damage.
             weapon_level = 119
-            crocea = True if player.gearset["main"]["Name2"] == "Crocea Mors R25C" else False
-            base_magical_damage = int(((152 + int((weapon_level-99)*2.45)+wsc)*ftp)*(1+crocea) + ws_dSTAT + magic_damage_stat)
+            base_magical_damage = int(((152 + int((weapon_level-99)*2.45)+wsc)*ftp)*(1+player.stats.get("Elemental WS Damage%",0)/100) + ws_dSTAT + magic_damage_stat)
+
 
             # Calculate TP return for purely magical weapon skills. This is treated as a single hit (even for dual wielding) with normal TP gain from delay and Store TP.
             magic_delay = (mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay) if ws_type=="melee" else ranged_delay+ammo_delay
