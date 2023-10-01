@@ -50,6 +50,7 @@ brd = {"Minuet": {"Attack": [32+25, 3.2], "Ranged Attack": [32+25, 3.2]},
         "Bewitching Etude":{"CHR":[15,1]},
         "Hunter's Prelude":{"Ranged Accuracy":[45,4.5]},
         "Archer's Prelude":{"Ranged Accuracy":[60,6]},
+        "Aria of Passion":{"PDL":[12,1.333]}
         }
 
 geo = {"Fury": {"Attack%": [0.347,0.027], "Ranged Attack%": [0.347,0.027]},

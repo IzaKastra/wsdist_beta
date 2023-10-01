@@ -1016,7 +1016,7 @@ class App(tk.Tk):
             self.brd_combo1.grid(row=1,column=0,sticky="nw",padx=0,pady=2)
 
 
-            self.song_list = ["Blade Madrigal","Sword Madrigal","Minuet V","Minuet IV","Minuet III","Honor March","Victory March","Adv. March","Hunter's Prelude","Archer's Prelude","Sinewy Etude","Herculean Etude","Dextrous Etude","Uncanny Etude","Vivacious Etude","Vital Etude","Quick Etude","Swift Etude","Learned Etude","Sage Etude","Spirited Etude","Logical Etude","Enchanting Etude","Bewitching Etude"]
+            self.song_list = ["Aria of Passion", "Blade Madrigal","Sword Madrigal","Minuet V","Minuet IV","Minuet III","Honor March","Victory March","Adv. March","Hunter's Prelude","Archer's Prelude","Sinewy Etude","Herculean Etude","Dextrous Etude","Uncanny Etude","Vivacious Etude","Vital Etude","Quick Etude","Swift Etude","Learned Etude","Sage Etude","Spirited Etude","Logical Etude","Enchanting Etude","Bewitching Etude",]
 
             self.song1 = tk.StringVar(value="Honor March")
             self.brd_combo2 = ttk.Combobox(self.brd_frame, values=self.song_list + ["None"], textvariable=self.song1,state="readonly")
@@ -2872,14 +2872,14 @@ class App(tk.Tk):
         self.wsdtrait_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
         self.wsdtrait_value.grid(row=7,column=1,padx=2,pady=2)
 
-        self.pdl_label = ttk.Label(self.misc_frame, text="PDL Gear", anchor="w", width=20,font="Courier 11")
+        self.pdl_label = ttk.Label(self.misc_frame, text="PDL", anchor="w", width=20,font="Courier 11")
         self.pdl_label.grid(row=8,column=0,padx=2,pady=2)
-        self.pdl_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.pdl_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=6,font="Courier 11")
         self.pdl_value.grid(row=8,column=1,padx=2,pady=2)
 
         self.pdltrait_label = ttk.Label(self.misc_frame, text="PDL Trait", anchor="w", width=20,font="Courier 11")
         self.pdltrait_label.grid(row=9,column=0,padx=2,pady=2)
-        self.pdltrait_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=4,font="Courier 11")
+        self.pdltrait_value = ttk.Label(self.misc_frame, text="----", anchor="w", width=6,font="Courier 11")
         self.pdltrait_value.grid(row=9,column=1,padx=2,pady=2)
 
 
@@ -4551,6 +4551,9 @@ class App(tk.Tk):
         brd_hm_rangedattack    = ((brd["Honor March"]["Ranged Attack"][0] + min(4,nsong)*brd["Honor March"]["Ranged Attack"][1])*(1.0+0.5*marcato if song1=="Honor March" else 1.0) if "Honor March" in active_songs else 0)*(1.0+1.0*soulvoice)
         brd_hm_haste           = ((brd["Honor March"]["Magic Haste"][0] + min(4,nsong)*brd["Honor March"]["Magic Haste"][1])*(1.0+0.5*marcato if song1=="Honor March" else 1.0) if "Honor March" in active_songs else 0)*(1.0+1.0*soulvoice)
 
+        # Aria PDL
+        brd_pdl = ((brd["Aria of Passion"]["PDL"][0] + min(3,nsong)*brd["Aria of Passion"]["PDL"][1])*(1.0+0.5*marcato if song1=="Aria of Passion" else 1.0) if "Aria of Passion" in active_songs else 0)*(1.0+1.0*soulvoice)
+
         # Madrigals cap at Songs+9
         brd_swordmad_accuracy  = ((brd["Sword Madrigal"]["Accuracy"][0] + min(9,nsong)*brd["Sword Madrigal"]["Accuracy"][1])*(1.0+0.5*marcato if song1=="Sword Madrigal" else 1.0) if "Sword Madrigal" in active_songs else 0)*(1.0+1.0*soulvoice)
         brd_blademad_accuracy  = ((brd["Blade Madrigal"]["Accuracy"][0] + min(9,nsong)*brd["Blade Madrigal"]["Accuracy"][1])*(1.0+0.5*marcato if song1=="Blade Madrigal" else 1.0) if "Blade Madrigal" in active_songs else 0)*(1.0+1.0*soulvoice)
@@ -4668,7 +4671,7 @@ class App(tk.Tk):
         # whm_chr   = whm_on*(whm["Boost-CHR"]["CHR"]*(self.whm_spell3.get()=="Boost-CHR") + 7*(self.whm_spell4.get() in ["Aurorastorm", "Aurorastorm II"]) + 3*(self.whm_spell4.get() in ["Voidstorm","Voidstorm II"]) + whm["Gain-CHR"]["CHR"]*(self.whm_spell3.get()=="Gain-CHR"))
 
 
-        buffs = {"brd": {"Attack": brd_attack, "Accuracy": brd_accuracy, "Ranged Accuracy": brd_rangedaccuracy, "Ranged Attack": brd_attack,"Magic Haste":brd_haste, "STR":brd_str,"DEX":brd_dex, "VIT":brd_vit, "AGI":brd_agi, "INT":brd_int, "MND":brd_mnd, "CHR":brd_chr,},
+        buffs = {"brd": {"Attack": brd_attack, "Accuracy": brd_accuracy, "Ranged Accuracy": brd_rangedaccuracy, "Ranged Attack": brd_attack,"Magic Haste":brd_haste, "STR":brd_str,"DEX":brd_dex, "VIT":brd_vit, "AGI":brd_agi, "INT":brd_int, "MND":brd_mnd, "CHR":brd_chr, "PDL":brd_pdl},
                     "cor": {"Attack%": cor_attack, "Ranged Attack%": cor_attack, "Store TP": cor_stp, "Accuracy": cor_accuracy, "Magic Attack": cor_magicattack, "Magic Accuracy":cor_magicaccuracy, "DA":cor_da, "Crit Rate": cor_critrate, "Subtle Blow":cor_subtleblow, "Regain":cor_regain},
                     "whm": {"Magic Haste": whm_haste, "STR":whm_str,"DEX":whm_dex, "VIT":whm_vit, "AGI":whm_agi, "INT":whm_int, "MND":whm_mnd, "CHR":whm_chr},
                     "geo": {"Attack%": geo_attack, "Ranged Attack%": geo_attack, "Accuracy": geo_accuracy, "Ranged Accuracy":geo_accuracy, "Magic Accuracy":geo_magicaccuracy, "Magic Attack":geo_magicattack, "STR":geo_str,"DEX":geo_dex, "VIT":geo_vit, "AGI":geo_agi, "INT":geo_int, "MND":geo_mnd, "CHR":geo_chr,"Magic Haste":geo_haste},
@@ -4964,8 +4967,8 @@ class App(tk.Tk):
             self.wsacc_value.config(text=f"{int(player.stats.get('Weapon Skill Accuracy',0)):>4d}")
             self.wsdtrait_value.config(text=f"{int(player.stats.get('Weapon Skill Damage Trait',0)):>3d}%")
 
-            self.pdl_value.config(text=f"{int(player.stats.get('PDL',0)):>3d}%")
-            self.pdltrait_value.config(text=f"{int(player.stats.get('PDL Trait',0)):>3d}%")
+            self.pdl_value.config(text=f"{int(player.stats.get('PDL',0)):>5.1f}%")
+            self.pdltrait_value.config(text=f"{int(player.stats.get('PDL Trait',0)):>5.1f}%")
 
             self.skillchain_value.config(text=f"{int(player.stats.get('Skillchain Bonus',0)):>3d}%")
 
