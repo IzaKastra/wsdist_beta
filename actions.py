@@ -12,6 +12,13 @@ from nuking import *
 from get_dint_m_v import *
 from get_delay_timing import *
 
+def enspell_damage(player):
+    #
+    #
+    #
+    damage = int(3*(player.stats.get("Enhancing Magic Skill",0)+50)/25)
+    
+
 
 def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, plot_dps=False, verbose=False):
     #
@@ -247,6 +254,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
 
 
     physical_damage = 0 
+    magical_damage = 0 # EnSpells for auto-attack rounds
     main_hit_damage = 0 # "DA DMG" and "TA DMG" apply to all hits. We need to record the damage for each hit before rolling QA > TA > DA so we can increase it later
     sub_hit_damage = 0
     zanshin_damage = 0

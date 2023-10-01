@@ -284,6 +284,7 @@ class create_player:
                     self.stats["Magic Damage"] = self.stats.get("Magic Damage",0) + 40
                 if self.abilities.get("Composure",False):
                     self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 20 + 50 # +50 from Lv99 base and +20 from JP
+                    self.stats["EnSpell Damage%"] = self.stats.get("EnSpell Damage%",0) + 200 # +200% EnSpell damage. (Base_damage + Ayanmo)*(composure + crocea)
         # ===========================================================================
         # ===========================================================================
         # Thief abilities
