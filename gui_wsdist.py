@@ -331,7 +331,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 October 1a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 October 01b)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -4552,7 +4552,7 @@ class App(tk.Tk):
         brd_hm_haste           = ((brd["Honor March"]["Magic Haste"][0] + min(4,nsong)*brd["Honor March"]["Magic Haste"][1])*(1.0+0.5*marcato if song1=="Honor March" else 1.0) if "Honor March" in active_songs else 0)*(1.0+1.0*soulvoice)
 
         # Aria PDL
-        brd_pdl = ((brd["Aria of Passion"]["PDL"][0] + min(3,nsong)*brd["Aria of Passion"]["PDL"][1])*(1.0+0.5*marcato if song1=="Aria of Passion" else 1.0) if "Aria of Passion" in active_songs else 0)*(1.0+1.0*soulvoice)
+        brd_pdl = ((brd["Aria of Passion"]["PDL"][0] + max(3,nsong)*brd["Aria of Passion"]["PDL"][1])*(1.0+0.5*marcato if song1=="Aria of Passion" else 1.0) if "Aria of Passion" in active_songs else 0)*(1.0+1.0*soulvoice)
 
         # Madrigals cap at Songs+9
         brd_swordmad_accuracy  = ((brd["Sword Madrigal"]["Accuracy"][0] + min(9,nsong)*brd["Sword Madrigal"]["Accuracy"][1])*(1.0+0.5*marcato if song1=="Sword Madrigal" else 1.0) if "Sword Madrigal" in active_songs else 0)*(1.0+1.0*soulvoice)
@@ -4967,8 +4967,8 @@ class App(tk.Tk):
             self.wsacc_value.config(text=f"{int(player.stats.get('Weapon Skill Accuracy',0)):>4d}")
             self.wsdtrait_value.config(text=f"{int(player.stats.get('Weapon Skill Damage Trait',0)):>3d}%")
 
-            self.pdl_value.config(text=f"{int(player.stats.get('PDL',0)):>5.1f}%")
-            self.pdltrait_value.config(text=f"{int(player.stats.get('PDL Trait',0)):>5.1f}%")
+            self.pdl_value.config(text=f"{player.stats.get('PDL',0):>5.1f}%")
+            self.pdltrait_value.config(text=f"{player.stats.get('PDL Trait',0):>5.1f}%")
 
             self.skillchain_value.config(text=f"{int(player.stats.get('Skillchain Bonus',0)):>3d}%")
 
