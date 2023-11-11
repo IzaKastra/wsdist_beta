@@ -342,7 +342,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = False
         wsc = 0.8*player_agi
         nhits = 1
-    elif ws_name == "Zesho Meppo":  # https://www.ffxiah.com/forum/topic/57318/prime-ws-information-testing-discussion/27/#3677860
+    elif ws_name == "Zesho Meppo":
         base_ftp = [4.0, 10.0, 18.715] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False
@@ -443,11 +443,11 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = True
         wsc = 0.4*(player_str + player_dex)
         nhits = 4
-    elif ws_name == "Merciless Strike":
-        base_ftp = [1, 2, 3] 
+    elif ws_name == "Ruthless Stroke":
+        base_ftp = [5.375, 14.0, 23.0] 
         ftp = np.interp(tp, base_tp, base_ftp)
-        ftp_rep = True 
-        wsc = 0.0*player_dex 
+        ftp_rep = False 
+        wsc = 0.25*(player_dex + player_vit)
         nhits = 4
 
 
@@ -751,7 +751,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.2*(player_str + player_int)
         nhits = 4
     elif ws_name == "Origin":
-        base_ftp = [3.0, 6.1125, 9.225] 
+        base_ftp = [3.0, 6.25, 9.5] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False 
         wsc = 0.6*(player_int + player_str)
@@ -1043,10 +1043,10 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.5*player_str
         nhits = 3
     elif ws_name == "Disaster":
-        base_ftp = [1, 2, 3] 
+        base_ftp = [3.05, 6.10, 9.15] 
         ftp = np.interp(tp, base_tp, base_ftp)
-        ftp_rep = True 
-        wsc = 0.0*player_dex 
+        ftp_rep = False 
+        wsc = 0.6*(player_str + player_vit) 
         nhits = 1
 
     # Axe weapon skills
@@ -1145,10 +1145,10 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         element = "Light"
         dSTAT = 651 if (player_chr - enemy_int)*1.5 > 651 else (player_chr - enemy_int)*1.5
     elif ws_name == "Blitz":
-        base_ftp = [1, 2, 3] 
+        base_ftp = [1.5, 7.0, 12.5] 
         ftp = np.interp(tp, base_tp, base_ftp)
-        ftp_rep = True 
-        wsc = 0.0*player_dex 
+        ftp_rep = False 
+        wsc = 0.32*(player_dex + player_str)
         nhits = 5
 
     # Archery weapon skills
@@ -1334,10 +1334,10 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         element = "Dark"
         dSTAT = (player_agi - enemy_int)*2 # No known cap.
     elif ws_name == "Terminus":
-        base_ftp = [1, 2, 3] 
+        base_ftp = [2.5, 5.0, 7.5] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False 
-        wsc = 0.0*player_dex 
+        wsc = 0.7*(player_dex + player_vit)
         nhits = 1
 
     # Staff weapon skills
