@@ -1067,7 +1067,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
     #     Attributes also include player.main_job, player.sub_job, player.master_level, player.main_job_level, and player.sub_job_level
     # Enemy: Class which contains the enemy's stats (enemy.stats).
     # ws_name: The name of the weapon skill being used.
-    # tp: The TP value at which to use the WS. I apply TP bonus and limit TP to 3000 before this function is called. The TP being used by this function is the effective TP.
+    # tp: The TP value at which to use the WS. I apply TP bonus and limit TP to 3000 before this function is called. The TP being used by this function is the effective TP. TP Bonus has already been added when calling this function.
     # ws_type: includes ["melee","ranged","magical"] and is used to separate how the physical/magical portions of the damage contribute. Hybrid WSs are considered "melee" but activate a "hybrid" flag which enables their magical damage.
     #
 
@@ -1077,7 +1077,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
 
     input_tp = 3000 if input_tp > 3000 else 1000 if input_tp < 1000 else input_tp
 
-    tp = input_tp + player.stats.get("TP Bonus",0)
+    tp = input_tp # TP Bonus is added when calling this function in gui_wsdist.py
     tp = 1000 if tp < 1000 else 3000 if tp > 3000 else tp
 
 
@@ -1235,7 +1235,6 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
             main_hit_pdif = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
             main_hit_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, main_hit_pdif, ftp2, crit_rate, crit_dmg, 0, ws_bonus, ws_trait) # Using FTP2, WSD=0, etc
             physical_damage += main_hits*main_hit_damage
-
 
             # Calculate the correction to the first hit based on the full set of buffs and bonuses.
 
