@@ -44,9 +44,12 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
     ws_damage_list = []
     ws_time_list = []
 
-    total_time = 10*3600
+    total_time = 10*3600 # seconds
     avg_tp_dmg = []
     avg_ws_dmg = []
+
+    avg_ws_tp = [] # List containing the values of player TP when each WS was used (before TP Bonus)
+
     while time < total_time:
 
         while tp < ws_threshold:
@@ -64,8 +67,9 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
             tp_damage_list.append(tp_damage)
             tp_time_list.append(time)
 
+        ws_sim = average_ws(player_ws, enemy, ws_name, tp + player_ws.stats.get("TP Bonus",0), ws_type, "Damage dealt", simulation=True)
+        avg_ws_tp.append(tp)
 
-        ws_sim = average_ws(player_ws, enemy, ws_name, tp, ws_type, "Damage dealt", simulation=True)
         damage += ws_sim[0]
         ws_damage += ws_sim[0]
         tp = ws_sim[1]
@@ -99,6 +103,7 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
     Time/Attack: {time_per_attack_round:7.3f} s
     Average Dmg/Attack: {np.average(avg_tp_dmg):8.1f}
     Average Dmg/WS: {np.average(avg_ws_dmg):8.1f}
+    Average TP/WS: {np.average(avg_ws_tp):4.0f} (+{player_ws.stats.get("TP Bonus",0)} TP Bonus)
     Total Damage: {damage/1e6:5.1f}M damage (Total DPS: {damage/time:7.1f})
     TP Damage: {tp_damage/1e6:5.1f}M damage (TP DPS: {tp_damage/time:7.1f}; {tp_damage/damage*100:5.1f}%)
     WS Damage: {ws_damage/1e6:5.1f}M damage (WS DPS: {ws_damage/time:7.1f}; {ws_damage/damage*100:5.1f}%)
