@@ -1418,7 +1418,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
                                     tp_return += 10*(1+stp)
-                    elif np.random.uniform() < oa8_sub:
+                    elif np.random.uniform() < oa8_sub/100:
                         for i in range(7):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1426,7 +1426,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
                                     tp_return += 10*(1+stp)
-                    elif np.random.uniform() < oa7_sub:
+                    elif np.random.uniform() < oa7_sub/100:
                         for i in range(6):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1434,7 +1434,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
                                     tp_return += 10*(1+stp)
-                    elif np.random.uniform() < oa6_sub:
+                    elif np.random.uniform() < oa6_sub/100:
                         for i in range(5):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1442,7 +1442,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
                                     tp_return += 10*(1+stp)
-                    elif np.random.uniform() < oa5_sub:
+                    elif np.random.uniform() < oa5_sub/100:
                         for i in range(4):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1450,7 +1450,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
                                     tp_return += 10*(1+stp)
-                    elif np.random.uniform() < oa4_sub:
+                    elif np.random.uniform() < oa4_sub/100:
                         for i in range(3):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1458,7 +1458,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
                                     tp_return += 10*(1+stp)
-                    elif np.random.uniform() < oa3_sub:
+                    elif np.random.uniform() < oa3_sub/100:
                         for i in range(2):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1466,7 +1466,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     pdif, crit = get_pdif_melee(player_attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     physical_damage += get_phys_damage(sub_dmg, fstr_sub, wsc, pdif, ftp2, crit, crit_dmg, 0, ws_bonus, ws_trait, 0)
                                     tp_return += 10*(1+stp)
-                    elif np.random.uniform() < oa2_sub:
+                    elif np.random.uniform() < oa2_sub/100:
                         for i in range(1):
                             if attempted_hits < 8:
                                 attempted_hits += 1
