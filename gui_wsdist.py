@@ -331,7 +331,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 November 17b)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 November 18a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
