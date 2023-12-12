@@ -275,7 +275,7 @@ def get_ma_rate3(main_job, nhits, qa, ta, da, oa_list, dual_wield, hitrate_matri
         # I checked in-game as NIN/MNK. Kick Attack animation happens before daken animation, but both can occur on the same attack round
         
         remaining_hits_available = 8 - (main_hits + sub_hits)
-        kickattack_hits += min(max(0,remaining_hits_available), 1.0)*kickattacks*hitrate12 # Need to use hitrate21, since hitrate11 gives an extra +100 accuracy for a WS's first hit.
+        kickattack_hits += min(max(0,remaining_hits_available), 1.0)*kickattacks*hitrate12 # Need to use hitrate12, since hitrate11 gives an extra +100 accuracy for a WS's first hit.
         daken_hits += min(max(0,remaining_hits_available - kickattacks), 1.0)*daken*ranged_hitrate2 # This uses ranged_hitrate2, for the same reason as hitrate21
 
     return(main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits)
