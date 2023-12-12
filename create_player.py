@@ -467,6 +467,7 @@ class create_player:
 
         aftermath_level = self.abilities.get("Aftermath",0)
         main_wpn_name = self.gearset["main"]["Name"]
+        main_wpn_name2 = self.gearset["main"]["Name2"]
         ranged_wpn_name = self.gearset["ranged"]["Name"]
 
         # Add Relic aftermath stats.
@@ -543,43 +544,47 @@ class create_player:
             if ranged_wpn_name in mythic_am_dict and aftermath_level in [1,2]: # Ranged Mythic aftermath check. We deal with Lv2 later in the main code when calculating damage.
                     self.stats[mythic_am_dict[ranged_wpn_name][aftermath_level-1][0]] = self.stats.get(mythic_am_dict[ranged_wpn_name][aftermath_level-1][0],0) + mythic_am_dict[ranged_wpn_name][aftermath_level-1][1]
 
-            # Prime weapon aftermath effects.  
-            prime_aftermath_pdl = [0.02, 0.05, 0.08] # PDL gained from aftermath on prime weapons. https://www.ffxiah.com/forum/topic/57318/prime-ws-information-testing-discussion/12/#3668875
-            prime_aftermath_mdmg = [20, 20, 20] # Magic Damage gained from aftermath on prime weapons. Needs testing
-            prime_aftermath_matk = [20, 20, 20] # Magic Attack Bonus gained from aftermath on prime weapons. Needs testing
-            prime_aftermath_potency = 0.6 # Assume 60% potency for Lv1 and Lv2 aftermath (WSing at 1600 TP and 2600 TP)
+            # Prime weapon aftermath effects.
+            prime_aftermath_pdl = {"IV": [4, 7, 10], "V":[6, 9, 12]} # PDL gained from aftermath on prime weapons for Stage4 and Stage5. https://www.ffxiah.com/forum/topic/45830/killer-instinct-the-beastmaster-compendium/172/#3683327
+            prime_aftermath_mdmg =  {"IV": [20, 20, 20,], "V":[30, 30, 30]} # Magic Damage gained from aftermath on prime weapons. Needs testing
+            prime_aftermath_matk =  {"IV": [20, 20, 20,], "V":[30, 30, 30]} # Magic Attack Bonus gained from aftermath on prime weapons. Needs testing
+            prime_aftermath_potency = 0.6
 
-            if aftermath_level==1:
-                prime_pdl = (prime_aftermath_pdl[1] - prime_aftermath_pdl[0])*prime_aftermath_potency + prime_aftermath_pdl[0]
-                prime_mdmg = (prime_aftermath_mdmg[1] - prime_aftermath_mdmg[0])*prime_aftermath_potency + prime_aftermath_mdmg[0]
-                prime_matk = (prime_aftermath_matk[1] - prime_aftermath_matk[0])*prime_aftermath_potency + prime_aftermath_matk[0]
-            elif aftermath_level==2:
-                prime_pdl = (prime_aftermath_pdl[2] - prime_aftermath_pdl[1])*prime_aftermath_potency + prime_aftermath_pdl[1]
-                prime_mdmg = (prime_aftermath_mdmg[2] - prime_aftermath_mdmg[1])*prime_aftermath_potency + prime_aftermath_mdmg[1]
-                prime_matk = (prime_aftermath_matk[2] - prime_aftermath_matk[1])*prime_aftermath_potency + prime_aftermath_matk[1]
-            elif aftermath_level==3:
-                prime_pdl = prime_aftermath_pdl[2]
-                prime_mdmg = prime_aftermath_mdmg[2]
-                prime_matk = prime_aftermath_matk[2]
+            if main_wpn_name in ["Caliburnus", "Dokoku", "Earp", "Foenaria", "Gae Buide", "Helheim", "Kusanagi-no-Tsurugi", "Laphria", "Lorg Mor", "Mpu Gandring", "Opashoro", "Pinaka", "Spalirisos", "Varga Purnikawa"]:
+                
+                stage = main_wpn_name2.split()[-1] # "IV" or "V"
 
-            prime_am_dict = {"Caliburnus":[["PDL",prime_pdl]],
-                            "Dokoku":[["PDL",prime_pdl]],
-                            "Earp":[["PDL",prime_pdl]],
-                            "Foenaria":[["PDL",prime_pdl]],
-                            "Gae Buide":[["PDL",prime_pdl]],
-                            "Helheim":[["PDL",prime_pdl]],
-                            "Kusanagi-no-Tsurugi":[["PDL",prime_pdl]],
-                            "Laphria":[["PDL",prime_pdl]],
-                            "Lorg Mor":[["Magic Damage",prime_mdmg]],
-                            "Mpu Gandring":[["PDL",prime_pdl]],
-                            "Opashoro":[["Magic Damage",prime_mdmg],["Magic Attack",prime_matk]],
-                            "Pinaka":[["PDL",prime_pdl]],
-                            "Spalirisos":[["PDL",prime_pdl]],
-                            "Varga Purnikawa":[["PDL",prime_pdl]],
-            }
-            if main_wpn_name in prime_am_dict and aftermath_level>0:
-                for stat in prime_am_dict[main_wpn_name]:
-                    self.stats[stat[0]] = self.stats.get(stat[0],0) + stat[1]
+                if aftermath_level==1:
+                    prime_pdl = (prime_aftermath_pdl[stage][1] - prime_aftermath_pdl[stage][0])*prime_aftermath_potency + prime_aftermath_pdl[stage][0]
+                    prime_mdmg = (prime_aftermath_mdmg[stage][1] - prime_aftermath_mdmg[stage][0])*prime_aftermath_potency + prime_aftermath_mdmg[stage][0]
+                    prime_matk = (prime_aftermath_matk[stage][1] - prime_aftermath_matk[stage][0])*prime_aftermath_potency + prime_aftermath_matk[stage][0]
+                elif aftermath_level==2:
+                    prime_pdl = (prime_aftermath_pdl[stage][2] - prime_aftermath_pdl[stage][1])*prime_aftermath_potency + prime_aftermath_pdl[stage][1]
+                    prime_mdmg = (prime_aftermath_mdmg[stage][2] - prime_aftermath_mdmg[stage][1])*prime_aftermath_potency + prime_aftermath_mdmg[stage][1]
+                    prime_matk = (prime_aftermath_matk[stage][2] - prime_aftermath_matk[stage][1])*prime_aftermath_potency + prime_aftermath_matk[stage][1]
+                elif aftermath_level==3:
+                    prime_pdl = prime_aftermath_pdl[stage][2]
+                    prime_mdmg = prime_aftermath_mdmg[stage][2]
+                    prime_matk = prime_aftermath_matk[stage][2]
+
+                prime_am_dict = {"Caliburnus":[["PDL",prime_pdl]],
+                                "Dokoku":[["PDL",prime_pdl]],
+                                "Earp":[["PDL",prime_pdl]],
+                                "Foenaria":[["PDL",prime_pdl]],
+                                "Gae Buide":[["PDL",prime_pdl]],
+                                "Helheim":[["PDL",prime_pdl]],
+                                "Kusanagi-no-Tsurugi":[["PDL",prime_pdl]],
+                                "Laphria":[["PDL",prime_pdl]],
+                                "Lorg Mor":[["Magic Damage",prime_mdmg]],
+                                "Mpu Gandring":[["PDL",prime_pdl]],
+                                "Opashoro":[["Magic Damage",prime_mdmg],["Magic Attack",prime_matk]],
+                                "Pinaka":[["PDL",prime_pdl]],
+                                "Spalirisos":[["PDL",prime_pdl]],
+                                "Varga Purnikawa":[["PDL",prime_pdl]],
+                }
+                if main_wpn_name in prime_am_dict and aftermath_level>0:
+                    for stat in prime_am_dict[main_wpn_name]:
+                        self.stats[stat[0]] = self.stats.get(stat[0],0) + stat[1]
 
             # Empyrean Aftermath is entirely handled in the main code when calculating damage.
 

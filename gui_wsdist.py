@@ -331,7 +331,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2023 November 18a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2023 December 12a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -4228,7 +4228,7 @@ class App(tk.Tk):
         self.sim_frame.grid_propagate(0)
         self.sim_frame.grid(row=2, column=0, padx=2, pady=10, sticky="w")
 
-        self.sim_button = tk.Button(self.sim_frame, text="Run weapon skill simulations",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("damage simulation"))
+        self.sim_button = tk.Button(self.sim_frame, text="Run DPS simulations",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("damage simulation"))
         self.sim_button_tip = Hovertip(self.sim_button,f"Simulate 10 hours of weapon skills using the above TP and WS sets.\nWeapon skills are used after reaching Minimum TP through normal attack rounds with the selected buffs.")
         self.sim_button.grid(row=1,column=0,columnspan=2,padx=5,pady=5)
 
