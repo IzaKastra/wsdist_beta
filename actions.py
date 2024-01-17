@@ -1020,13 +1020,12 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         # Recycle procs will increase TP gained by +50 for 5/5 Recycle merits on Ranger
         # This applies to all double/triple/quad shot bonuses too. Recycle simply has to proc.
         if "Arcadian Beret" in player.gearset["head"]["Name"]:
-            recycle = player.stats.get("Recycle",0)/100
+            recycle = player.stats.get("Recycle",0)
             recycle = 90 if recycle > 90 else recycle
             tp_return += 50*recycle/100 # Chance to proc on first hit.
             tp_return += 1*50*recycle/100*double_shot # Chance to proc on the Double Shot
             tp_return += 2*50*recycle/100*triple_shot # Chance to proc on two Triple Shots
             tp_return += 3*50*recycle/100*quad_shot # Chance to proc on three Quad shots (should be zero for Ranger anyway)
-
 
     # Apply damage multipliers which affect all hits. 
     damage = phys * (1 + true_shot) * (1 + hover_shot) * empyrean_am_damage_bonus * relic_hidden_damage_bonus * mythic_am_damage_bonus
