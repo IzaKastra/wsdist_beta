@@ -840,7 +840,7 @@ class create_player:
                             "drk":{},
                             "bst":{},
                             "brd":{},
-                            "rng":{},
+                            "rng":{"Recycle":25},
                             "smn":{},
                             "sam":{"Zanshin":5,"Store TP":10,"Weapon Skill Damage":19 * self.abilities.get("Overwhelm",False)}, # Overwhelm is treated as a checkbox toggle and only applies when enabled. Currently applies to Ranged WSs as well, which is incorrect.
                             "nin":{"Subtle Blow":5,"Ninjutsu Magic Accuracy":25,"Ninjutsu Magic Attack":20+10,"Ninjutsu Magic Damage":0}, # Including +10 matk from group1 and +20 matk from group 2. 
