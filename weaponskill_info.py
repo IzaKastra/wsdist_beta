@@ -545,10 +545,10 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         player_attack1 *= (1+player.stats.get("Attack%",0) + ws_atk_modifier) / (1+player.stats.get("Attack%",0))
         player_attack1 += player.stats.get("Food Attack",0)
     elif ws_name == "Diarmuid":
-        base_ftp = [1, 2, 3] 
+        base_ftp = [2.17, 5.36, 8.55] 
         ftp = np.interp(tp, base_tp, base_ftp)
-        ftp_rep = True 
-        wsc = 0.0*player_dex 
+        ftp_rep = False 
+        wsc = 0.55*(player_str + player_vit)
         nhits = 2
 
     # Great Katana weapon skills
