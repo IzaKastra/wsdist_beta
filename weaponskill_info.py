@@ -659,10 +659,10 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.5*player_str
         nhits = 3
     elif ws_name == "Tachi: Mumei":
-        base_ftp = [1, 2, 3] 
+        base_ftp = [3.66, 7.33, 11.0]
         ftp = np.interp(tp, base_tp, base_ftp)
-        ftp_rep = True 
-        wsc = 0.0*player_dex 
+        ftp_rep = False
+        wsc = 0.5*(player_str + player_dex)
         nhits = 1
 
     # Scythe weapon skills
