@@ -19,4 +19,13 @@ If you choose to use the executable version of this application, then I recommen
 Note that the application will not notice any changes made to the version .py files (except gear.py) when using the executable version of the code. If you wish to make changes to any other file, then you will need to run the gui_wsdist.py version of the code.
 
 
-I prefer that all issues are reported as issues on the GitHub page. I rarely check FFXIAH anymore, so I may be delayed when responding to posts there.
+I prefer that all issues are reported as issues on the GitHub page. I rarely check FFXIAH, so I may be delayed when responding to posts there.
+
+
+
+GUI preview images:
+
+<img src="https://i.imgur.com/pswkepe.png" alt="Inputs tab preview" width="857" height="454">
+<img src="https://i.imgur.com/4mLpiJB.png" alt="Optimize tab preview" width="857" height="454">
+<img src="https://i.imgur.com/LTptfE4.png" alt="Player Stats tab preview" width="857" height="454">
+<img src="https://i.imgur.com/ZfuJHuA.png" alt="Simulations tab preview" width="857" height="454">
