@@ -204,11 +204,11 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         wsc = 0.8*player_dex 
         nhits = 2
         sc = ["Fusion"]
-    elif ws_name == "Imperator":
-        base_ftp = [1, 2, 3] 
+    elif ws_name == "Imperator":    
+        base_ftp = [3.75, 7.5, 11.75] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False 
-        wsc = 0.0*player_dex 
+        wsc = 0.7*(player_dex + player_mnd)
         nhits = 1
         sc = ["Detonation","Compression","Distortion"]
 
@@ -918,11 +918,10 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 2
         sc = ["Light","Fragmentation"]
     elif ws_name == "Fimbulvetr":
-        base_ftp = [1, 2, 3] 
+        base_ftp = [3.3, 6.6, 9.9] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False 
-        wsc = 0.0*player_dex 
-        nhits = 1
+        wsc = 0.6*(player_str + player_vit)
         sc = ["Detonation","Compression","Distortion"]
 
     # Club weapon skills
@@ -1358,10 +1357,10 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 3
         sc = ["Light","Fusion"]
     elif ws_name == "Sarv":
-        base_ftp = [1, 2, 3] 
+        base_ftp = [2.75, 5.5, 8.25] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False 
-        wsc = 0.0*player_dex 
+        wsc = 0.65*(player_str + player_agi)
         nhits = 1
         sc = ["Transfixion","Scission","Gravitation"]
 
