@@ -168,9 +168,6 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
     
     crit_rate = 1.0 if crit_rate > 1.0 else crit_rate
 
-    mighty_strikes = player.abilities.get("Mighty Strikes", False)
-    crit_rate = 1.0 if mighty_strikes else crit_rate
-
     stp = player.stats.get("Store TP",0)/100 + (50./100)*crit_rate*(player.gearset["main"]["Name"]=="Karambit") # Karambit provides +50 STP to critical hit auto attacks. Thus we add crit% of 50 to our STP for average attack rounds, then divide by 100 to keep Store TP as a %. (https://www.bg-wiki.com/ffxi/Karambit)
 
     # Read in delay values now so we can use them in the magical WS section, which return TP for their one magic hit.
@@ -1105,9 +1102,6 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
     ws_dSTAT = ws_info["dSTAT"]
 
     crit_rate = ws_info["crit_rate"] if ws_info["crit_rate"] < 1.0 else 1.0
-
-    mighty_strikes = player.abilities.get("Mighty Strikes", False)
-    crit_rate = 1.0 if mighty_strikes else crit_rate
     
     ftp += player.stats.get("ftp",0)
     if hybrid:

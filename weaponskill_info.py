@@ -2,8 +2,6 @@
 # Created by Kastra on Asura.
 # Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
 #
-# Version date: 2023 February 14
-#
 import numpy as np
 from get_dex_crit import *
 
@@ -1782,6 +1780,8 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         crit_bonus = np.interp(tp, [1000,2000,3000], crit_boost)
         crit_rate += crit_bonus
 
+
+    crit_rate = 1.0 if player.abilities.get("Mighty Strikes", False) else crit_rate
 
     wsc += sum([ player.stats[k[0]] * k[1]/100 for k in wsc_bonus]) # Add WSC bonuses from things like Utu Grip and Crepuscular Knife, which use the "WSC" stat in their gear entry.
 
