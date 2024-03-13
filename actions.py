@@ -1633,6 +1633,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
         invert=1
 
     if simulation:
+        # Cap damage at 99999 for simulations if enabled
+        if player.abilities.get("99999", False):
+            total_damage = 99999 if total_damage > 99999 else total_damage
         return(total_damage, tp_return)
     else:
         return(metric, [total_damage, tp_return, invert])

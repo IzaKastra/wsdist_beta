@@ -122,5 +122,7 @@ ws_waist=Sailfi Belt +1 R15
 ws_legs=Nyame Flanchard R25B
 ws_feet=Hattori Kyahan +3
 
+DamageLimit=True
+
 # Window size:  widthxheight
 dimensions=700x885

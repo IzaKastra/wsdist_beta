@@ -157,6 +157,9 @@ def load_defaults(app,defaults):
     app.spellmetric.set(defaults.get("spellmetric","Damage dealt"))
     app.wsmetric.set(defaults.get("wsmetric","Damage dealt"))
 
+    # Load 99999 damage limit preference
+    app.damage_limit99999.set(defaults.get("DamageLimit",True))
+
     # Finally, update the window size based on the input file.
     app.geometry(defaults.get("dimensions","700x885"))
 
@@ -294,6 +297,9 @@ def save_defaults():
         ofile.write(f"ws_legs={eval(app.selected_legs_ws.get())['Name2']}\n")
         ofile.write(f"ws_feet={eval(app.selected_feet_ws.get())['Name2']}\n")
 
+        # Save 99999 damage limit preference
+        ofile.write(f"\nDamageLimit={app.damage_limit99999.get()}\n")
+
         # Save the current window size. Most/all of the widgets use a specific size anyway, so resizing the window is mostly pointless for now.
         ofile.write("\n# Window size:  widthxheight\n")
         ofile.write(f"dimensions={app.winfo_width()}x{app.winfo_height()}")
@@ -331,7 +337,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2024 March 10a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2024 March 13a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -354,12 +360,18 @@ class App(tk.Tk):
 
         # tkinter Menu  https://blog.teclado.com/how-to-add-menu-to-tkinter-app/
         self.menu_bar = tk.Menu(self)
-        self.file_menu = tk.Menu(self.menu_bar,tearoff=False)
+        self.file_menu = tk.Menu(self.menu_bar, tearoff=False)
         self.file_menu.add_command(label="Save Defaults", command=save_defaults)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Close GUI", command=self.destroy)
-
         self.menu_bar.add_cascade(label="File", menu=self.file_menu)
+
+
+        self.damage_limit99999 = tk.BooleanVar()
+        self.settings_menu = tk.Menu(self.menu_bar, tearoff=False)
+        self.settings_menu.add_checkbutton(label="Damage Limit", onvalue=True, offvalue=False, variable=self.damage_limit99999)
+        self.menu_bar.add_cascade(label="Settings", menu=self.settings_menu)
+        
 
         self.config(menu=self.menu_bar)
 
@@ -4784,7 +4796,8 @@ class App(tk.Tk):
                      "Distract III":self.distract3_value.get(),
                      "Temper":self.temper1_value.get(),
                      "Temper II":self.temper2_value.get(),
-                     "Enh. Skill":self.enh_skill.get() if self.enh_skill.get() > 0 else 0}
+                     "Enh. Skill":self.enh_skill.get() if self.enh_skill.get() > 0 else 0,
+                     "99999":self.damage_limit99999.get()}
 
 
         gearset = {
