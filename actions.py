@@ -24,7 +24,9 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
     #
     #
     #
-    time_per_attack_round = get_delay_timing(player_tp.stats["Delay1"], player_tp.stats["Delay2"], player_tp.stats.get("Dual Wield",0)/100, player_tp.stats.get("Martial Arts",0), player_tp.stats.get("Magic Haste",0), player_tp.stats.get("JA Haste",0), player_tp.stats.get("Gear Haste",0))
+    dual_wield = ((player_tp.gearset["sub"].get("Type",None) == "Weapon") or (player_tp.gearset["main"]["Skill Type"] == "Hand-to-Hand")) and ((player_ws.gearset["sub"].get("Type",None) == "Weapon") or (player_ws.gearset["main"]["Skill Type"] == "Hand-to-Hand"))
+
+    time_per_attack_round = get_delay_timing(player_tp.stats["Delay1"], player_tp.stats["Delay2"] if dual_wield and (player_ws.gearset["main"]["Skill Type"] != "Hand-to-Hand") else 0, player_tp.stats.get("Dual Wield",0)/100, player_tp.stats.get("Martial Arts",0), player_tp.stats.get("Magic Haste",0), player_tp.stats.get("JA Haste",0), player_tp.stats.get("Gear Haste",0))
 
     regain_tp = player_tp.stats.get("Dual Wield",0)*(player_tp.gearset["main"]["Name"]=="Gokotai") + player_tp.stats.get("Regain",0)
 
@@ -540,7 +542,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
         tp_per_attack_round += get_tp(daken_hits, ammo_delay, stp)
 
         # This next line's function call can probably be brought into this main code instead of being its own function/file. TODO
-        time_per_attack_round = get_delay_timing(player.stats["Delay1"], player.stats["Delay2"], player.stats.get("Dual Wield",0)/100, player.stats.get("Martial Arts",0), player.stats.get("Magic Haste",0), player.stats.get("JA Haste",0), player.stats.get("Gear Haste",0))
+        time_per_attack_round = get_delay_timing(player.stats["Delay1"], player.stats["Delay2"] if dual_wield and (player.gearset["main"]["Skill Type"] != "Hand-to-Hand") else 0, player.stats.get("Dual Wield",0)/100, player.stats.get("Martial Arts",0), player.stats.get("Magic Haste",0), player.stats.get("JA Haste",0), player.stats.get("Gear Haste",0))
 
         # Add the passive TP generation from Regain, occuring once every 3 seconds.
         regain_tp = player.stats.get("Dual Wield",0)*(player.gearset["main"]["Name"]=="Gokotai") + player.stats.get("Regain",0)

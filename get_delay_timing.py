@@ -2,7 +2,7 @@
 # Created by Kastra on Asura.
 # Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
 #
-# Version date: 2023 January 15
+# Version date: 2024 June 29 
 #
 from numba import njit
 
@@ -21,7 +21,7 @@ def get_delay_timing(delay1, delay2, dw, marts, magic_haste, ja_haste, gear_hast
     ja_haste    = 256./1024. if    ja_haste > 256./1024. else    ja_haste
     total_haste = gear_haste + magic_haste + ja_haste
 
-    delay = (delay1+delay2)/2. # Effective weapon delay. The delay minimum is 20% of this value. delay2=delay1 if not dual wielding, then this just becomes delay1
+    delay = (delay1+delay2) # Effective weapon delay. The delay minimum is 20% of this value. delay2=delay1 if not dual wielding, then this just becomes delay1
 
     rdelay = (delay-marts)*(1-dw)*(1-total_haste) # Reduced weapon delay, including martial arts, dual wield, and all forms of haste
     rdelay = 0.2*delay if rdelay < 0.2*delay else rdelay # -80% delay cap, including Dual Wield, Martial Arts, and Haste

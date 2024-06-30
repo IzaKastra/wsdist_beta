@@ -337,7 +337,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2024 March 29a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2024 June 29a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -2598,7 +2598,15 @@ class App(tk.Tk):
         self.stats_frame.grid_rowconfigure((0,1),weight=1) # Column 0 expands in the horizontal direction to fill blank space, effectively centering column1 in the frame. Weight=1 is how fast it expands; 2 is twice as fast, but it's all relative so no reason to change it with only one column
 
         self.stats_frame1 = ttk.Frame(self.stats_frame)
-        self.stats_frame1.grid(row=0,column=0,pady=5,padx=5,sticky="nw")
+        self.stats_frame1.grid(row=1,column=0,pady=5,padx=5,sticky="nw")
+
+        self.all_stats_button_frame = ttk.Frame(self.stats_frame)
+        self.all_stats_button_frame.grid(row=0, column=0, pady=5, padx=5, sticky="nw")
+
+        self.all_stats_button = ttk.Button()
+        self.all_stats_button = ttk.Button(self.all_stats_button_frame, text="Print All Stats", width=32, command=lambda trigger="all stats": self.run_optimize(trigger))
+        self.all_stats_button.grid(row=0,column=0,padx=1,pady=1)
+
 
         self.base_parameters_frame = ttk.LabelFrame(self.stats_frame1,text="Base parameters",)
         self.base_parameters_frame.grid(row=0,column=0,padx=5,pady=5,sticky="nw")
@@ -2708,7 +2716,7 @@ class App(tk.Tk):
 
 
         self.stats_frame2 = ttk.Frame(self.stats_frame)
-        self.stats_frame2.grid(row=1,column=0,pady=5,padx=5, sticky="nw")
+        self.stats_frame2.grid(row=2,column=0,pady=5,padx=5, sticky="nw")
 
         self.ma_frame = ttk.LabelFrame(self.stats_frame2, text="Multi-Attack")
         self.ma_frame.grid(row=0,column=0,sticky="nw", pady=2,padx=2)
@@ -2795,7 +2803,7 @@ class App(tk.Tk):
 
 
         self.stats_frame3 = ttk.Frame(self.stats_frame)
-        self.stats_frame3.grid(row=2,column=0,pady=5,padx=5, sticky="nw")
+        self.stats_frame3.grid(row=3,column=0,pady=5,padx=5, sticky="nw")
 
         self.def_frame = ttk.LabelFrame(self.stats_frame3, text="Defensive")
         self.def_frame.grid(row=0,column=0,sticky="nw", pady=5,padx=5)
@@ -4926,6 +4934,11 @@ class App(tk.Tk):
             ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
             run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, self.plot_dps.get())
 
+
+        elif trigger=="all stats":
+            player = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset, buffs, abilities)
+            for stat_name in sorted(player.stats.keys()):
+                print(f"{stat_name:>35s}: {str(player.stats[stat_name]):<10s}")
 
 
         elif trigger=="stats":
