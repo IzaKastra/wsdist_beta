@@ -1,4 +1,3 @@
-#
 # Created by Kastra on Asura.
 # Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
 #
@@ -28,7 +27,7 @@ def get_weapon_bonus(main_wpn_name, rng_wpn_name, ws_name):
         "Kannagi": {"Blade: Hi": 0.1},
         "Nagi": {"Blade: Kamu": 0.495},
         "Kenkonken": {"Stringing Pummel": 0.495},
-        "Heishi": {"Blade: Shun": 0.1},
+        "Heishi Shorinken": {"Blade: Shun": 0.1},
         "Gokotai": {"Blade: Ku": 0.6},
         "Tauret": {"Evisceration": 0.5},
         "Aeneas": {"Exenterator": 0.1},
@@ -69,7 +68,6 @@ def get_weapon_bonus(main_wpn_name, rng_wpn_name, ws_name):
         "Xoanon": {"Retribution": 0.2},
         "Khatvanga": {"Shattersoul": 0.1},
         "Vajra": {"Mandalic Stab": 0.495},
-        "Terpsichore": {"Pyrrhic Kleos": 0.495},
         "Glanzfaust": {"Ascetic's Fury": 0.495},
         "Verethragna": {"Victory Smite": 0.1},
         "Godhands": {"Shijin Spiral": 0.1},
