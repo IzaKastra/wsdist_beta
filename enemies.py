@@ -20,9 +20,9 @@ def create_enemy(name, level, defense, evasion, vit, agi, mnd, int, chr, locatio
     return enemy
 
 enemies = [
-    ("Apex Bats", 129, 1142, 1043, 254, 298, 233, 233, 277, "Dho Gates", "CHR unknown. Using value from apex_toad"),
+    ("Apex Bats", 129, 1142, 1043, 254, 298, 233, 233, 247, "Dho Gates"),
     ("Apex Toad", 132, 1239, 1133, 270, 348, 224, 293, 277, "Woh Gates"),
-    ("Apex Bat", 135, 1338, 1224, 289, 340, 267, 267, 267, "Outer Ra'Kaznar", "CHR unknown. Copied MND/INT"),
+    ("Apex Bat", 135, 1338, 1224, 289, 340, 267, 267, 282, "Outer Ra'Kaznar"),
     ("Apex Lugcrawler Hunter", 138, 1446, 1314, 325, 346, 284, 284, 284, "Crawler's Nest [S]", "CHR unknown. Copied MND/INT"),
     ("Apex Knight Lugcrawler", 140, 1530, 1383, 356, 343, 297, 297, 297, "Crawler's Nest [S]", "CHR unknown. Copied MND/INT"),
     ("Apex Idle Drifter", 142, 1448, 1502, 348, 366, 327, 327, 327, "Promyvion", "CHR unknown. Copied MND/INT"),
