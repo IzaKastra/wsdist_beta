@@ -258,14 +258,14 @@ class create_player:
                     self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 100 + 20
                 if self.abilities.get("Footwork",False):
                     self.stats["Kick Attacks"] = self.stats.get("Kick Attacks",0) + 20
-                    self.stats["Kick Attacks Attack%"] = self.stats.get("Kick Attacks Attack%",0) + 100./1024 + 160./1024
+                    self.stats["Kick Attacks Attack%"] = self.stats.get("Kick Attacks Attack%",0) + 100./1024 + (130./1024 if "Bhikku Gaiters +2"==self.gearset["feet"]["Name"] else 160./1024)
                     self.stats["Kick Attacks DMG"] = self.stats.get("Kick Attacks DMG",0) + 20 + 20 # Activating footwork increases Kick DMG by 20, with an additional 20 from job points
                 if self.abilities.get("Impetus",False):
                     impetus_potency = 0.9
                     self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 50*impetus_potency
                     self.stats["Attack"] = self.stats.get("Attack",0) + (100+40)*impetus_potency
-                    self.stats["Crit Damage"] = self.stats.get("Crit Damage",0) + 50*impetus_potency*(self.gearset["body"]["Name"]=="Bhikku Cyclas +3")
-                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 100*impetus_potency
+                    self.stats["Crit Damage"] = self.stats.get("Crit Damage",0) + 50*impetus_potency*("Bhikku Cyclas" in self.gearset["body"]["Name"])
+                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 100*impetus_potency*("Bhikku Cyclas" in self.gearset["body"]["Name"])
         # ===========================================================================
         # ===========================================================================
         # Black Mage abilities
@@ -343,7 +343,7 @@ class create_player:
                 if self.abilities.get("Velocity Shot",False):
                     self.stats["Ranged Attack"] = self.stats.get("Ranged Attack",0) + 40
                     self.stats["JA Haste"] = self.stats.get("JA Haste",0) - 15
-                    self.stats["Ranged Attack%"] = self.stats.get("Ranged Attack%",0) + 152./1024 + 112./1024*("Amini Caban" in self.gearset["body"]["Name"]) + 20./1024*("Belenus" in self.gearset["back"]["Name"])
+                    self.stats["Ranged Attack%"] = self.stats.get("Ranged Attack%",0) + 152./1024 + 112./1024*("Amini Caban +3"==self.gearset["body"]["Name"]) + 92./1024*("Amini Caban +2"==self.gearset["body"]["Name"]) + 20./1024*("Belenus" in self.gearset["back"]["Name"])
                 if self.abilities.get("Double Shot",False):
                     self.stats["Double Shot"] = self.stats.get("Double Shot",0) + 40 + 5*("Arcadian Jerkin" in self.gearset["body"]["Name"])
                     if "Arcadian Jerkin" in self.gearset["body"]["Name"]: # Half of your Double Shot becomes Triple Shot with the relic body equipped. This ratio is assumed from the Triple>Quad ratio for COR linked below.
@@ -384,6 +384,7 @@ class create_player:
                 self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + (innin_potency*(30-10) + 10)
                 self.stats["Ninjutsu Damage%"] = self.stats.get("Ninjutsu Damage%",0) + (innin_potency*(30-10) + 10)
                 self.stats["Evasion"] = self.stats.get("Evasion",0) + (innin_potency*(-30 - -10) + -10)
+                self.stats["DA"] = self.stats.get("DA",0) + self.stats.get("Innin DA%",0)
             if self.abilities.get("Futae",False):
                 self.stats["Ninjutsu Magic Damage"] = self.stats.get("Ninjutsu Magic Damage",0) + 100
         # ===========================================================================
@@ -668,13 +669,13 @@ class create_player:
         regal_ring_count = 5 if regal_ring_count > 5 else regal_ring_count
         regal_earring_count = 5 if regal_earring_count > 5 else regal_earring_count
 
-        self.stats["STR"] = self.stats.get("STR",0) + ((ayanmo_count)*8 if ayanmo_count >= 2 else 0) + ((flamma_count)*8 if flamma_count >= 2 else 0) 
-        self.stats["DEX"] = self.stats.get("DEX",0) + ((mummu_count)*8 if mummu_count >= 2 else 0) + ((flamma_count)*8 if flamma_count >= 2 else 0) 
-        self.stats["VIT"] = self.stats.get("VIT",0) + ((mummu_count)*8 if mummu_count >= 2 else 0) + ((flamma_count)*8 if flamma_count >= 2 else 0) + ((ayanmo_count)*8 if ayanmo_count >= 2 else 0) + ((mallquis_count)*8 if mallquis_count >= 2 else 0)
-        self.stats["AGI"] = self.stats.get("AGI",0) + ((mummu_count)*8 if mummu_count >= 2 else 0)
-        self.stats["INT"] = self.stats.get("INT",0) + ((mallquis_count)*8 if mallquis_count >= 2 else 0)
-        self.stats["MND"] = self.stats.get("MND",0) + ((mallquis_count)*8 if mallquis_count >= 2 else 0) + ((ayanmo_count)*8 if ayanmo_count >= 2 else 0)
-        self.stats["CHR"] = self.stats.get("CHR",0) + ((mummu_count)*8 if mummu_count >= 2 else 0)
+        self.stats["STR"] = self.stats.get("STR",0) + ((ayanmo_count-1)*8 if ayanmo_count >= 2 else 0) + ((flamma_count-1)*8 if flamma_count >= 2 else 0) 
+        self.stats["DEX"] = self.stats.get("DEX",0) + ((mummu_count-1)*8 if mummu_count >= 2 else 0) + ((flamma_count-1)*8 if flamma_count >= 2 else 0) 
+        self.stats["VIT"] = self.stats.get("VIT",0) + ((mummu_count-1)*8 if mummu_count >= 2 else 0) + ((flamma_count-1)*8 if flamma_count >= 2 else 0) + ((ayanmo_count-1)*8 if ayanmo_count >= 2 else 0) + ((mallquis_count-1)*8 if mallquis_count >= 2 else 0)
+        self.stats["AGI"] = self.stats.get("AGI",0) + ((mummu_count-1)*8 if mummu_count >= 2 else 0)
+        self.stats["INT"] = self.stats.get("INT",0) + ((mallquis_count-1)*8 if mallquis_count >= 2 else 0)
+        self.stats["MND"] = self.stats.get("MND",0) + ((mallquis_count-1)*8 if mallquis_count >= 2 else 0) + ((ayanmo_count-1)*8 if ayanmo_count >= 2 else 0)
+        self.stats["CHR"] = self.stats.get("CHR",0) + ((mummu_count-1)*8 if mummu_count >= 2 else 0)
         self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + (adhemar_count*2 if adhemar_count > 1 else 0)
         self.stats["Magic Attack"] = self.stats.get("Magic Attack",0) + ((amalric_count)*10 if amalric_count >= 2 else 0)
         self.stats["Weapon Skill Damage"] = self.stats.get("Weapon Skill Damage",0) + ((lustratio_count)*2 if lustratio_count >= 2 else 0)
