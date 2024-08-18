@@ -1,5 +1,5 @@
 #
-# Created by Kastra on Asura.
+# Author: Kastra (Asura)
 # Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
 #
 import numpy as np

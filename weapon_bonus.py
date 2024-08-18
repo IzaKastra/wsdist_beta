@@ -1,4 +1,5 @@
 #
+# Author: Kastra (Asura)
 # Version date: 2024 July 07
 #
 from get_dex_crit import *

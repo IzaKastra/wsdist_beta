@@ -1,8 +1,5 @@
 #
-# Created by Kastra on Asura.
-# Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
-#
-# Version date: 2024 June 29 
+# Version date: 2024 June 29
 #
 from numba import njit
 
@@ -30,4 +27,4 @@ def get_delay_timing(delay1, delay2, dw, marts, magic_haste, ja_haste, gear_hast
 
     tpa = rdelay/60 # Convert reduced delay into real-world seconds.
 
-    return(tpa) # Return "time per attack"
+    return(tpa) # Return "time per attack" in seconds

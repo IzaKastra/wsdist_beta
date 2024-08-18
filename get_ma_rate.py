@@ -1,136 +1,132 @@
 #
-# Created by Kastra on Asura.
-# Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
-#
+# Author: Kastra (Asura)
 # Version date: 2023 July 3
-
-# This code contains the function used to estimate the average number of attacks per attack round given multi-attack stats and accuracy.
 #
 from numba import njit
 import numpy as np
 import random
 
-@njit
-def get_ma_rate2(nhits, qa, ta, da, oa3, oa2, dual_wield, hitrate_matrix):
-    #
-    # Estimate the number of attacks per weapon through simulation. Useful for checking the output from a simple equation.
-    #
-    hitrate11 = hitrate_matrix[0][0] # Main hand hit rate with the bonus +100 accuracy. Caps at 99%
-    hitrate21 = hitrate_matrix[0][1] # Off hand hit rate with the bonus +100 accuracy. Caps at 95%
+# @njit
+# def get_ma_rate2(nhits, qa, ta, da, oa3, oa2, dual_wield, hitrate_matrix):
+#     #
+#     # Estimate the number of attacks per weapon through simulation. Useful for checking the output from a simple equation.
+#     #
+#     hitrate11 = hitrate_matrix[0][0] # Main hand hit rate with the bonus +100 accuracy. Caps at 99%
+#     hitrate21 = hitrate_matrix[0][1] # Off hand hit rate with the bonus +100 accuracy. Caps at 95%
 
-    hitrate12 = hitrate_matrix[1][0] # Main hand hit rate. Caps at 99%
-    hitrate22 = hitrate_matrix[1][1] # Off hand hit rate. Caps at 95%
+#     hitrate12 = hitrate_matrix[1][0] # Main hand hit rate. Caps at 99%
+#     hitrate22 = hitrate_matrix[1][1] # Off hand hit rate. Caps at 95%
 
-    n_sim = 1000000
-    main_hits_list = np.zeros(n_sim) # List containing number of main hits per simulation. Will take average of this later
-    sub_hits_list = np.zeros(n_sim) # List containing number of sub hits per simuation. Will take average of this later
-    for k in range(n_sim):
-        main_hits = 0
-        sub_hits = 0
-        total_hits = 0
+#     n_sim = 1000000
+#     main_hits_list = np.zeros(n_sim) # List containing number of main hits per simulation. Will take average of this later
+#     sub_hits_list = np.zeros(n_sim) # List containing number of sub hits per simuation. Will take average of this later
+#     for k in range(n_sim):
+#         main_hits = 0
+#         sub_hits = 0
+#         total_hits = 0
 
-        main_hits += 1*hitrate11
-        total_hits += 1
+#         main_hits += 1*hitrate11
+#         total_hits += 1
 
-        sub_hits += 1*hitrate21 if dual_wield else 0
-        total_hits +=1 if dual_wield else 0
+#         sub_hits += 1*hitrate21 if dual_wield else 0
+#         total_hits +=1 if dual_wield else 0
 
-        for l in range(nhits-1):
+#         for l in range(nhits-1):
 
-            if main_hits + sub_hits >= 8:
-                continue
+#             if main_hits + sub_hits >= 8:
+#                 continue
 
-            main_hits += 1*hitrate12
-            total_hits += 1
+#             main_hits += 1*hitrate12
+#             total_hits += 1
 
-        # Add main MA
-        if random.uniform(0,1) < qa:
-            for m in range(3):
-                if total_hits >= 8:
-                    continue
-                main_hits += 1*hitrate12
-                total_hits += 1
-        elif random.uniform(0,1) < ta:
-            for m in range(2):
-                if total_hits >= 8:
-                    continue
-                main_hits += 1*hitrate12
-                total_hits += 1
-        elif random.uniform(0,1) < da:
-            for m in range(1):
-                if total_hits >= 8:
-                    continue
-                main_hits += 1*hitrate12
-                total_hits += 1
-        elif random.uniform(0,1) < oa3:
-            for m in range(2):
-                if total_hits >= 8:
-                    continue
-                main_hits += 1*hitrate12
-                total_hits += 1
-        elif random.uniform(0,1) < oa2:
-            for m in range(1):
-                if total_hits >= 8:
-                    continue
-                main_hits += 1*hitrate12
-                total_hits += 1
+#         # Add main MA
+#         if random.uniform(0,1) < qa:
+#             for m in range(3):
+#                 if total_hits >= 8:
+#                     continue
+#                 main_hits += 1*hitrate12
+#                 total_hits += 1
+#         elif random.uniform(0,1) < ta:
+#             for m in range(2):
+#                 if total_hits >= 8:
+#                     continue
+#                 main_hits += 1*hitrate12
+#                 total_hits += 1
+#         elif random.uniform(0,1) < da:
+#             for m in range(1):
+#                 if total_hits >= 8:
+#                     continue
+#                 main_hits += 1*hitrate12
+#                 total_hits += 1
+#         elif random.uniform(0,1) < oa3:
+#             for m in range(2):
+#                 if total_hits >= 8:
+#                     continue
+#                 main_hits += 1*hitrate12
+#                 total_hits += 1
+#         elif random.uniform(0,1) < oa2:
+#             for m in range(1):
+#                 if total_hits >= 8:
+#                     continue
+#                 main_hits += 1*hitrate12
+#                 total_hits += 1
 
-        # Add second MA
-        if nhits > 1 or dual_wield:
-            if random.uniform(0,1) < qa:
-                for m in range(3):
-                    if total_hits >= 8:
-                        continue
-                    if dual_wield:
-                        sub_hits += 1*hitrate22
-                    elif nhits > 1:
-                        main_hits += 1*hitrate12
-                    total_hits += 1
-            elif random.uniform(0,1) < ta:
-                for m in range(2):
-                    if total_hits >= 8:
-                        continue
-                    if dual_wield:
-                        sub_hits += 1*hitrate22
-                    elif nhits > 1:
-                        main_hits += 1*hitrate12
-                    total_hits += 1
-            elif random.uniform(0,1) < da:
-                for m in range(1):
-                    if total_hits >= 8:
-                        continue
-                    if dual_wield:
-                        sub_hits += 1*hitrate22
-                    elif nhits > 1:
-                        main_hits += 1*hitrate12
-                    total_hits += 1
-            elif random.uniform(0,1) < oa3:
-                for m in range(2):
-                    if total_hits >= 8:
-                        continue
-                    if nhits > 1:
-                        main_hits += 1*hitrate12
-                        total_hits += 1
-            elif random.uniform(0,1) < oa2:
-                for m in range(1):
-                    if total_hits >= 8:
-                        continue
-                    if nhits > 1:
-                        main_hits += 1*hitrate12
-                        total_hits += 1
+#         # Add second MA
+#         if nhits > 1 or dual_wield:
+#             if random.uniform(0,1) < qa:
+#                 for m in range(3):
+#                     if total_hits >= 8:
+#                         continue
+#                     if dual_wield:
+#                         sub_hits += 1*hitrate22
+#                     elif nhits > 1:
+#                         main_hits += 1*hitrate12
+#                     total_hits += 1
+#             elif random.uniform(0,1) < ta:
+#                 for m in range(2):
+#                     if total_hits >= 8:
+#                         continue
+#                     if dual_wield:
+#                         sub_hits += 1*hitrate22
+#                     elif nhits > 1:
+#                         main_hits += 1*hitrate12
+#                     total_hits += 1
+#             elif random.uniform(0,1) < da:
+#                 for m in range(1):
+#                     if total_hits >= 8:
+#                         continue
+#                     if dual_wield:
+#                         sub_hits += 1*hitrate22
+#                     elif nhits > 1:
+#                         main_hits += 1*hitrate12
+#                     total_hits += 1
+#             elif random.uniform(0,1) < oa3:
+#                 for m in range(2):
+#                     if total_hits >= 8:
+#                         continue
+#                     if nhits > 1:
+#                         main_hits += 1*hitrate12
+#                         total_hits += 1
+#             elif random.uniform(0,1) < oa2:
+#                 for m in range(1):
+#                     if total_hits >= 8:
+#                         continue
+#                     if nhits > 1:
+#                         main_hits += 1*hitrate12
+#                         total_hits += 1
 
-        main_hits_list[k] = main_hits
-        sub_hits_list[k] = sub_hits
+#         main_hits_list[k] = main_hits
+#         sub_hits_list[k] = sub_hits
 
-    main_hits = np.mean(main_hits_list)
-    sub_hits = np.mean(sub_hits_list)
+#     main_hits = np.mean(main_hits_list)
+#     sub_hits = np.mean(sub_hits_list)
 
-    # import matplotlib.pyplot as plt
-    # plt.hist(main_hits_list,bins='scott')
-    # plt.hist(sub_hits_list,bins='scott')
-    # plt.show()
+#     # import matplotlib.pyplot as plt
+#     # plt.hist(main_hits_list,bins='scott')
+#     # plt.hist(sub_hits_list,bins='scott')
+#     # plt.show()
 
-    return(main_hits, sub_hits)
+#     return(main_hits, sub_hits)
 
 # @njit
 # def get_ma_rate3(nhits, qa, ta, da, oa3, oa2, dual_wield_type, hitrate_matrix):
@@ -183,19 +179,19 @@ def get_ma_rate3(main_job, nhits, qa, ta, da, oa_list, dual_wield, hitrate_matri
     # Break up the results into main_hits, sub_hits, daken_hits, kickattack_hits, and zanshin_hits. The sum must be no larger than 8.
     # For weapon skills, pass in ranged_hitrate2 = daken = kickattacks = zanshin = zanhasso = zanshin_hitrate = zanshin_oa2 = 0
     #
-    main_hits = 0
+    main_hits = 0 # Start at 0 main-hand hits, then add one hit per attack
     sub_hits = 0
     daken_hits = 0
     kickattack_hits = 0
 
-    hitrate11 = hitrate_matrix[0][0] # Main hand hit rate with the bonus +100 accuracy. Caps at 99% for single-handed weapons
-    hitrate21 = hitrate_matrix[0][1] # Off hand hit rate with the bonus +100 accuracy. Caps at 95%
+    hitrate11 = hitrate_matrix[0][0] # Main hand hit rate with the bonus +100 accuracy first-mainhand-WS-hit bonus. Caps at 99% for single-handed weapons
+    hitrate21 = hitrate_matrix[0][1] # Off hand hit rate with the bonus +100 accuracy first-offhand-WS-hit bonus. Caps at 95%
 
-    hitrate12 = hitrate_matrix[1][0] # Main hand hit rate. Caps at 99% for single-handed weapons
-    hitrate22 = hitrate_matrix[1][1] # Off hand hit rate. Caps at 95%
+    hitrate12 = hitrate_matrix[1][0] # Main hand hit rate without the +100 accuracy first-WS-hit bonus. Caps at 99% for single-handed weapons
+    hitrate22 = hitrate_matrix[1][1] # Off hand hit rate without the +100 accuracy first-WS-hit bonus. Caps at 95%
 
     main_hits += 1*hitrate11 # Add the first main hit (gets bonus accuracy)
-    main_hits += (nhits-1)*(hitrate12) # Add the remaining natural main hits
+    main_hits += (nhits-1)*(hitrate12) # Add the remaining natural main hits (no bonus accuracy)
 
     if dual_wield and main_hits+sub_hits < 8:
         sub_hits += 1*hitrate21 # Add the first sub hit (gets bonus accuracy)

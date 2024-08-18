@@ -1,17 +1,12 @@
 #
-# Created by Kastra on Asura.
-# Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
-#
 # Version date: 2023 February 11
-#
-# This code contains the function used to calculate the player's fSTR stat.
 #
 from numba import njit
 
 @njit
 def get_fstr(dmg, player_str, enemy_vit):
     #
-    # Calculate fSTR using equation from BG wiki
+    # Calculate fSTR for melee attacks using the equation from BG wiki
     # https://www.bg-wiki.com/ffxi/FSTR
     #
     dstr = player_str - enemy_vit
@@ -43,7 +38,7 @@ def get_fstr(dmg, player_str, enemy_vit):
 @njit
 def get_fstr2(rng_dmg, player_str, enemy_vit):
     #
-    # Calculate fSTR using equation from BG wiki
+    # Calculate fSTR for ranged attacks using the equation from BG wiki
     # https://www.bg-wiki.com/ffxi/FSTR
     #
     wpn_rank = rng_dmg/9.
