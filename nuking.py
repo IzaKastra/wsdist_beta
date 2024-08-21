@@ -5,6 +5,32 @@
 from get_dint_m_v import *
 import numpy as np
 
+def get_enspell_damage(enhancing_magic_skill, enspell_damage_percent, enspell_damage):
+    '''
+    Calculate EnSpell damage based on Enhancing Magic Skill and EnSpell enhancing equipment.
+    https://www.bg-wiki.com/ffxi/Category:Enspell
+    '''
+    if enhancing_magic_skill > 500:
+        damage = int( 3*(enhancing_magic_skill+50)/25)
+
+    elif enhancing_magic_skill >= 400:
+        damage = int( (enhancing_magic_skill+20)/8 )
+
+    elif enhancing_magic_skill > 150:
+        damage = int( (enhancing_magic_skill/20) + 5)
+
+    elif enhancing_magic_skill > 0:
+        damage = int( (enhancing_magic_skill**0.5) - 1)
+
+    else:
+        damage = 0
+
+    damage += enspell_damage
+    damage *= (1 + enspell_damage_percent/100)
+
+    return(damage)
+
+
 def quickdraw(rng_dmg, ammo_dmg, element, gearset, player_matk, player_magic_damage, enemy_int, enemy_mdb, enemy_meva, job_abilities):
     #
     # Calculate Quick Draw damage

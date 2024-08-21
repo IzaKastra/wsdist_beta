@@ -284,7 +284,8 @@ class create_player:
                     self.stats["Magic Damage"] = self.stats.get("Magic Damage",0) + 40
                 if self.abilities.get("Composure",False):
                     self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 20 + 50 # +50 from Lv99 base and +20 from JP
-                    self.stats["EnSpell Damage%"] = self.stats.get("EnSpell Damage%",0) + 200 # +200% EnSpell damage. (Base_damage + Ayanmo)*(composure + crocea)
+                    self.stats["EnSpell Damage%"] = self.stats.get("EnSpell Damage%",0) + 200 # +200% EnSpell damage from Composure
+                    self.stats["EnSpell Damage"] = self.stats.get("EnSpell Damage",0)
         # ===========================================================================
         # ===========================================================================
         # Thief abilities
@@ -614,7 +615,7 @@ class create_player:
                     # A list of combat skills to ignore when seen in the main or sub slots. These skills apply only to their respective slots on weapons so we create a new stat for them.
                     ignore_main_sub_skills = ["Hand-to-Hand Skill","Dagger Skill","Sword Skill","Great Sword Skill","Axe Skill","Great Axe Skill","Scythe Skill","Polearm Skill","Katana Skill","Great Katana Skill","Club Skill","Staff Skill","Evasion Skill","Divine Magic Skill","Elemental Magic Skill","Dark Magic Skill","Ninjutsu Skill","Summoning Magic Skill","Blue Magic Skill","Magic Accuracy Skill"]
                     if not (slot in ["main","sub"] and stat in ignore_main_sub_skills):
-                        if stat in ["OA8","OA7","OA6","OA5","OA4","OA3","OA2"]: # OAX stats apply only to the weapon they are attached to.
+                        if stat in ["OA8","OA7","OA6","OA5","OA4","OA3","OA2","EnSpell Damage","EnSpell Damage%"] and slot in ["main", "sub"]: # OAX stats apply only to the weapon they are attached to.
                             self.stats[f"{stat} {slot}"] = self.stats.get(f"{stat} {slot}",0) + self.gearset[slot][stat]
                         elif stat=="WSC":
                             self.stats[stat] = self.stats.get(stat,[]) + [self.gearset[slot][stat]]
@@ -835,7 +836,7 @@ class create_player:
                             "mnk":{"Kick Attacks":5,},
                             "whm":{},
                             "blm":{"Magic Attack":10, "Magic Accuracy":25,},
-                            "rdm":{"Magic Accuracy":15+25,"Accuracy":25*0,},
+                            "rdm":{"Magic Accuracy":15+25,"Accuracy":25*0, "EnSpell Damage":15},
                             "thf":{"TA":5,"Accuracy":15,"Ranged Accuracy":15,},
                             "pld":{},
                             "drk":{},
@@ -875,7 +876,7 @@ class create_player:
                             "mnk":{"Accuracy":41, "Ranged Accuracy":41, "Attack":40, "Ranged Attack":40, "Magic Accuracy":36,"Evasion":42,"Magic Evasion":36,"Subtle Blow":10,"Martial Arts":10,"Kick Attacks Attack":40,"Kick Attacks Accuracy":20},
                             "whm":{"Accuracy":14, "Ranged Accuracy":14, "Magic Accuracy":20+50, "Magic Attack":22,"Magic Defense":50,"Divine Magic Skill":36,},
                             "blm":{"Magic Burst Damage Trait":20+23, "Magic Accuracy":20, "Magic Damage":20+23, "Magic Defense":14, "Magic Attack":50, "Magic Evasion":42, "Magic Accuracy":32, "Elemental Magic Skill":36, "Dark Magic Skill":36,},
-                            "rdm":{"Magic Attack":20+28,"Magic Accuracy":20+70,"Magic Defense":28,"Magic Evasion":56,"Accuracy":22,"Ranged Accuracy":22,}, # Composure Accuracy+20 is added later
+                            "rdm":{"Magic Attack":20+28,"Magic Accuracy":20+70,"Magic Defense":28,"Magic Evasion":56,"Accuracy":22,"Ranged Accuracy":22,"EnSpell Damage":23}, # Composure Accuracy+20 is added later
                             "thf":{"Sneak Attack Bonus":20,"Trick Attack Bonus":20,"Attack":50,"Ranged Attack":50,"Evasion":70,"Accuracy":36,"Ranged Accuracy":36,"Magic Evasion":36,"Magic Accuracy":36,"TA":8,"Crit Damage":8,"Dual Wield":5,"TA Attack":20},
                             "pld":{"Accuracy":28,"Ranged Accuracy":28,"Attack":28,"Ranged Attack":28,"Evasion":22,"Magic Evasion":42,"Divine Magic Skill":36,"Magic Accuracy":42},
                             "drk":{"Attack":106,"Ranged Attack":106,"Evasion":22,"Magic Evasion":36,"Accuracy":22,"Ranged Accuracy":22,"Magic Accuracy":42,"Dark Magic Skill":36,"Crit Damage":8,"Weapon Skill Damage":8,},

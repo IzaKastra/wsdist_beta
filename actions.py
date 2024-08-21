@@ -12,14 +12,6 @@ from nuking import *
 from get_dint_m_v import *
 from get_delay_timing import *
 
-def enspell_damage(player):
-    #
-    #
-    #
-    damage = int(3*(player.stats.get("Enhancing Magic Skill",0)+50)/25)
-    
-
-
 def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, plot_dps=False, verbose=False):
     #
     #
@@ -37,6 +29,8 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
     damage = 0  # Total damage dealt
     damage_list = [] # List of damage at each interval, useful for plotting
     time_list = []
+    phys_dmg_list = []
+    magic_dmg_list = []
 
     tp_damage = 0 # Total damage dealt from TP phase
     tp_damage_list = []
@@ -56,13 +50,20 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
 
         while tp < ws_threshold:
             tp_round = average_attack_round(player_tp, enemy, tp, ws_threshold, "Time to WS", simulation=True)
-            damage += tp_round[0]
-            tp_damage += tp_round[0]
-            tp += tp_round[1]
+            physical_damage = tp_round[0]
+            tp_return = tp_round[1]
+            magical_damage = tp_round[2]
+
+            damage += physical_damage + magical_damage
+
+            tp_damage += physical_damage + magical_damage
+            tp += tp_return
             tp += (time_per_attack_round/3)*(regain_tp) # Extra TP from regain, averaged over time per attack round to simplify things
             time += time_per_attack_round
-            avg_tp_dmg.append(tp_round[0])
+            avg_tp_dmg.append(physical_damage + magical_damage)
 
+            phys_dmg_list.append(physical_damage)
+            magic_dmg_list.append(magical_damage)
             damage_list.append(damage)
             time_list.append(time)
 
@@ -90,6 +91,8 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
     ws_damage_list = np.array(ws_damage_list)
     tp_time_list = np.array(tp_time_list)
     ws_time_list = np.array(ws_time_list)
+    phys_dmg_list = np.array(phys_dmg_list)
+    magic_dmg_list = np.array(magic_dmg_list)
 
     if plot_dps:
         plt.plot(time_list, damage_list/time_list,label=f"Total={damage/time:7.1f}")
@@ -104,6 +107,8 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
     Total time: {(time/3600):5.1f} h
     Time/Attack: {time_per_attack_round:7.3f} s
     Average Dmg/Attack: {np.average(avg_tp_dmg):8.1f}
+        Physical: {np.average(phys_dmg_list):8.1f} ({np.average(phys_dmg_list)/np.average(avg_tp_dmg)*100:5.1f}%)
+         Magical: {np.average(magic_dmg_list):8.1f} ({np.average(magic_dmg_list)/np.average(avg_tp_dmg)*100:5.1f}%)
     Average Dmg/WS: {np.average(avg_ws_dmg):8.1f}
     Average TP/WS: {np.average(avg_ws_tp):4.0f} (+{player_ws.stats.get("TP Bonus",0)} TP Bonus)
     Total Damage: {damage/1e6:5.1f}M damage (Total DPS: {damage/time:7.1f})
@@ -240,8 +245,23 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
     zanshin_hit_rate = get_hit_rate(accuracy1+34, enemy_evasion, 0.95)
     zanshin_oa2 = player.stats.get("Zanshin OA2",0)/100
 
+    enhancing_magic_skill = player.abilities.get("Enh. Skill",0)
+    enspell_active = player.abilities.get("EnSpell",False)
+    if enspell_active:
+        enspell_damage_percent_main = player.stats.get("EnSpell Damage% main",0) + player.stats.get("EnSpell Damage%",0)
+        enspell_damage_percent_sub = player.stats.get("EnSpell Damage% sub",0) + player.stats.get("EnSpell Damage%",0)
+        enspell_damage_main = player.stats.get("EnSpell Damage main",0) + player.stats.get("EnSpell Damage",0)
+        enspell_damage_sub = player.stats.get("EnSpell Damage sub",0) + player.stats.get("EnSpell Damage",0)
+        magic_crit_rate2 = player.stats.get("Magic Crit Rate II",0)/100
 
+        active_storm = player.abilities.get("Storm spell",False)
+        if active_storm!="None" and player.gearset["waist"]["Name"]=="Hachirin-no-Obi":
+            dayweather = 0.25 if "II" in active_storm else 0.10 # Assume the EnSpell element matches the storm spell selected.
+        else:
+            dayweather = 0
 
+        # Assume the EnSpell element matches the element corresponding to the gear with the highest elemental damage bonus, ignoring light/dark. Orpheus sash is applies separately.
+        elemental_magic_attack_bonus = (max([player.stats.get(f"{element} Elemental Bonus", 0) for element in ["Earth", "Water", "Wind", "Fire", "Ice", "Thunder"]])/100 + player.stats.get("Elemental Bonus",0)/100)
 
 
     aftermath = player.abilities.get("Aftermath",0)
@@ -287,6 +307,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
             d = get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0) * (3.0 if (np.random.uniform()<0.13 and player.gearset["main"]["Name"] in relic_weapons) else 1.0) * (3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
             main_hit_damage += d
             tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp) # Add TP return from the main-hand hit
+            if enspell_active:
+                magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
 
         # Off-hand hit
         if dual_wield:
@@ -295,6 +317,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0) 
                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                if enspell_active:
+                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
 
 
         # Check main-hand multi-attack
@@ -307,6 +331,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         pdif, crit = get_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                         main_hit_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                         tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                        if enspell_active:
+                            magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
+
         elif np.random.uniform() < ta:
             main_ta_proc = True # Used to increase damage of all hits of a TA for "TA Damage%" stats
             main_ma_proc = True
@@ -317,6 +344,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         pdif, crit = get_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                         main_hit_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                         tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                        if enspell_active:
+                            magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         elif np.random.uniform() < da:
             main_da_proc = True
             main_ma_proc = True
@@ -327,6 +356,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         pdif, crit = get_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                         main_hit_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                         tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                        if enspell_active:
+                            magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         elif np.random.uniform() < oa8_main:
             main_oa8_proc = True
             main_ma_proc = True
@@ -337,6 +368,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         pdif, crit = get_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                         main_hit_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                         tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                        if enspell_active:
+                            magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         elif np.random.uniform() < oa7_main:
             main_ma_proc = True
             for i in range(6):
@@ -346,6 +379,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         pdif, crit = get_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                         main_hit_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                         tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                        if enspell_active:
+                            magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         elif np.random.uniform() < oa6_main:
             main_ma_proc = True
             for i in range(5):
@@ -355,6 +390,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         pdif, crit = get_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                         main_hit_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                         tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                        if enspell_active:
+                            magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         elif np.random.uniform() < oa5_main:
             main_ma_proc = True
             for i in range(4):
@@ -364,6 +401,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         pdif, crit = get_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                         main_hit_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                         tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                        if enspell_active:
+                            magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         elif np.random.uniform() < oa4_main:
             main_ma_proc = True
             for i in range(3):
@@ -373,6 +412,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         pdif, crit = get_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                         main_hit_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                         tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                        if enspell_active:
+                            magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         elif np.random.uniform() < oa3_main:
             main_ma_proc = True
             for i in range(2):
@@ -382,6 +423,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         pdif, crit = get_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                         main_hit_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                         tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                        if enspell_active:
+                            magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         elif np.random.uniform() < oa2_main:
             main_ma_proc = True
             for i in range(1):
@@ -391,6 +434,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         pdif, crit = get_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                         main_hit_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                         tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                        if enspell_active:
+                            magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         physical_damage += main_hit_damage * (1+da_dmg*main_da_proc) * (1+ta_dmg*main_ta_proc)
 
 
@@ -405,6 +450,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                if enspell_active:
+                                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                 elif np.random.uniform() < ta:
                     sub_ta_proc = True
                     for i in range(2):
@@ -414,6 +461,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                if enspell_active:
+                                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                 elif np.random.uniform() < da:
                     sub_da_proc = True
                     for i in range(1):
@@ -423,6 +472,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                if enspell_active:
+                                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                 elif np.random.uniform() < oa8_sub:
                     for i in range(7):
                         if attempted_hits < 8:
@@ -431,6 +482,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                if enspell_active:
+                                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                 elif np.random.uniform() < oa7_sub:
                     for i in range(6):
                         if attempted_hits < 8:
@@ -439,6 +492,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                if enspell_active:
+                                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                 elif np.random.uniform() < oa6_sub:
                     for i in range(5):
                         if attempted_hits < 8:
@@ -447,6 +502,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                if enspell_active:
+                                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                 elif np.random.uniform() < oa5_sub:
                     for i in range(4):
                         if attempted_hits < 8:
@@ -455,6 +512,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                if enspell_active:
+                                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                 elif np.random.uniform() < oa4_sub:
                     for i in range(3):
                         if attempted_hits < 8:
@@ -463,6 +522,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                if enspell_active:
+                                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                 elif np.random.uniform() < oa3_sub:
                     for i in range(2):
                         if attempted_hits < 8:
@@ -471,6 +532,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                if enspell_active:
+                                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                 elif np.random.uniform() < oa2_sub:
                     for i in range(1):
                         if attempted_hits < 8:
@@ -479,6 +542,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                 pdif, crit = get_pdif_melee(attack2, sub_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                 sub_hit_damage += get_phys_damage(sub_dmg, fstr_sub, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                                 tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                if enspell_active:
+                                    magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
             physical_damage += sub_hit_damage * (1+da_dmg*sub_da_proc) * (1+ta_dmg*sub_ta_proc)
 
 
@@ -494,6 +559,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     pdif, crit = get_pdif_melee(attack1 + player.stats.get("Zanshin Attack",0), main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     zanshin_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                                     tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                    if enspell_active:
+                                        magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                     elif np.random.uniform() < zanshin:
                         for i in range(1):
                             if attempted_hits < 8:
@@ -502,6 +569,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     pdif, crit = get_pdif_melee(attack1 + player.stats.get("Zanshin Attack",0), main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     zanshin_damage += get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(3.0 if (np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0) else 1.0)
                                     tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                    if enspell_active:
+                                        magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         physical_damage += zanshin_damage
 
 
@@ -513,6 +582,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                     kickattacks_pdif, crit = get_pdif_melee(attack1 + player.stats.get("Kick Attacks Attack",0), main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                     kickattacks_damage = get_phys_damage(kick_dmg, fstr_kick, 0, kickattacks_pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
                     tp_return += get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                    if enspell_active:
+                        magical_damage += get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
                     # Kick attacks are probably not affected by Verethragna aftermath
         physical_damage += kickattacks_damage
 
@@ -528,13 +599,22 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                     # Daken is not affected by Kannagi aftermath
         physical_damage += daken_damage
 
-        return(physical_damage, tp_return)
+        return(physical_damage, tp_return, magical_damage)
 
 
     else: # Not running simulations, just checking averages
 
         # Use multi-attack values to estimate the number of hits per weapon. This must include Flourishes, which can force multi-attacks.
         main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits = get_ma_rate3(player.main_job, nhits, qa, ta, da, oa_list, dual_wield, hit_rate_matrix, hit_rate_ranged, daken, kickattacks, zanshin, zanhasso, zanshin_hit_rate, zanshin_oa2, striking_flourish, ternary_flourish, True)
+
+        if enspell_active:
+            magical_damage += main_hits * get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main)
+            magical_damage += sub_hits * get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_sub, enspell_damage_sub)
+            magical_damage += kickattack_hits * get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main)
+            magical_damage += zanshin_hits * get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main)
+            magical_damage *= (1 + dayweather)
+            magical_damage *= (1 + elemental_magic_attack_bonus)
+            magical_damage *= (1 + 0.25*magic_crit_rate2)
 
         tp_per_attack_round = 0
         tp_per_attack_round += get_tp(main_hits + sub_hits + kickattack_hits, (mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay), stp)  # Non-zanshin hits get normal TP. Note that H2H use half of today mdelay for each hand
@@ -615,7 +695,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
         physical_damage += zanshin_hits*zanshin_damage
 
 
-    damage = physical_damage
+    damage = physical_damage + magical_damage
 
     if input_metric=="Damage dealt":
         metric = damage
@@ -639,7 +719,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
         metric = time_per_ws
         invert = -1
 
-    return(metric, [damage, tp_per_attack_round, time_per_attack_round, invert]) 
+    return(metric, [damage, tp_per_attack_round, time_per_attack_round, invert], magical_damage) 
 
 
 def cast_spell(player, enemy, spell_name, spell_type, input_metric):
@@ -647,6 +727,42 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
     # Calculate average spell damage. Includes "Ranged Attack" and "Quick Draw"
     # A lot of the magic damage code is repeated and I'd like to reduce this later.
     #
+
+    if spell_name == "EnSpell":
+
+        main_skill_type = player.gearset["main"]["Skill Type"]
+        # two_handed_skills = ["Great Sword", "Great Katana", "Great Axe", "Polearm", "Scythe", "Staff",]
+        # one_handed_skills = ["Axe", "Club", "Dagger", "Sword", "Katana",]
+        # hit_rate_cap_main = 0.99 if main_skill_type in one_handed_skills or main_skill_type == "Hand-to-Hand" else 0.95
+        # enemy_evasion = enemy.stats["Evasion"]
+        # accuracy1 = player.stats["Accuracy1"]
+        # hit_rate11 = get_hit_rate(accuracy1, enemy_evasion, hit_rate_cap_main)
+
+        base_delay = (player.stats["Delay1"] + player.stats["Delay2"])/2 
+        mdelay = (base_delay - player.stats.get("Martial Arts",0)) * ((1 - player.stats.get("Dual Wield",0)/100))
+        stp = player.stats.get("Store TP",0)/100
+        tp_return = get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+
+        enhancing_magic_skill = player.abilities.get("Enh. Skill",0)
+        enspell_damage_percent_main = player.stats.get("EnSpell Damage% main",0) + player.stats.get("EnSpell Damage%",0)
+        enspell_damage_main = player.stats.get("EnSpell Damage main",0) + player.stats.get("EnSpell Damage",0)
+        magic_crit_rate2 = player.stats.get("Magic Crit Rate II",0)/100
+
+        active_storm = player.abilities.get("Storm spell", False)
+        if active_storm!="None" and player.gearset["waist"]["Name"]=="Hachirin-no-Obi":
+            dayweather = 0.25 if "II" in active_storm else 0.10 # Assume the EnSpell element matches the storm spell selected.
+        else:
+            dayweather = 0
+
+        # Assume the EnSpell element matches the element corresponding to the gear with the highest elemental damage bonus, ignoring light/dark. Orpheus sash is applies separately.
+        elemental_magic_attack_bonus = (max([player.stats.get(f"{element} Elemental Bonus", 0) for element in ["Earth", "Water", "Wind", "Fire", "Ice", "Thunder"]])/100 + player.stats.get("Elemental Bonus",0)/100)
+        
+        magical_damage = get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*magic_crit_rate2)
+
+        # magical_damage *= hit_rate11
+        # tp_return *= hit_rate11
+
+        return(magical_damage, [magical_damage, tp_return, 1])
 
     dINT = player.stats["INT"] - enemy.stats["INT"]
     dMND = player.stats["MND"] - enemy.stats["MND"]

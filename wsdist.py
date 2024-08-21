@@ -327,7 +327,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                             elif action_type=="attack round":
                                 decimals = 3 # How many decimals to show in the output.
                                 nondecimals = 8
-                                metric_base, output = average_attack_round(player, enemy, starting_tp, min_tp, input_metric)
+                                metric_base, output, _ = average_attack_round(player, enemy, starting_tp, min_tp, input_metric)
                                 invert = output[-1]
                                 metric = metric_base**invert
 

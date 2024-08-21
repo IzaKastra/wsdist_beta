@@ -337,7 +337,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2024 August 18a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2024 August 20a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -440,7 +440,8 @@ class App(tk.Tk):
                                 "Blizzard","Blizzard II","Blizzard III","Blizzard IV","Blizzard V","Blizzard VI","Blizzaja",
                                 "Thunder","Thunder II","Thunder III","Thunder IV","Thunder V","Thunder VI", "Thundaja","Impact",
                                 "Ranged Attack"],
-                        "RDM":["Stone","Stone II","Stone III","Stone IV","Stone V",
+                        "RDM":["EnSpell", 
+                                "Stone","Stone II","Stone III","Stone IV","Stone V",
                                 "Water","Water II","Water III","Water IV","Water V",
                                 "Aero","Aero II","Aero III","Aero IV","Aero V",
                                 "Fire","Fire II","Fire III","Fire IV","Fire V",
@@ -660,9 +661,15 @@ class App(tk.Tk):
         self.chainspell_toggle.state(["!alternate"])
         self.chainspell_toggle.grid(row=9,column=0,sticky="n")
 
+        self.enspell_value = tk.BooleanVar()
+        self.enspell_toggle = ttk.Checkbutton(self.ja_frame,variable=self.enspell_value, text="EnSpell",width=-25, command=lambda event="enspell": self.update_special_checkboxes(event))
+        self.enspell_tip = Hovertip(self.enspell_toggle,"Base damage is determined using the \"Enhancing Skill\" text entry.",hover_delay=500)
+        self.enspell_toggle.state(["!alternate"])
+        self.enspell_toggle.grid(row=9,column=0,sticky="n")
+
         self.composure_value = tk.BooleanVar()
         self.composure_toggle = ttk.Checkbutton(self.ja_frame,variable=self.composure_value, text="Composure",width=-25, command=lambda event="composure": self.update_special_checkboxes(event))
-        self.composuretip = Hovertip(self.composure_toggle,"Accuracy +20",hover_delay=500)
+        self.composuretip = Hovertip(self.composure_toggle,"Accuracy +20\nEnSpell Damage +200%",hover_delay=500)
         self.composure_toggle.state(["!alternate"])
         self.composure_toggle.grid(row=10,column=0,sticky="n")
 
@@ -991,7 +998,7 @@ class App(tk.Tk):
             self.whm_combo3 = ttk.Combobox(self.whm_frame, values=self.whm_stat_spells, textvariable=self.whm_spell3,state="readonly")
             self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
-            self.whm_spells4 = ["None"] +["Sandstorm","Sandstorm II","Rainstorm","Rainstorm II","Windstorm","Windstorm II","Firestorm","Firestorm II","Hailstorm","Hailstorm II","Thunderstorm","Thunderstorm II","Aurorastorm","Aurorastorm II","Voidstorm","Voidstorm II"]
+            self.whm_spells4 = ["None"] + ["Sandstorm","Sandstorm II","Rainstorm","Rainstorm II","Windstorm","Windstorm II","Firestorm","Firestorm II","Hailstorm","Hailstorm II","Thunderstorm","Thunderstorm II","Aurorastorm","Aurorastorm II","Voidstorm","Voidstorm II"]
             self.whm_spell4 = tk.StringVar(value="None")
             self.whm_combo4 = ttk.Combobox(self.whm_frame, values=self.whm_spells4, textvariable=self.whm_spell4,state="readonly")
             self.whm_combo4.grid(row=5,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
@@ -4766,6 +4773,7 @@ class App(tk.Tk):
                      "Manafont":self.manafont_value.get(),
                      "Manawell":self.manawell_value.get(),
                      "Chainspell":self.chainspell_value.get(),
+                     "EnSpell":self.enspell_value.get(),
                      "Composure":self.composure_value.get(),
                      "Conspirator":self.conspirator_value.get(),
                      "Divine Emblem":self.divine_emblem_value.get(),
@@ -4888,7 +4896,7 @@ class App(tk.Tk):
 
         ws_name = self.ws_name.get()
 
-        if trigger in ["quicklook ws","quicklook spell", "build_distribution"]:
+        if trigger in ["quicklook ws", "quicklook spell", "build_distribution"]:
             if trigger=="quicklook ws":
                 if ws_name=="None":
                     print("No weapon skill selected.")
@@ -5856,7 +5864,7 @@ class App(tk.Tk):
         # Create a list containing: [[checkbox_object, job_required, ML required for subjob use]] to loop over
         special_checkbox_toggles = [[self.aggressor_toggle, self.aggressor_value,"war",0],
                                     [self.barrage_toggle, self.barrage_value, "rng", 0], [self.berserk_toggle, self.berserk_value,"war",0], [self.blood_rage_toggle, self.blood_rage_value,"war",999],[self.building_flourish_toggle, self.building_flourish_value,"dnc",5],
-                                    [self.chainspell_toggle, self.chainspell_value,"rdm",999],[self.climactic_flourish_toggle, self.climactic_flourish_value,"dnc",999], [self.composure_toggle, self.composure_value,"rdm",999],[self.conspirator_toggle, self.conspirator_value,"thf",0], 
+                                    [self.chainspell_toggle, self.chainspell_value,"rdm",999], [self.enspell_toggle, self.enspell_value,"rdm",0],[self.climactic_flourish_toggle, self.climactic_flourish_value,"dnc",999], [self.composure_toggle, self.composure_value,"rdm",999],[self.conspirator_toggle, self.conspirator_value,"thf",0], 
                                     [self.divine_emblem_toggle, self.divine_emblem_value,"pld",999], [self.double_shot_toggle, self.double_shot_value,"rng",999], 
                                     [self.ebullience_toggle, self.ebullience_value,"sch",30],[self.endark_toggle, self.endark_value,"drk",0],[self.enlight_toggle, self.enlight_value,"pld",999],[self.enlightenment_toggle, self.enlightenment_value,"sch",999],
                                     [self.focus_toggle, self.focus_value,"mnk",0], [self.footwork_toggle, self.footwork_value,"mnk",999], [self.futae_toggle, self.futae_value,"nin",999],
@@ -5937,6 +5945,7 @@ class App(tk.Tk):
                 
             if self.mainjob.get().lower() == "rdm":
                 self.temper2_value.set(True)
+                self.enspell_value.set(True)
             if self.mainjob.get().lower() == "run":
                 self.temper1_value.set(True)
 
