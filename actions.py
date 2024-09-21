@@ -21,7 +21,8 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
 
     time_per_attack_round = get_delay_timing(player_tp.stats["Delay1"], player_tp.stats["Delay2"] if dual_wield and (player_ws.gearset["main"]["Skill Type"] != "Hand-to-Hand") else 0, player_tp.stats.get("Dual Wield",0)/100, player_tp.stats.get("Martial Arts",0), player_tp.stats.get("Magic Haste",0), player_tp.stats.get("JA Haste",0), player_tp.stats.get("Gear Haste",0))
 
-    regain_tp = player_tp.stats.get("Dual Wield",0)*(player_tp.gearset["main"]["Name"]=="Gokotai") + player_tp.stats.get("Regain",0)
+    regain_tp = player_tp.stats.get("Dual Wield",0)*(player_tp.gearset["main"]["Name"]=="Gokotai") + player_tp.stats.get("Regain",0) # Total regain in TP set
+    regain_ws = player_ws.stats.get("Dual Wield",0)*(player_ws.gearset["main"]["Name"]=="Gokotai") + player_ws.stats.get("Regain",0) # Total regain in WS set
 
     time = 0 # Time since simulation start in seconds
     n_ws = 10000 # Number of weapon skills to simulate
@@ -61,7 +62,7 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
             tp += tp_return
             regain_tp_return = (time_per_attack_round/3)*(regain_tp) # Extra TP from regain, averaged over time per attack round to simplify things
             tp += regain_tp_return
-            print(f"    Regain tic: +{regain_tp_return:.1f} TP") if verbose_dps and regain_tp_return>0 else None
+            print(f"    Regain bonus: +{regain_tp_return:.1f} TP") if verbose_dps and regain_tp_return>0 else None
             time += time_per_attack_round
             avg_tp_dmg.append(physical_damage + magical_damage)
 
@@ -80,8 +81,11 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         ws_damage += ws_sim[0]
         tp = ws_sim[1]
         time += 2.0 # 2.0 seconds of delay after using a WS  (see https://www.bg-wiki.com/ffxi/Forced_Delay)
-        regain_tp_return_ws = (2./3)*(regain_tp) # Extra TP gained from Regain during the 2s delay after using a WS.
-        tp += regain_tp_return_ws
+        regain_ws_return = (2./3)*(regain_ws) # Extra TP gained from Regain during the 2s delay after using a WS.
+        tp += regain_ws_return
+        print(f"    Regain bonus: +{regain_ws_return:.1f} TP") if verbose_dps and regain_ws_return>0 else None
+        print() if verbose_dps else None
+        print() if verbose_dps else None
 
         avg_ws_dmg.append(ws_sim[0])
         damage_list.append(damage)
@@ -1860,8 +1864,6 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
         print(f"        Phys. Damage: {physical_damage:>5.1f}") if verbose_dps else None
         print(f"        Magic Damage: {magical_damage:>5.1f}") if verbose_dps else None
         print(f"        TP Returned:  {tp_return:>5.1f}") if verbose_dps else None
-        print() if verbose_dps else None
-        print() if verbose_dps else None
 
         return(total_damage, tp_return)
     else:
