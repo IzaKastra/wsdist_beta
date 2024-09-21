@@ -230,7 +230,7 @@ class create_player:
         # Warrior abilities
         if "war" in jobs:
             if self.abilities.get("Warcry",False):
-                if self.main_job=="war":
+                if self.main_job=="war": # main_job WAR does not have access to this buff (TODO: delete first part of this if-statement to remove redundant code)
                     self.stats["Attack%"] = self.stats.get("Attack%",0) + 118./1024
                     self.stats["Attack"] = self.stats.get("Attack",0) + 60
                     self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + 500+200 # (5/5 Savagery Merits with Relic head)
@@ -246,8 +246,6 @@ class create_player:
                 if self.abilities.get("Mighty Strikes",False):
                     self.stats["Crit Rate"] = 100
                     self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 40
-                if self.abilities.get("Blood Rage",False):
-                    self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 20 + 20
         # ===========================================================================
         # ===========================================================================
         # Monk abilities
@@ -266,6 +264,11 @@ class create_player:
                     self.stats["Attack"] = self.stats.get("Attack",0) + (100+40)*impetus_potency
                     self.stats["Crit Damage"] = self.stats.get("Crit Damage",0) + 50*impetus_potency*("Bhikku Cyclas" in self.gearset["body"]["Name"])
                     self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 100*impetus_potency*("Bhikku Cyclas" in self.gearset["body"]["Name"])
+            if self.sub_job=="mnk":
+                if self.abilities.get("Focus",False):
+                    self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 20*(1 - (99 - (self.sub_job_level))/100)
+                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 100*(1 - (99 - (self.sub_job_level))/100)
+
         # ===========================================================================
         # ===========================================================================
         # Black Mage abilities
@@ -390,12 +393,6 @@ class create_player:
                 self.stats["Ninjutsu Magic Damage"] = self.stats.get("Ninjutsu Magic Damage",0) + 100
         # ===========================================================================
         # ===========================================================================
-        # Blue Mage abilities
-        if self.main_job=="blu":
-            if self.abilities.get("Nature's Meditation",False):
-                self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.20
-        # ===========================================================================
-        # ===========================================================================
         # Corsair abilities
         if self.main_job == "cor":
             if self.abilities.get("Triple Shot",False):
@@ -452,6 +449,15 @@ class create_player:
                 swordplay_potency = 0.9 # Assume 90% potency
                 self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 60*swordplay_potency
                 self.stats["Evasion"] = self.stats.get("Evasion",0) + 60*swordplay_potency
+        # ===========================================================================
+        # ===========================================================================
+        # Corsair abilities
+        if self.main_job=="bst":
+            if self.abilities.get("Rage",False):
+                self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.50
+            if self.abilities.get("Frenzied Rage",False):
+                self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.25
+
         # ===========================================================================
         # ===========================================================================
 
@@ -590,12 +596,50 @@ class create_player:
 
             # Empyrean Aftermath is entirely handled in the main code when calculating damage.
 
+        # Add buffs accessible to all jobs from assumed party members (SMN, BLU, BST, WAR, etc)
+
         # Add WHM Auspice checkbox here. TODO
         if self.abilities.get("Auspice",False):
             self.stats["Subtle Blow"] = self.stats.get("Subtle Blow",0) + 29
 
         if self.abilities.get("Shell V",False):
             self.stats["MDT"] = self.stats.get("MDT",0) - 29
+
+        if self.abilities.get("Blood Rage",False):
+            self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 20
+            if self.main_job=="war":
+                self.stats["Ranged Crit Rate"] = self.stats.get("Ranged Crit Rate",0) + 20
+
+        if self.abilities.get("warcry_main", False) and self.main_job!="war":
+            self.stats["Attack%"] = self.stats.get("Attack%",0) + int(99/4 + 4.75)/256
+            self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + 500+200
+
+        if self.abilities.get("Crimson Howl", False):
+            self.stats["Attack%"] = self.stats.get("Attack%",0) + int(99/4 + 4.75)/256
+
+        if self.abilities.get("Crystal Blessing", False):
+            self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + 250
+
+        if self.abilities.get("ifrit_favor", False):
+            self.stats["DA"] = self.stats.get("DA",0) + 25
+
+        if self.abilities.get("shiva_favor", False):
+            self.stats["Magic Attack"] = self.stats.get("Magic Attack",0) + 39
+
+        if self.abilities.get("ramuh_favor", False):
+            self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 23
+
+
+        if self.abilities.get("haste_samba_main", False) and self.main_job!="dnc":
+            self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 10.1
+
+        if self.abilities.get("Nature's Meditation",False): # https://www.bg-wiki.com/ffxi/Nat._Meditation
+            self.stats["Attack%"] = self.stats.get("Attack%",0) + 52./256
+
+        if self.abilities.get("Mighty Guard",False): # https://www.bg-wiki.com/ffxi/Nat._Meditation
+            self.stats["Magic Haste"] = self.stats.get("Magic Haste",0) + 0.15
+            self.stats["Magic Defense"] = self.stats.get("Magic Defense",0) + 15
+            
 
 
     # def add_gear_stats(self, stats, gearset):
@@ -944,8 +988,8 @@ class create_player:
             self.stats["Store TP"] = self.stats.get("Store TP",0) + 10 # Kakka: Ichi
             self.stats["Subtle Blow"] = self.stats.get("Subtle Blow",0) + 10 # Myoshu: Ichi
             
-        if "dnc" in [self.main_job, self.sub_job] and self.abilities.get("Haste Samba",False):
-            self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 10 if self.main_job == "dnc" else self.stats.get("JA Haste",0) + 5 # Haste Samba
+        if self.sub_job=="dnc" and self.abilities.get("Haste Samba",False):
+            self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 5.1
 
 
 
