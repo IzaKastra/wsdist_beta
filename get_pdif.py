@@ -24,7 +24,7 @@ def get_pdif_melee(player_attack, wpn_type_skill, pdl_trait, pdl_gear=0, enemy_d
     # Define your capped PDIF value after including bonuses from traits and gear.
     pdif_cap = (pdif_base_cap+pdl_trait)*(1+pdl_gear)
 
-    crit = random.uniform() < crit_rate  # True or False  (1 or 0)
+    crit = random.uniform(0,1) < crit_rate  # True or False  (1 or 0)
 
     ratio = player_attack / enemy_defense
 
