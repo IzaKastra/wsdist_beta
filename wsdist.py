@@ -423,7 +423,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
             print(f"Avg TP per round = {best_output[1]:<5.1f} TP")
         else:
             print(f"Avg Damage per round = {best_output[0]:<{nondecimals}.{decimals}f} damage")
-            print(f"Avg time per round = {best_output[2]:<5.1f} TP")
+            print(f"Avg time per round = {best_output[2]:<5.1f} s")
             print(f"Avg TP per round = {best_output[1]:<5.1f} TP")
     else:
         print(f"Avg Damage = {best_output[0]:<{nondecimals}.{decimals}f} damage")
