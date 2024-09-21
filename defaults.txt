@@ -123,6 +123,8 @@ ws_legs=Nyame Flanchard R25B
 ws_feet=Hattori Kyahan +3
 
 DamageLimit=True
+VerboseDPS=True
+VerboseSwaps=False
 
 # Window size:  widthxheight
 dimensions=700x885
