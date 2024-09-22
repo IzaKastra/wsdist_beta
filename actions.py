@@ -318,18 +318,17 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
         sub_enspell_damage = get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
 
     elif player.abilities.get("Enlight II", False):
+        enlight_potency = 0.8
         if enhancing_magic_skill <=500:
             main_enspell_damage = 2*((enhancing_magic_skill + 85)/13) + ((enhancing_magic_skill + 85)/26)
         else:
             main_enspell_damage = 2*((enhancing_magic_skill + 400)/20) + ((enhancing_magic_skill + 400)/40)
-        main_enspell_damage *= 0.80
-        main_enspell_damage += 20
+        main_enspell_damage = int(main_enspell_damage * enlight_potency) + 20 # +20 from Job points
         sub_enspell_damage = 0
 
     elif player.abilities.get("Endark II", False): # https://ffxiclopedia.fandom.com/wiki/Endark_II
-        main_enspell_damage = ((enhancing_magic_skill + 20)/13 + 5)*2.5
-        main_enspell_damage *= 0.80
-        main_enspell_damage += 20
+        endark_potency = 0.8
+        main_enspell_damage = int(((enhancing_magic_skill + 20)/13 + 5)*2.5 * endark_potency) + 20 # +20 from Job points
         sub_enspell_damage = 0
 
 
