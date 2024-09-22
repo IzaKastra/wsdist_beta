@@ -1586,10 +1586,10 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 1
         sc = ["Darkness","Distortion"]
     elif ws_name == "Oshala":
-        base_ftp = [1, 2, 3] 
+        base_ftp = [3.945, 7.894, 11.839] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False 
-        wsc = 0.0*player_dex 
+        wsc = 0.45*(player_int + player_mnd)
         nhits = 1
         sc = ["Induration","Reverberation","Fusion"]
 
