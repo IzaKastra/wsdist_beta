@@ -162,6 +162,7 @@ def load_defaults(app,defaults):
 
     app.verbose_swaps.set(defaults.get("VerboseSwaps",True))
     app.verbose_dps_outputs.set(defaults.get("VerboseDPS",False))
+    app.very_verbose_dps_outputs.set(defaults.get("very_verboseDPS",False))
 
     # Finally, update the window size based on the input file.
     app.geometry(defaults.get("dimensions","700x885"))
@@ -302,6 +303,7 @@ def save_defaults():
         # Save 99999 damage limit preference
         ofile.write(f"\nDamageLimit={app.damage_limit99999.get()}\n")
         ofile.write(f"VerboseDPS={app.verbose_dps_outputs.get()}\n")
+        ofile.write(f"very_verboseDPS={app.very_verbose_dps_outputs.get()}\n")
         ofile.write(f"VerboseSwaps={app.verbose_swaps.get()}\n")
 
         # Save the current window size. Most/all of the widgets use a specific size anyway, so resizing the window is mostly pointless for now.
@@ -341,7 +343,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2024 September 21a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2024 September 22a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -378,6 +380,9 @@ class App(tk.Tk):
 
         self.verbose_dps_outputs = tk.BooleanVar()
         self.settings_menu.add_checkbutton(label="Verbose DPS", onvalue=True, offvalue=False, variable=self.verbose_dps_outputs)
+
+        self.very_verbose_dps_outputs = tk.BooleanVar()
+        self.settings_menu.add_checkbutton(label="Very Verbose DPS", onvalue=True, offvalue=False, variable=self.very_verbose_dps_outputs)
 
         self.verbose_swaps = tk.BooleanVar()
         self.settings_menu.add_checkbutton(label="Verbose Swaps", onvalue=True, offvalue=False, variable=self.verbose_swaps)
@@ -694,7 +699,7 @@ class App(tk.Tk):
 
         self.enlight_value = tk.BooleanVar()
         self.enlight_toggle = ttk.Checkbutton(self.ja_frame,variable=self.enlight_value, text="Enlight II",width=-25, command=lambda event="enlight": self.update_special_checkboxes(event))
-        self.enlighttip = Hovertip(self.enlight_toggle,"Accuracy +112\n(assumes 80% max potency",hover_delay=500)
+        self.enlighttip = Hovertip(self.enlight_toggle,"Accuracy +120 at 600 skill\n(assumes 80% max potency",hover_delay=500)
         self.enlight_toggle.state(["!alternate"])
         self.enlight_toggle.grid(row=12,column=0,sticky="n")
 
@@ -706,7 +711,7 @@ class App(tk.Tk):
 
         self.endark_value = tk.BooleanVar()
         self.endark_toggle = ttk.Checkbutton(self.ja_frame,variable=self.endark_value, text="Endark II",width=-25, command=lambda event="endark": self.update_special_checkboxes(event))
-        self.endarktip = Hovertip(self.endark_toggle,"Accuracy +16\nAttack +120\n(assumes 80% max potency with 600 Dark Magic Skill)",hover_delay=500)
+        self.endarktip = Hovertip(self.endark_toggle,"Accuracy +20\n(assumes 80% max potency)\nAttack +125 at 600 skill",hover_delay=500)
         self.endark_toggle.state(["!alternate"])
         self.endark_toggle.grid(row=14,column=0,sticky="n")
 
@@ -4354,7 +4359,7 @@ class App(tk.Tk):
         self.sim_frame.grid(row=2, column=0, padx=2, pady=10, sticky="w")
 
         self.sim_button = tk.Button(self.sim_frame, text="Run DPS simulations",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("damage simulation"))
-        self.sim_button_tip = Hovertip(self.sim_button,f"Simulate 10 hours of weapon skills using the above TP and WS sets.\nWeapon skills are used after reaching Minimum TP through normal attack rounds with the selected buffs.")
+        self.sim_button_tip = Hovertip(self.sim_button,f"Simulate attack rounds and weapon skills using the above TP and WS sets.\nWeapon skills are used after reaching Minimum TP value provided in the Inputs tab.")
         self.sim_button.grid(row=1,column=0,columnspan=2,padx=5,pady=5)
 
         self.build_dist = tk.Button(self.sim_frame, text="Create weapon skill\ndistribution plot",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("build distribution"))
@@ -4861,6 +4866,7 @@ class App(tk.Tk):
         # Test a given gearset, either with a quick look or an optimization
         #
         abilities = {"Verbose DPS":self.verbose_dps_outputs.get(),
+                    "Very Verbose DPS":self.very_verbose_dps_outputs.get(),
                     "Verbose Swaps":self.verbose_swaps.get(),
                     "Magic Burst":self.magic_burst_value.get(),
                      "Warcry":self.warcry_value.get(),
@@ -6053,6 +6059,12 @@ class App(tk.Tk):
             if self.mainjob.get().lower() == "run":
                 self.temper1_value.set(True)
 
+            if self.mainjob.get().lower() == "drk":
+                self.endark_value.set(True)
+
+            if self.mainjob.get().lower() == "pld":
+                self.enlight_value.set(True)
+
 
 
 
@@ -6070,53 +6082,6 @@ class App(tk.Tk):
             else:
                 self.true_shot_toggle.grid_forget()
                 self.true_shot_value.set(False)
-
-
-            # Manually display all abilities available to all jobs (from party buffs for example) and make them False
-            # self.angon_value.set(False)
-            # self.angon_toggle.grid(row=0,column=0,sticky="n")
-
-            # self.distract3_value.set(False) 
-            # self.distract3_toggle.grid(row=1,column=0,sticky="n")
-
-            # self.blood_rage_value.set(False) 
-            # self.blood_rage_toggle.grid(row=4,column=0,sticky="n")
-
-            # self.warcry_main_value.set(False) 
-            # self.warcry_main_toggle.grid(row=5,column=0,sticky="n")
-
-            # self.crimson_howl_value.set(False) 
-            # self.crimson_howl_toggle.grid(row=6,column=0,sticky="n")
-
-            # self.crystal_blessing_value.set(False) 
-            # self.crystal_blessing_toggle.grid(row=7,column=0,sticky="n")
-
-            # self.haste_samba_main_value.set(False) 
-            # self.haste_samba_main_toggle.grid(row=8,column=0,sticky="n")
-
-            # self.natures_meditation_value.set(False) 
-            # self.natures_meditation_toggle.grid(row=9,column=0,sticky="n")
-
-            # self.mighty_guard_value.set(False) 
-            # self.mighty_guard_toggle.grid(row=10,column=0,sticky="n")
-
-            # self.ifrit_favor_value.set(False) 
-            # self.ifrit_favor_toggle.grid(row=11,column=0,sticky="n")
-
-            # self.shiva_favor_value.set(False) 
-            # self.shiva_favor_toggle.grid(row=12,column=0,sticky="n")
-
-            # self.ramuh_favor_value.set(False) 
-            # self.ramuh_favor_toggle.grid(row=13,column=0,sticky="n")
-
-            # self.corrosive_ooze_value.set(False) 
-            # self.corrosive_ooze_toggle.grid(row=14,column=0,sticky="n")
-
-            # self.box_step_main_value.set(False) 
-            # self.box_step_main_toggle.grid(row=16,column=0,sticky="n")
-
-            # self.swooping_frenzy_value.set(False) 
-            # self.swooping_frenzy_toggle.grid(row=17,column=0,sticky="n")
 
             # Swap Boost-spells for Gain-spells when using RDM main.
             if self.mainjob.get().lower() == "rdm":
@@ -6198,6 +6163,16 @@ class App(tk.Tk):
             self.box_step_value.set(False)
         elif trigger=="box_step":
             self.box_step_main_value.set(False)
+
+        if trigger=="enlight":
+            self.enspell_value.set(False)
+            self.endark_value.set(False)
+        elif trigger=="endark":
+            self.enspell_value.set(False)
+            self.enlight_value.set(False)
+        elif trigger=="enspell":
+            self.endark_value.set(False)
+            self.enlight_value.set(False)
 
 
 
