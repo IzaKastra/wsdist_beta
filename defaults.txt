@@ -124,6 +124,7 @@ ws_feet=Hattori Kyahan +3
 
 DamageLimit=True
 VerboseDPS=True
+very_verboseDPS=True
 VerboseSwaps=False
 
 # Window size:  widthxheight
