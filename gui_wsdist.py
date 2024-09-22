@@ -18,6 +18,8 @@ from fancy_plot import *
 
 from idlelib.tooltip import Hovertip # https://stackoverflow.com/questions/3221956/how-do-i-display-tooltips-in-tkinter
 
+from colorama import just_fix_windows_console # https://github.com/tartley/colorama?tab=readme-ov-file#initialisation
+
 def load_defaults(app,defaults):
     #
     # Read the input file for default values to use when opening a fresh GUI.
@@ -343,7 +345,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2024 September 22a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2024 September 22b)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
