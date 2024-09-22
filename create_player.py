@@ -309,12 +309,12 @@ class create_player:
                     divine_skill = self.abilities.get("Enh. Skill",0)
                     divine_skill = 0 if divine_skill < 0 else divine_skill
                     if divine_skill <=500:
-                        enlight_acc = 2*((divine_skill + 85)/13) + ((divine_skill + 85)/26) + 20 # +20 from JP
+                        enlight_acc = 2*((divine_skill + 85)/13) + ((divine_skill + 85)/26)
                     else:
-                        enlight_acc = 2*((divine_skill + 400)/20) + ((divine_skill + 400)/40) + 20 # +20 from JP
+                        enlight_acc = 2*((divine_skill + 400)/20) + ((divine_skill + 400)/40)
 
                     enlight_potency = 0.80
-                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + enlight_acc*enlight_potency
+                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + enlight_acc*enlight_potency + 20 # +20 from JP.  +120 accuracy at 600 skill
         # ===========================================================================
         # ===========================================================================
         # Dark Knight abilities
@@ -324,10 +324,11 @@ class create_player:
                 self.stats["Attack"] = self.stats.get("Attack",0) + 40*(self.main_job=="drk")
                 self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 15 + 10*(self.main_job=="drk") if self.gearset["main"]["Skill Type"] in two_handed else self.stats.get("JA Haste",0)
             if self.main_job=="drk":
-                if self.abilities.get("Endark II",False): # Assuming 600 Dark Magic Skill
+                if self.abilities.get("Endark II",False): # https://ffxiclopedia.fandom.com/wiki/Endark_II
                     endark_potency = 0.80
-                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + (20)*endark_potency
-                    self.stats["Attack"] = self.stats.get("Attack",0) + (131+20)*endark_potency
+                    dark_magic_skill = self.abilities.get("Enh. Skill",0)
+                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 20
+                    self.stats["Attack"] = self.stats.get("Attack",0) + (((dark_magic_skill + 20)/13 + 5)*2.5) * endark_potency + 20 # +125 attack at 600 skill
         # # ===========================================================================
         # # ===========================================================================
         # # Bard abilities
