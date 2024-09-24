@@ -312,7 +312,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
             dayweather = 0
 
         # Assume the EnSpell element matches the element corresponding to the gear with the highest elemental damage bonus, ignoring light/dark. Orpheus sash is applies separately.
-        elemental_magic_attack_bonus = (max([player.stats.get(f"{element} Elemental Bonus", 0) for element in ["Earth", "Water", "Wind", "Fire", "Ice", "Thunder"]])/100 + player.stats.get("Elemental Bonus",0)/100)
+        elemental_magic_attack_bonus = (max([player.stats.get(f"{element.capitalize()} Elemental Bonus", 0) for element in ["Earth", "Water", "Wind", "Fire", "Ice", "Thunder"]])/100 + player.stats.get("Elemental Bonus",0)/100)
 
         main_enspell_damage = get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
         sub_enspell_damage = get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_sub) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*(np.random.uniform() < magic_crit_rate2))
@@ -1109,8 +1109,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
             dayweather = 0
 
         # Assume the EnSpell element matches the element corresponding to the gear with the highest elemental damage bonus, ignoring light/dark. Orpheus sash is applies separately.
-        elemental_magic_attack_bonus = (max([player.stats.get(f"{element} Elemental Bonus", 0) for element in ["Earth", "Water", "Wind", "Fire", "Ice", "Thunder"]])/100 + player.stats.get("Elemental Bonus",0)/100)
-        
+        elemental_magic_attack_bonus = (max([player.stats.get(f"{element.capitalize()} Elemental Bonus", 0) for element in ["Earth", "Water", "Wind", "Fire", "Ice", "Thunder"]])/100 + player.stats.get("Elemental Bonus",0)/100)
         magical_damage = get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*magic_crit_rate2)
 
         # magical_damage *= hit_rate11
@@ -1179,7 +1178,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
                 dayweather = 1.25 if "II" in active_storm else 1.1
 
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
-        element_magic_attack_bonus = 1 + (player.stats.get(f"{element} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
+        element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
 
         magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather*enemy_mdt*affinity*magic_crit_rate2
 
@@ -1228,7 +1227,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
                 dayweather = 1.25 if "II" in active_storm else 1.1
 
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
-        element_magic_attack_bonus = 1 + (player.stats.get(f"{element} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
+        element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
 
         ninjutsu_damage_multiplier = 1 + player.stats.get("Ninjutsu Damage%",0)/100
         
@@ -1347,8 +1346,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
                 dayweather = 1.25 if "II" in active_storm else 1.1
 
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
-        element_magic_attack_bonus = 1 + (player.stats.get(f"{element} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
-
+        element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
 
 
         magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather*enemy_mdt*affinity*magic_crit_rate2*ebullience_multiplier*klimaform_multiplier*magic_burst_multiplier*burst_bonus_multiplier
@@ -2248,7 +2246,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
         magic_attack_ratio = (100 + magic_attack) / (100 + enemy_magic_defense)
 
          # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
-        element_magic_attack_bonus = 1 + (player.stats.get(f"{element} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100)
+        element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100)
 
         dayweather = 1.0
         storm_elements = {"Sandstorm II":"earth","Rainstorm II":"water","Windstorm II":"wind","Firestorm II":"fire","Hailstorm II":"ice","Thunderstorm II":"thunder","Aurorastorm II":"light","Voidstorm II":"dark",
