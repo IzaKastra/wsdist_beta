@@ -631,7 +631,7 @@ class create_player:
             self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 23
 
 
-        if self.abilities.get("haste_samba_main", False) and self.main_job!="dnc":
+        if self.abilities.get("haste_samba_main", False):
             self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 10.1
 
         if self.abilities.get("Nature's Meditation",False): # https://www.bg-wiki.com/ffxi/Nat._Meditation
