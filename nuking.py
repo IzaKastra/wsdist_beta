@@ -77,7 +77,9 @@ def quickdraw(rng_dmg, ammo_dmg, element, gearset, player_matk, player_magic_dam
     return(damage)
 
 def nuking(spell, spelltype, tier, element, job_abilities, main_job, sub_job, gearset, player_INT, player_matk, mdmg, enemy_INT, enemy_mdb, enemy_meva, ninjutsu_damage, futae=False, burst=False, ebullience=False):
-
+    #
+    # Does this function even get used anymore? Commenting it out seems to do nothing and there are no matches for searches for "nuking("
+    #
     steps = 2 # 2-step skillchain
 
     # print(spelltype, tier, element, gearset, player_INT, player_matk, mdmg, enemy_INT, enemy_mdb, ninjutsu_damage, futae, burst, steps)
