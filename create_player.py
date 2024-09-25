@@ -611,7 +611,7 @@ class create_player:
             if self.main_job=="war":
                 self.stats["Ranged Crit Rate"] = self.stats.get("Ranged Crit Rate",0) + 20
 
-        if self.abilities.get("warcry_main", False) and self.main_job!="war":
+        if self.abilities.get("warcry_main", False):
             self.stats["Attack%"] = self.stats.get("Attack%",0) + int(99/4 + 4.75)/256
             self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + 500+200
 
