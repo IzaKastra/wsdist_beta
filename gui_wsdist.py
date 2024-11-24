@@ -152,6 +152,7 @@ def load_defaults(app,defaults):
 
     # Load odyssey rank and TVR ring choices
     app.odyrank.set(defaults.get("odyrank","30"))
+    app.nyame_override_toggle.set(defaults.get("nyame<30",True))
     app.tvr_ring.set(defaults.get("tvrring","Cornelia's"))
 
     # Load damage metrics
@@ -184,6 +185,7 @@ def save_defaults():
         ofile.write(f"spell={app.spell_name.get()}\n")
         ofile.write(f"ws={app.ws_name.get()}\n")
         ofile.write(f"initialtp={app.tp0.get()}\n")
+        ofile.write(f"nyame<30={app.nyame_override_toggle.get()}\n")
         ofile.write(f"odyrank={app.odyrank.get()}\n")
         ofile.write(f"tvrring={app.tvr_ring.get()}\n")
 
@@ -345,7 +347,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2024 October 13a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2024 November 24a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -2006,21 +2008,28 @@ class App(tk.Tk):
 # ====================================================================================================================================================================================
 
         self.select_frame = ttk.Frame(self.frame41,)
-        self.select_frame.grid(row=2,column=0,padx=0,pady=25)
+        self.select_frame.grid(row=3,column=0,padx=0,pady=25)
+
+
+
+        self.nyame_override_toggle = tk.BooleanVar(value=True)
+        self.nyame_override_checkbox = ttk.Checkbutton(self.select_frame, text="Nyame <= R25", variable=self.nyame_override_toggle) 
+        self.nyame_override_tip = Hovertip(self.nyame_override_checkbox,"When using \"Odyssey Rank\"=30, select Nyame R25B instead of Nyame R30B.",hover_delay=500)
+        self.nyame_override_checkbox.grid(row=0, column=1, sticky="ne", padx=0, pady=1)
 
         self.odyrank = tk.IntVar(value=30)
         self.odyrank_select = ttk.Combobox(self.select_frame, textvariable=self.odyrank,values=[30, 25, 20, 15, 0],state="readonly",width=5)
         self.odyrank_tip = Hovertip(self.odyrank_select,"Only select Odyssey equipment with this rank when using the \"Select ___\" buttons.",hover_delay=500)
-        self.odyrank_select.grid(row=0,column=1,padx=0,pady=0,sticky="e")
+        self.odyrank_select.grid(row=1,column=1,padx=0,pady=0,sticky="e")
         self.odyrank_label = ttk.Label(self.select_frame,text="Odyssey Rank", width=15)
-        self.odyrank_label.grid(row=0,column=0,padx=0,pady=0,sticky="w")
+        self.odyrank_label.grid(row=1,column=0,padx=0,pady=0,sticky="w")
 
         self.tvr_ring = tk.StringVar(value="Cornelia's")
-        self.tvr_ring_select = ttk.Combobox(self.select_frame, textvariable=self.tvr_ring,values=["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's"],state="readonly",width=20)
+        self.tvr_ring_select = ttk.Combobox(self.select_frame, textvariable=self.tvr_ring,values=["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's","None"],state="readonly",width=20)
         self.tvr_ring_tip = Hovertip(self.tvr_ring_select,"Only select this ring when using the \"Select ___\" buttons.",hover_delay=500)
-        self.tvr_ring_select.grid(row=1,column=1,padx=0,pady=0,sticky="e")
+        self.tvr_ring_select.grid(row=2,column=1,padx=0,pady=0,sticky="e")
         self.tvr_ring_label = ttk.Label(self.select_frame,text="TVR Ring", width=15)
-        self.tvr_ring_label.grid(row=1,column=0,padx=0,pady=0,sticky="w")
+        self.tvr_ring_label.grid(row=2,column=0,padx=0,pady=0,sticky="w")
 
 
 
@@ -4549,6 +4558,18 @@ class App(tk.Tk):
                         if "Nyame" in label and "A"==label[-1]:
                             item.set(False)
 
+                        if label.split()[-1] == "V":
+                            item.set(False)
+
+                        # Unselect Nyame R30 in favor of R25
+                        if self.nyame_override_toggle.get() and "un" not in trigger:
+                            if "Nyame" in label and ("R30B" in label or "R25B" in label):
+                                item.set(False)
+                                if self.odyrank.get()==30 and "R25B" in label:
+                                    item.set(True)
+
+
+
                         # Unselect JSE +2 Earrings
                         if jse_ear_names[self.mainjob.get().lower()] in label and "+2" in label:
                             item.set(False)
@@ -4995,6 +5016,9 @@ class App(tk.Tk):
         player = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset, buffs, abilities)
         player_tpset = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset_tp, buffs, abilities)
         player_wsset = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset_ws, buffs, abilities)
+
+        if self.tp2.get() < self.tp1.get():
+            self.tp2.set(self.tp1.get())
 
         effective_tp = (self.tp2.get() + self.tp1.get()) / 2 + player.stats.get("TP Bonus",0)
         effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
