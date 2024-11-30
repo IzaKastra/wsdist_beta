@@ -1341,9 +1341,10 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         resist_state = get_resist_state_average(magic_hit_rate) # TODO: When creating a distribution, use a proper sampling of resist states, rather than the average.
         magic_attack_ratio = (100 + magic_attack) / (100 + enemy_magic_defense)
 
-        if player.gearset["waist"]["Name"]=="Hachirin-no-Obi" and active_storm:
+        if (player.gearset["waist"]["Name"]=="Hachirin-no-Obi" or tier=="helix") and active_storm:
             if element.lower() == storm_elements.get(active_storm,False):
                 dayweather = 1.25 if "II" in active_storm else 1.1
+
 
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
         element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
