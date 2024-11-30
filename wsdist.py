@@ -48,6 +48,15 @@ def format_bgwiki(ws_name, tp, player):
         player.gearset["ear1"] = ear2
         player.gearset["ear2"] = ear1
 
+    # Do it again because the above doesn't always work??
+    empy = ["Hattori", "Heathen", "Lethargy", "Eber", "Wicce", "Peltast", "Boii", "Bhikku", "Skulker", "Chevalier", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner", "Hashishin", "Chasseur", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]
+    for name in empy:
+        if name.lower() in player.gearset["ear1"]["Name"].lower():
+            ear2 = player.gearset["ear2"]
+            ear1 = player.gearset["ear1"]
+            player.gearset["ear1"] = ear2
+            player.gearset["ear2"] = ear1
+
     # Epami looks best in the left ring slot, but only if sroda is not also equipped.
     if "epami" in player.gearset["ring2"]["Name"].lower():
         if "sroda" not in player.gearset["ring1"]["Name"].lower():
