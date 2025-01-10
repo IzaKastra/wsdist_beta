@@ -14796,3 +14796,7 @@
 28669;butznar shield +1;Butznar Shield +1
 28670;leafkin shield;Leafkin Shield
 28671;butznar shield;Butznar Shield
+24270;null masque;Null Masque
+26042;null loop;Null Loop
+26367;null belt;Null Belt
+26274;null shawl;Null Shawl
