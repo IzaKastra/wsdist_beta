@@ -12,7 +12,7 @@ import os
 sys.path.append(os.path.dirname(sys.executable))
 from gear import *
 
-def format_bgwiki(ws_name, tp, player):
+def format_bgwiki(ws_name, tp, player, best_metric):
     #
     # Input: A player class containing job and gear info.
     # Output: None
@@ -28,7 +28,7 @@ def format_bgwiki(ws_name, tp, player):
 
     backaugs = []
     for stat in player.gearset["back"]:
-        if stat.lower() in ["str","dex","vit","agi","int","mnd","chr","da","store TP","dual wield","crit rate","weapon skill damage", "magic attack"]:
+        if stat.lower() in ["str","dex","vit","agi","int","mnd","chr","da","store tp","dual wield","crit rate","weapon skill damage", "magic attack"]:
             backaugs.append(stat)
     
 
@@ -96,8 +96,8 @@ def format_bgwiki(ws_name, tp, player):
         |Equipment Set=
         {'{'}{'{'}
             Equipment Set
-            |CaptionTop = {buffs} Buff
-            |CaptionBottom =
+            |CaptionTop = 25% DT
+            |CaptionBottom = {best_metric**-1:.3f} s
             |Main = {hardcode_gearset["main"]} (Level 119 III)
             |Sub = {hardcode_gearset["sub"]}
             |Range = {hardcode_gearset["ranged"]}
@@ -553,7 +553,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
 
     # Print additional output formatted for BG Wiki item sets.
     if False:
-        format_bgwiki(header, (min_tp), best_player)
+        format_bgwiki(header, (min_tp), best_player, best_metric)
 
     return(best_player, best_output)
 
