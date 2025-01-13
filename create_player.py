@@ -1,10 +1,6 @@
-# TODO thoughts:
-#  Auspice checkbox
-#  Enlight checkbox (Accuracy+20 on PLD) to go with the Endark checkbox
-#
-#
-#
 from enemies import *
+
+
 class create_enemy:
     #
     # Create an enemy class so that we may modify its stats more easily.
@@ -833,6 +829,8 @@ class create_player:
              # Since we add traits immediately after base parameters, all stats should be 0 except those from <main_job> traits. This ordering ensures that we can cleanly compare <main_job> and <sub_job> trait tiers and keep only the highest without stacking them.
             if self.sub_job in traits[trait]:
                 for k in traits[trait][self.sub_job]:
+                    if trait=="DA" and self.main_job=="dnc" and self.sub_job=="war" and self.abilities.get("Saber Dance",False): # Saber Dance does not stack with DA traits apparently.
+                        continue
                     if self.sub_job_level >= k[0]:
                         self.stats[trait] = max(self.stats.get(trait,0), k[1]) # Only keep the highest tier trait between your <main_job> and <sub_job>.
                         break
