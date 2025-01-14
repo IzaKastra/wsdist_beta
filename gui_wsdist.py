@@ -347,7 +347,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 January 14a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 January 14b)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -984,6 +984,12 @@ class App(tk.Tk):
         self.swooping_frenzy_tip = Hovertip(self.swooping_frenzy_toggle,"Enemy Magic Defense -25\nEnemy Defense -25%",hover_delay=500)
         self.swooping_frenzy_toggle.state(["!alternate"])
         self.swooping_frenzy_toggle.grid(row=61,column=0,sticky="n")
+
+        self.closed_position_value = tk.BooleanVar()
+        self.closed_position_toggle = ttk.Checkbutton(self.ja_frame,variable=self.closed_position_value, text="Closed Position",width=-25, command=lambda event="closed_position": self.update_special_checkboxes(event))
+        self.closed_position_tip = Hovertip(self.closed_position_toggle,"+15 Accuracy, +15 Evasion\nDNC Relic+3 feet: Store TP +15",hover_delay=500)
+        self.closed_position_toggle.state(["!alternate"])
+        self.closed_position_toggle.grid(row=62,column=0,sticky="n")
 
 
         self.ja_canvas.create_window((0,0),window=self.ja_frame, anchor="nw")
@@ -4943,6 +4949,7 @@ class App(tk.Tk):
                      "haste_samba_main":self.haste_samba_main_value.get(),
                      "Klimaform":self.klimaform_value.get(),
                      "Overwhelm":self.overwhelm_value.get(),
+                     "closed_position":self.closed_position_value.get(),
                      "Distract III":self.distract3_value.get(),
                      "ifrit_favor":self.ifrit_favor_value.get(),
                      "shiva_favor":self.shiva_favor_value.get(),
@@ -6010,20 +6017,20 @@ class App(tk.Tk):
         #     Values of "999" mean the ability is only available to the main job
         #     Other values, such as Ebullience at "30", mean the main job must be master level 30 or higher to use the ability through subjobs.
         special_checkbox_toggles = [[self.aggressor_toggle, self.aggressor_value,"war",0],
-                                    [self.barrage_toggle, self.barrage_value, "rng", 0], [self.berserk_toggle, self.berserk_value,"war",0],[self.box_step_toggle, self.box_step_value, "dnc", 0], [self.building_flourish_toggle, self.building_flourish_value,"dnc",5],
-                                    [self.chainspell_toggle, self.chainspell_value,"rdm",999], [self.enspell_toggle, self.enspell_value,"rdm",0],[self.climactic_flourish_toggle, self.climactic_flourish_value,"dnc",999], [self.composure_toggle, self.composure_value,"rdm",999],[self.conspirator_toggle, self.conspirator_value,"thf",0], 
+                                    [self.barrage_toggle, self.barrage_value, "rng", 0], [self.berserk_toggle, self.berserk_value,"war",0], [self.box_step_toggle, self.box_step_value, "dnc", 0], [self.building_flourish_toggle, self.building_flourish_value,"dnc",5],
+                                    [self.chainspell_toggle, self.chainspell_value,"rdm",999], [self.climactic_flourish_toggle, self.climactic_flourish_value,"dnc",999], [self.closed_position_toggle, self.closed_position_value, "dnc", 999], [self.composure_toggle, self.composure_value,"rdm",999], [self.conspirator_toggle, self.conspirator_value,"thf",0], 
                                     [self.divine_emblem_toggle, self.divine_emblem_value,"pld",999], [self.double_shot_toggle, self.double_shot_value,"rng",999], 
-                                    [self.ebullience_toggle, self.ebullience_value,"sch",30],[self.endark_toggle, self.endark_value,"drk",0],[self.enlight_toggle, self.enlight_value,"pld",999],[self.enlightenment_toggle, self.enlightenment_value,"sch",999],
+                                    [self.ebullience_toggle, self.ebullience_value,"sch",30], [self.endark_toggle, self.endark_value,"drk",0], [self.enlight_toggle, self.enlight_value,"pld",999], [self.enlightenment_toggle, self.enlightenment_value,"sch",999], [self.enspell_toggle, self.enspell_value,"rdm",0],
                                     [self.focus_toggle, self.focus_value,"mnk",0], [self.footwork_toggle, self.footwork_value,"mnk",999], [self.frenzied_rage_toggle, self.frenzied_rage_value, "bst", 999], [self.futae_toggle, self.futae_value,"nin",999],
-                                    [self.hasso_toggle, self.hasso_value,"sam",0],[self.haste_samba_toggle, self.haste_samba_value,"dnc",0],[self.hover_shot_toggle, self.hover_shot_value,"rng",999],
-                                    [self.impetus_toggle, self.impetus_value,"mnk",999],[self.innin_toggle, self.innin_value,"nin",999],
+                                    [self.hasso_toggle, self.hasso_value,"sam",0], [self.haste_samba_toggle, self.haste_samba_value,"dnc",0], [self.hover_shot_toggle, self.hover_shot_value,"rng",999],
+                                    [self.impetus_toggle, self.impetus_value,"mnk",999], [self.innin_toggle, self.innin_value,"nin",999],
                                     [self.klimaform_toggle, self.klimaform_value,"sch",0],
                                     [self.last_resort_toggle, self.last_resort_value,"drk",0],
-                                    [self.manafont_toggle, self.manafont_value,"blm",999], [self.manawell_toggle, self.manawell_value,"blm",999],[self.mighty_strikes_toggle, self.mighty_strikes_value,"war",999],
+                                    [self.manafont_toggle, self.manafont_value,"blm",999], [self.manawell_toggle, self.manawell_value,"blm",999], [self.mighty_strikes_toggle, self.mighty_strikes_value,"war",999],
                                     [self.overwhelm_toggle, self.overwhelm_value,"sam",999],
                                     [self.rage_toggle, self.rage_value, "bst", 999],
-                                    [self.saber_dance_toggle, self.saber_dance_value,"dnc",999],[self.sange_toggle, self.sange_value,"nin",999], [self.sharpshot_toggle, self.sharpshot_value,"rng",0],[self.sneak_attack_toggle, self.sneak_attack_value,"thf",0], [self.striking_flourish_toggle, self.striking_flourish_value,"dnc",999], [self.swordplay_toggle, self.swordplay_value,"run",0], 
-                                    [self.ternary_flourish_toggle, self.ternary_flourish_value,"dnc",999], [self.temper1_toggle, self.temper1_value,"run",999], [self.temper2_toggle, self.temper2_value,"rdm",999],[self.theurgic_focus_toggle, self.theurgic_focus_value,"geo",999],[self.trick_attack_toggle, self.trick_attack_value,"thf",0],[self.triple_shot_toggle, self.triple_shot_value,"cor",999],[self.true_shot_toggle, self.true_shot_value, "rng",999],[self.true_shot_toggle, self.true_shot_value, "cor",999],
+                                    [self.saber_dance_toggle, self.saber_dance_value,"dnc",999], [self.sange_toggle, self.sange_value,"nin",999], [self.sharpshot_toggle, self.sharpshot_value,"rng",0], [self.sneak_attack_toggle, self.sneak_attack_value,"thf",0], [self.striking_flourish_toggle, self.striking_flourish_value,"dnc",999], [self.swordplay_toggle, self.swordplay_value,"run",0], 
+                                    [self.ternary_flourish_toggle, self.ternary_flourish_value,"dnc",999], [self.temper1_toggle, self.temper1_value,"run",999], [self.temper2_toggle, self.temper2_value,"rdm",999], [self.theurgic_focus_toggle, self.theurgic_focus_value,"geo",999], [self.trick_attack_toggle, self.trick_attack_value,"thf",0], [self.triple_shot_toggle, self.triple_shot_value,"cor",999], [self.true_shot_toggle, self.true_shot_value, "rng",999], [self.true_shot_toggle, self.true_shot_value, "cor",999],
                                     [self.velocity_shot_toggle, self.velocity_shot_value,"rng",999], 
                                     [self.warcry_toggle, self.warcry_value,"war",0],
                                     

@@ -418,6 +418,9 @@ class create_player:
             # We deal with Climactic, Striking, and Ternary Flourish in the main code since they are special cases that apply some stuff only to the first hit.
             if self.abilities.get("Saber Dance",False):
                 self.stats["DA"] = self.stats.get("DA",0) + 25 # Assume minimum potency Saber Dance since it decays quickly.
+            if self.abilities.get("closed_position", False):
+                self.stats["Store TP"] = self.stats.get("Store TP",0) + (3*5)*("Horos Toe Shoes +3"==self.gearset["feet"]["Name"]) # DNC Relic+3 feet provide +3 Store TP for each merit into Closed Position
+
         # ===========================================================================
         # ===========================================================================
         # Scholar abilities.
@@ -887,13 +890,13 @@ class create_player:
                             "brd":{},
                             "rng":{"Recycle":25},
                             "smn":{},
-                            "sam":{"Zanshin":5,"Store TP":10,"Weapon Skill Damage":19 * self.abilities.get("Overwhelm",False)}, # Overwhelm is treated as a checkbox toggle and only applies when enabled. Currently applies to Ranged WSs as well, which is incorrect.
+                            "sam":{"Zanshin":5, "Store TP":10, "Weapon Skill Damage":19 * self.abilities.get("Overwhelm",False)}, # Overwhelm is treated as a checkbox toggle and only applies when enabled. Currently applies to Ranged WSs as well, which is incorrect.
                             "nin":{"Subtle Blow":5,"Ninjutsu Magic Accuracy":25,"Ninjutsu Magic Attack":20+10,"Ninjutsu Magic Damage":0}, # Including +10 matk from group1 and +20 matk from group 2. 
                             "drg":{},
                             "blu":{},
                             "cor":{},
                             "pup":{},
-                            "dnc":{}, # Ignoring Saber Dance, Fan Dance, and Closed Position.
+                            "dnc":{"Accuracy":15*self.abilities.get("closed_position", False), "Evasion":15*self.abilities.get("closed_position",False)}, # +15 Accuracy and Evasion when Closed Position is enabled. DNC Relic+3 feet handled later.
                             "sch":{"Helix Magic Accuracy":15,"Helix Magic Attack":10},
                             "geo":{},
                             "run":{},
