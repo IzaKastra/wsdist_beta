@@ -865,7 +865,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     pdif, crit = get_pdif_melee(attack1 + player.stats.get("Zanshin Attack",0), main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     phys_dmg_ph = get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(1.0 + 2.0*(np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0))
                                     zanshin_damage += phys_dmg_ph
-                                    tp_ph = get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                    tp_ph = get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp, player.main_job=="sam") # Zanshin proc increases TP if SAM main with Ikishoten merits.
                                     tp_return += tp_ph
 
                                     magic_dmg_ph = 0
@@ -884,7 +884,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     pdif, crit = get_pdif_melee(attack1 + player.stats.get("Zanshin Attack",0), main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                                     phys_dmg_ph = get_phys_damage(main_dmg, fstr_main, 0, pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)*(1.0 + 2.0*(np.random.uniform() < empyrean_am[aftermath-1] and player.gearset["main"]["Name"] in empyrean_weapons and aftermath>0))
                                     zanshin_damage += phys_dmg_ph
-                                    tp_ph = get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
+                                    tp_ph = get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp, player.main_job=="sam") # Zanshin proc increases TP if SAM main with Ikishoten merits.
                                     tp_return += tp_ph
 
                                     magic_dmg_ph = 0
