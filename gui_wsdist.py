@@ -2073,7 +2073,7 @@ class App(tk.Tk):
         self.tpmetric_label.grid(row=3, column=0, sticky="w", padx=0, pady=1)
         self.tpmetric = tk.StringVar(value="Time to WS")
         self.tpmetric_combo = ttk.Combobox(self.conditions_frame, values=["Time to WS","TP return","Damage dealt","DPS",], textvariable=self.tpmetric,state="readonly",width=15)
-        self.tpmetric_combo_tip = Hovertip(self.tpmetric_combo,f"Choose what the algorithm prioritizes when building melee TP sets.\nTime to WS: Minimize real-world time to reach min. TP\nTP return: Maximize TP return per attack round; ignores damage dealt\nDamage dealt: Maximize damage dealt per attack round; ignores TP return\nDPS: Maximize damage per second during TP phase\n\nI personally do not trust the DPS metric since it ignores the WS phase.\nYou may get more total DPS from a faster TP set that let's you WS more often.",hover_delay=500)
+        self.tpmetric_combo_tip = Hovertip(self.tpmetric_combo,f"Choose what the algorithm prioritizes when building melee TP sets.\nTime to WS: Minimize real-world time to reach min. TP\nTP return: Maximize TP return per attack round; ignores damage dealt\nDamage dealt: Maximize damage dealt per attack round; ignores TP return\nDPS: Maximize damage per second during TP phase (not total DPS)",hover_delay=500)
         self.tpmetric_combo.grid(row=3,column=1,sticky="nw",padx=0,pady=2)
 
         self.spellmetric_label = ttk.Label(self.conditions_frame,text="Spell Metric:")
