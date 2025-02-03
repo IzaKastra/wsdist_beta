@@ -347,7 +347,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 January 14b)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 February 03a)")
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -991,6 +991,11 @@ class App(tk.Tk):
         self.closed_position_toggle.state(["!alternate"])
         self.closed_position_toggle.grid(row=62,column=0,sticky="n")
 
+        self.armor_break_value = tk.BooleanVar()
+        self.armor_break_toggle = ttk.Checkbutton(self.ja_frame,variable=self.armor_break_value, text="Armor Break",width=-25, command=lambda event="armor_break": self.update_special_checkboxes(event))
+        self.armor_break_tip = Hovertip(self.armor_break_toggle,"Enemy Defense -25%",hover_delay=500)
+        self.armor_break_toggle.state(["!alternate"])
+        self.armor_break_toggle.grid(row=63,column=0,sticky="n")
 
         self.ja_canvas.create_window((0,0),window=self.ja_frame, anchor="nw")
         # ===========================================================================
@@ -4874,6 +4879,7 @@ class App(tk.Tk):
             "VIT":self.enemy_vit.get(),
             "INT":self.enemy_int.get(),
             "MND":self.enemy_mnd.get(),
+            "Base Defense":self.enemy_defense.get(),
             "Defense":self.enemy_defense.get(),
             "Magic Defense":self.enemy_magic_defense.get(),
             "Evasion":self.enemy_evasion.get(),
@@ -4881,8 +4887,9 @@ class App(tk.Tk):
             })
 
         # Decrease enemy stats based on debuffs selected.
-        # TODO: Box Step, DEF/EVA- weapon skills.
-        enemy_reduced_defense = enemy.stats["Defense"] * (1-dia_potency) * (1-frailty_potency) * (1 - 0.2*self.angon_value.get()) * (1 - 0.33*self.corrosive_ooze_value.get()) * (1 - 0.13*self.box_step_value.get()) * (1 - 0.23*self.box_step_main_value.get()) * (1 - 0.25*self.swooping_frenzy_value.get())
+        # Tested in game: Defense debuffs stack additively and defense is floored at Def=1.
+        # enemy_reduced_defense = enemy.stats["Defense"] * (1-dia_potency) * (1-frailty_potency) * (1 - 0.2*self.angon_value.get()) * (1 - 0.33*self.corrosive_ooze_value.get()) * (1 - 0.13*self.box_step_value.get()) * (1 - 0.23*self.box_step_main_value.get()) * (1 - 0.25*self.swooping_frenzy_value.get())
+        enemy_reduced_defense = enemy.stats["Defense"] * (1-dia_potency - frailty_potency - 0.2*self.angon_value.get() - 0.25*self.armor_break_value.get() - 0.33*self.corrosive_ooze_value.get() - 0.13*self.box_step_value.get() - 0.23*self.box_step_main_value.get() - 0.25*self.swooping_frenzy_value.get())
         enemy.stats["Defense"] = enemy_reduced_defense if enemy_reduced_defense > 1 else 1 # Minimum enemy defense value is 1 for the purposes of this code.
         enemy.stats["Magic Defense"] = (enemy.stats["Magic Defense"] - malaise_potency - 25*self.swooping_frenzy_value.get()) if (enemy.stats["Magic Defense"]- malaise_potency) > -50 else -50
         enemy.stats["Evasion"] -= (torpor_potency + 280*self.distract3_value.get())
@@ -6035,6 +6042,7 @@ class App(tk.Tk):
                                     [self.warcry_toggle, self.warcry_value,"war",0],
                                     
                                     [self.angon_toggle, self.angon_value, "all",0],
+                                    [self.armor_break_toggle, self.armor_break_value, "all",0],
                                     [self.blood_rage_toggle, self.blood_rage_value, "all", 0],
                                     [self.box_step_main_toggle, self.box_step_main_value, "all", 0],
                                     [self.corrosive_ooze_toggle, self.corrosive_ooze_value, "all",0],
@@ -6191,6 +6199,17 @@ class App(tk.Tk):
             self.haste_samba_value.set(False)
         elif trigger=="haste_samba":
             self.haste_samba_main_value.set(False)
+
+        if trigger=="angon":
+            self.armor_break_value.set(False)
+            self.swooping_frenzy_value.set(False)
+        elif trigger=="armor_break":
+            self.angon_value.set(False)
+            self.swooping_frenzy_value.set(False)
+        elif trigger=="swooping_frenzy":
+            self.angon_value.set(False)
+            self.armor_break_value.set(False)
+
 
         if trigger=="box_step_main":
             self.box_step_value.set(False)

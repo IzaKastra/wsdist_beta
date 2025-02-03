@@ -28,6 +28,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
     player_attack2 = player.stats["Attack2"]
     player_rangedattack = player.stats["Ranged Attack"]
 
+    enemy_basedef = enemy.stats["Base Defense"]
     enemy_def = enemy.stats["Defense"]
     enemy_vit = enemy.stats["VIT"]
     enemy_agi = enemy.stats["AGI"]
@@ -61,8 +62,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
             player_attack2 += player.stats.get("Food Attack",0)
 
     elif player.gearset["main"]["Name"] == "Nandaka": # Nandaka lowers enemy defense by 1% per debuff present on weapon skills. I assume this is only -3% (dia, slow, paralyze, )
-        enemy_def *= (1 - 0.03) # I treat defense down debuffs as multiplicatively stacking. This alone gets around the potential for more than 100% defense reduction. A normal Idris Frailty is -40%. If we added Blade: Kamu, this would be -110% with additive stacking. Multiplicatively, it is -85%.
-
+        enemy_def -= 0.03*enemy_basedef
 
 
     # Sword Weapon skills
@@ -315,7 +315,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
             player_attack2 += player.stats.get("Food Attack",0)
 
         # enemy.stats["Defense%"] = enemy.stats.get("Defense%",0) - 0.25 # Create a new enemy stat "Defense%" which works similar to the player's "Attack%". I'll use it immediately before calculating damage later.
-        enemy_def *= (1 - 0.25) # I treat defense down debuffs as multiplicatively stacking. This alone gets around the potential for more than 100% defense reduction. A normal Idris Frailty is -40%. If we added Blade: Kamu, this would be -110% with additive stacking. Multiplicatively, it is -85%.
+        enemy_def -= 0.25*enemy_basedef 
         sc = ["Fragmentation","Compression"]
     elif ws_name == "Blade: Shun":
         atk_boost = [1.0, 2.0, 3.0]
@@ -522,7 +522,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 1
         base_enemy_def_scaling = [0.50, 0.625, 0.75]
         enemy_def_scaling = np.interp(tp, base_tp, base_enemy_def_scaling)
-        enemy_def *= (1-enemy_def_scaling)
+        enemy_def -= enemy_basedef*enemy_def_scaling
         sc = ["Scission"]
     elif ws_name == "Impulse Drive":
         base_ftp = [1.0, 3.0, 5.5]
@@ -558,7 +558,8 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 1
         base_enemy_def_scaling = [0.125, 0.375, 0.625]
         enemy_def_scaling = np.interp(tp, base_tp, base_enemy_def_scaling)
-        enemy_def *= (1-enemy_def_scaling)
+        # enemy_def -= (1-enemy_def_scaling)
+        enemy_def -= enemy_basedef*enemy_def_scaling
         sc = ["Light","Fragmentation"]
     elif ws_name == "Drakesbane":
         crit_ws = True
@@ -801,7 +802,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 1
         base_enemy_def_scaling = [0.10, 0.30, 0.50]
         enemy_def_scaling = np.interp(tp, base_tp, base_enemy_def_scaling)
-        enemy_def *= (1-enemy_def_scaling)
+        enemy_def -= enemy_basedef*enemy_def_scaling
         sc = ["Darkness","Distortion"]
     elif ws_name == "Insurgency":
         base_ftp = [0.5, 3.25, 6.0]
@@ -1277,8 +1278,9 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = True
         wsc = 0.5*player_agi + 0.2*player_str
         nhits = 1
-        def_multiplier = [1.0, 0.65, 0.50]
-        enemy_def *= np.interp(tp, base_tp, def_multiplier)
+        base_enemy_def_scaling = [0.0, 0.35, 0.50]
+        enemy_def_scaling = np.interp(tp, base_tp, base_enemy_def_scaling)
+        enemy_def -= enemy_basedef*enemy_def_scaling
         sc = ["Reverberation","Transfixion"]
     elif ws_name == "Dulling Arrow":
         crit_ws = True
@@ -1335,7 +1337,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 1
         base_enemy_def_scaling = [0.15, 0.30, 0.45] # First number is known. I made up the other two
         enemy_def_scaling = np.interp(tp, base_tp, base_enemy_def_scaling)
-        enemy_def *= (1-enemy_def_scaling)
+        enemy_def -= enemy_basedef*enemy_def_scaling
         sc = ["Aeonic","Fragmentation","Transfixion"]
     elif ws_name == "Namas Arrow":
         ftp  = 2.75
@@ -1379,8 +1381,9 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = False
         wsc = 0.7*player_agi
         nhits = 1
-        def_multiplier = [1.0, 0.65, 0.50]
-        enemy_def *= np.interp(tp, base_tp, def_multiplier)
+        base_enemy_def_scaling = [0.0, 0.35, 0.50]
+        enemy_def_scaling = np.interp(tp, base_tp, base_enemy_def_scaling)
+        enemy_def -= enemy_basedef*enemy_def_scaling
         sc = ["Reverberation","Transfixion"]
     elif ws_name == "Sniper Shot":
         crit_ws = True
@@ -1612,8 +1615,9 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         ftp_rep = True
         wsc = 1.0*player_vit
         nhits = 2-1
-        def_multiplier = [1.0, 0.75, 0.50]
-        enemy_def *= np.interp(tp, base_tp, def_multiplier) # TODO: This should be additive with Dia, Frailty, etc? I think it's fine as is.
+        base_enemy_def_scaling = [0.0, 0.25, 0.50]
+        enemy_def_scaling = np.interp(tp, base_tp, base_enemy_def_scaling)
+        enemy_def -= enemy_basedef*enemy_def_scaling
         sc = ["Compression"]
     elif ws_name == "Raging Fists":
         base_ftp = [1.0, 2.1875, 3.75]
@@ -1783,6 +1787,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
 
 
     crit_rate = 1.0 if player.abilities.get("Mighty Strikes", False) else crit_rate
+    enemy_def = 1 if enemy_def < 1 else enemy_def
 
     wsc += sum([ player.stats[k[0]] * k[1]/100 for k in wsc_bonus]) # Add WSC bonuses from things like Utu Grip and Crepuscular Knife, which use the "WSC" stat in their gear entry.
 

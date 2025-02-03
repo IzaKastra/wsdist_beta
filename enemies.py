@@ -1,14 +1,9 @@
-#
-# Created by Kastra on Asura.
-# Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
-#
-# Version date: 2023 April 17
-#
 # Enemy information taken from https://w.atwiki.jp/bartlett3/pages/327.html
 #
 # Dho Gates triple-bats
 apex_bats = {'Name': 'Apex Bats',
              'Level': 129,
+             'Base Defense': 1142,
              'Defense': 1142,
              'Evasion': 1043,
              'VIT': 254,
@@ -23,6 +18,7 @@ apex_bats = {'Name': 'Apex Bats',
 # Woh Gates toads
 apex_toad = {'Name': "Apex Toad",
              'Level': 132,
+             'Base Defense': 1239,
              'Defense': 1239,
              'Evasion': 1133,
              'VIT': 270,
@@ -37,6 +33,7 @@ apex_toad = {'Name': "Apex Toad",
 # Outer Ra'Kaznar single bats
 apex_bat  = {'Name': "Apex Bat",
              'Level': 135,
+             'Base Defense': 1338,
              'Defense': 1338,
              'Evasion': 1224,
              'VIT': 289,
@@ -51,6 +48,7 @@ apex_bat  = {'Name': "Apex Bat",
 # Crawler's Nest [S] 
 apex_lugcrawler_hunter  = {'Name': "Apex Lugcrawler Hunter",
              'Level': 138,
+             'Base Defense': 1446,
              'Defense': 1446,
              'Evasion': 1314,
              'VIT': 325,
@@ -64,6 +62,7 @@ apex_lugcrawler_hunter  = {'Name': "Apex Lugcrawler Hunter",
 
 apex_knight_lugcrawler  = {'Name': "Apex Knight Lugcrawler",
              'Level': 140,
+             'Base Defense': 1530,
              'Defense': 1530,
              'Evasion': 1383,
              'VIT': 356,
@@ -77,6 +76,7 @@ apex_knight_lugcrawler  = {'Name': "Apex Knight Lugcrawler",
 
 apex_idle_drifter  = {'Name': "Apex Idle Drifter",
              'Level': 142,
+             'Base Defense': 1448,
              'Defense': 1448,
              'Evasion': 1502,
              'VIT': 348,
@@ -90,6 +90,7 @@ apex_idle_drifter  = {'Name': "Apex Idle Drifter",
 
 apex_archaic_cog  = {'Name': "Apex Archaic Cog",
              'Level': 145,
+             'Base Defense': 1704,
              'Defense': 1704,
              'Evasion': 1551,
              'VIT': 381,
@@ -104,6 +105,7 @@ apex_archaic_cog  = {'Name': "Apex Archaic Cog",
 
 apex_archaic_cogs  = {'Name': "Apex Archaic Cogs",
              'Level': 147,
+             'Base Defense': 1791,
              'Defense': 1791,
              'Evasion': 1628,
              'VIT': 399,
@@ -118,6 +120,7 @@ apex_archaic_cogs  = {'Name': "Apex Archaic Cogs",
 
 ozma = {"Name": "Ozma",
              'Level': 999,
+             'Base Defense': 9999,
              'Defense': 9999,
              'Evasion': 9999,
              'VIT': 999,
@@ -131,6 +134,7 @@ ozma = {"Name": "Ozma",
 
 octorok = {"Name": "Octorok",
              'Level': 1,
+             'Base Defense': 1,
              'Defense': 1,
              'Evasion': 1,
              'VIT': 1,
