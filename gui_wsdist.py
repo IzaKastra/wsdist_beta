@@ -347,7 +347,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 February 03a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 February 22a)") # pyinstaller --exclude-module gear --clean --onefile .\gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -2035,12 +2035,19 @@ class App(tk.Tk):
         self.odyrank_label = ttk.Label(self.select_frame,text="Odyssey Rank", width=15)
         self.odyrank_label.grid(row=1,column=0,padx=0,pady=0,sticky="w")
 
+        self.soa_ring = tk.StringVar(value="Weatherspoon")
+        self.soa_ring_select = ttk.Combobox(self.select_frame, textvariable=self.soa_ring,values=["Weatherspoon","Karieyh", "Vocane", "None"],state="readonly",width=20)
+        self.soa_ring_tip = Hovertip(self.soa_ring_select,"Only select this SOA ring when using the \"Select ___\" buttons.",hover_delay=500)
+        self.soa_ring_select.grid(row=2,column=1,padx=0,pady=0,sticky="e")
+        self.soa_ring_label = ttk.Label(self.select_frame,text="SOA Ring", width=15)
+        self.soa_ring_label.grid(row=2,column=0,padx=0,pady=0,sticky="w")
+
         self.tvr_ring = tk.StringVar(value="Cornelia's")
         self.tvr_ring_select = ttk.Combobox(self.select_frame, textvariable=self.tvr_ring,values=["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's","None"],state="readonly",width=20)
-        self.tvr_ring_tip = Hovertip(self.tvr_ring_select,"Only select this ring when using the \"Select ___\" buttons.",hover_delay=500)
-        self.tvr_ring_select.grid(row=2,column=1,padx=0,pady=0,sticky="e")
+        self.tvr_ring_tip = Hovertip(self.tvr_ring_select,"Only select this TVR ring when using the \"Select ___\" buttons.",hover_delay=500)
+        self.tvr_ring_select.grid(row=3,column=1,padx=0,pady=0,sticky="e")
         self.tvr_ring_label = ttk.Label(self.select_frame,text="TVR Ring", width=15)
-        self.tvr_ring_label.grid(row=2,column=0,padx=0,pady=0,sticky="w")
+        self.tvr_ring_label.grid(row=3,column=0,padx=0,pady=0,sticky="w")
 
 
 
@@ -4494,6 +4501,7 @@ class App(tk.Tk):
         # TODO: Dictionary these buttons/checkboxes/radio
         #
         tvr_rings = ["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's"]
+        soa_rings = ["Weatherspoon", "Karieyh", "Vocane"]
         jse_ear_names = {"nin":"Hattori","drk":"Heathen","blm":"Wicce","rdm":"Lethargy","drg":"Peltast","whm":"Ebers","sam":"Kasuga","sch":"Arbatel","war":"Boii","cor":"Chasseur","brd":"Fili","thf":"Skulker","mnk":"Bhikku","dnc":"Maculele","bst":"Nukumi","geo":"Azimuth","pld":"Chevalier","rng":"Amini","blu":"Hashishin","run":"Erilaz","pup":"Karagoz","smn":"Beckoner"}
 
         cbox_lists = {"main":[self.main_cbox_frame,self.x_main2,self.x_main2_var],
@@ -4559,6 +4567,9 @@ class App(tk.Tk):
 
                         # TVR Ring check
                         if slot in ["ring1","ring2"] and " ".join(label.split()[0:-1]) in tvr_rings and " ".join(label.split()[0:-1])!=self.tvr_ring.get():
+                            item.set(False)
+
+                        if slot in ["ring1","ring2"] and " ".join(label.split()[0:-2]) in soa_rings and " ".join(label.split()[0:-2])!=self.soa_ring.get():
                             item.set(False)
 
                         # Odyssey Rank check
