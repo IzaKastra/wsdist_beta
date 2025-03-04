@@ -20,7 +20,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -37,10 +37,10 @@ jobs:
         pip install colorama
 
     - name: Create Installer
-      run: pyinstaller --exclude-module gear --clean --onefile gui_wsdist.py
+      run: pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
 
     - name: Upload Installer
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with: 
         name: wsdist-executable-only
         path: ./dist/gui_wsdist.exe
@@ -52,10 +52,10 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Download Artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: wsdist-executable-only
         path: ./  
@@ -64,11 +64,12 @@ jobs:
       run: |
         zip -r ./wsdist.zip ./gui_wsdist.exe
         zip -r ./wsdist.zip ./gear.py
+        zip -r ./wsdist.zip ./enemies.py
         zip -r ./wsdist.zip ./item_list.txt
         zip -r ./wsdist.zip ./icons32
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with: 
         name: wsdist-full
         path: ./wsdist.zip
