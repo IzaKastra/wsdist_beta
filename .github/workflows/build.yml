@@ -34,6 +34,7 @@ jobs:
         pip install numba
         pip install pillow
         pip install pyinstaller
+        pip install colorama
 
     - name: Create Installer
       run: pyinstaller --exclude-module gear --clean --onefile gui_wsdist.py

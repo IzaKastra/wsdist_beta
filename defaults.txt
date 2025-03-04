@@ -8,6 +8,7 @@ maxtp=2100
 spell=Doton: Ichi
 ws=Blade: Ten
 initialtp=0
+nyame<30=True
 odyrank=30
 tvrring=Lehko Habhoka's
 tpmetric=Time to WS
@@ -105,6 +106,7 @@ tp_back=Andartia's Mantle AGI Store TP (Ranged)
 tp_waist=Windbuffet Belt +1
 tp_legs=Samnuha Tights
 tp_feet=Malignance Boots
+
 ws_main=Heishi Shorinken R15
 ws_sub=Crepuscular Knife
 ws_ranged=Empty
@@ -123,6 +125,9 @@ ws_legs=Nyame Flanchard R25B
 ws_feet=Hattori Kyahan +3
 
 DamageLimit=True
+VerboseDPS=True
+very_verboseDPS=True
+VerboseSwaps=False
 
 # Window size:  widthxheight
 dimensions=700x885

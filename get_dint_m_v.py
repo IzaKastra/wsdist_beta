@@ -62,7 +62,7 @@ def get_mv_blm(element, tier, dINT):
     # The table on BG wiki does not list negative dINT values.
     # Ninjutsu clearly shows different slopes for negative dINT.
     # I'm currently assuming that the lower dINT limit is 0, such that any negative dINT is converted to 0.
-    # This does not appear to be the case on preliminary testing, but it's better than what I was using previously.
+    # This does not appear to be the case on preliminary testing.
     # BG states 
     #     "With a negative dINT, calculated value for D will be lower than V, potentially even 0."
     #   which is not very helpful.

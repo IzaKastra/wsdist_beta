@@ -1,10 +1,6 @@
 #
-# Created by Kastra on Asura.
-# Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
-#
+# Author: Kastra (Asura)
 # Version date: 2022 January 22
-#
-# Calculate PDIF using equations from BG Wiki
 #
 import random
 from numba import njit
@@ -15,16 +11,18 @@ def get_pdif_melee(player_attack, wpn_type_skill, pdl_trait, pdl_gear=0, enemy_d
     # Calculate PDIF for physical melee hits using the process described on BG wiki
     # https://www.bg-wiki.com/ffxi/PDIF
     #
-    if wpn_type_skill=='Katana' or wpn_type_skill=="Dagger" or wpn_type_skill=="Sword" or wpn_type_skill=="Axe" or wpn_type_skill=="Club":
+    # Assign the base PDIF cap based on your weapon.
+    if wpn_type_skill in ["Katana", "Dagger", "Sword", "Axe", "Club"]:
         pdif_base_cap = 3.25
-    elif wpn_type_skill=="Great Katana" or wpn_type_skill=="Hand-to-Hand":
+    elif wpn_type_skill in ["Great Katana", "Hand-to-Hand"]:
         pdif_base_cap = 3.5
-    elif wpn_type_skill=="Great Sword" or wpn_type_skill=="Staff" or wpn_type_skill=="Great Axe" or wpn_type_skill=="Polearm":
+    elif wpn_type_skill in ["Great Sword", "Staff", "Great Axe", "Polearm"]:
         pdif_base_cap = 3.75
     elif wpn_type_skill=="Scythe":
         pdif_base_cap = 4.0
 
-
+    # Define your capped PDIF value after including bonuses from traits and gear.
+    pdif_cap = (pdif_base_cap+pdl_trait)*(1+pdl_gear)
 
     crit = random.uniform(0,1) < crit_rate  # True or False  (1 or 0)
 
@@ -34,7 +32,7 @@ def get_pdif_melee(player_attack, wpn_type_skill, pdl_trait, pdl_gear=0, enemy_d
 
     wratio = cratio+1 if crit else cratio # Add 1.0 if crit
 
-    # qRatio stuff taken from BG
+    # qRatio stuff taken from BG Wiki
     if wratio >= 0.0 and wratio < 0.5:
         upper_qlim = wratio + 0.5
     elif wratio >= 0.5 and wratio < 0.7:
@@ -57,10 +55,7 @@ def get_pdif_melee(player_attack, wpn_type_skill, pdl_trait, pdl_gear=0, enemy_d
     elif wratio >= 2.44:
         lower_qlim = wratio - 0.375
 
-    qratio = random.uniform(lower_qlim, upper_qlim)
-
-    # Define your capped PDIF value
-    pdif_cap = (pdif_base_cap+pdl_trait)*(1+pdl_gear)
+    qratio = random.uniform(lower_qlim, upper_qlim) # Randomly pick a value between the lower and upper limits.
 
     # Limit PDIF to between 0 and cap.
     if qratio <= 0:
@@ -86,14 +81,19 @@ def get_avg_pdif_melee(player_attack, wpn_type_skill, pdl_trait, pdl_gear=0, ene
     # Calculate PDIF for physical melee hits using the process described on BG wiki, but assuming the average random value is drawn.
     # https://www.bg-wiki.com/ffxi/PDIF
     #
-    if wpn_type_skill=='Katana' or wpn_type_skill=="Dagger" or wpn_type_skill=="Sword" or wpn_type_skill=="Axe" or wpn_type_skill=="Club": # TODO: "if_wpn_skill in [a,b,c,]"
+    # Assign the base PDIF cap based on your weapon.
+    if wpn_type_skill in ["Katana", "Dagger", "Sword", "Axe", "Club"]:
         pdif_base_cap = 3.25
-    elif wpn_type_skill=="Great Katana" or wpn_type_skill=="Hand-to-Hand":
+    elif wpn_type_skill in ["Great Katana", "Hand-to-Hand"]:
         pdif_base_cap = 3.5
-    elif wpn_type_skill=="Great Sword" or wpn_type_skill=="Staff" or wpn_type_skill=="Great Axe" or wpn_type_skill=="Polearm":
+    elif wpn_type_skill in ["Great Sword", "Staff", "Great Axe", "Polearm"]:
         pdif_base_cap = 3.75
     elif wpn_type_skill=="Scythe":
         pdif_base_cap = 4.0
+
+    # Define your capped PDIF value after including bonuses from traits and gear.
+    pdif_cap = (pdif_base_cap+pdl_trait)*(1+pdl_gear)
+
 
     ratio = player_attack / enemy_defense
 
@@ -126,9 +126,6 @@ def get_avg_pdif_melee(player_attack, wpn_type_skill, pdl_trait, pdl_gear=0, ene
         lower_qlim = wratio - 0.375
 
     qratio = 0.5*(upper_qlim+lower_qlim)
-
-    # Define your capped PDIF value
-    pdif_cap = (pdif_base_cap+pdl_trait)*(1+pdl_gear)
 
     # Limit PDIF to between 0 and cap.
     if qratio <= 0:

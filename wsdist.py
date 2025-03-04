@@ -3,6 +3,7 @@ import numpy as np
 import numpy as np
 from actions import *
 import sys
+from datetime import datetime # For timestamping new sets to put on BG Wiki
 
 # Use an external gear.py file
 # https://stackoverflow.com/questions/47350078/importing-external-module-in-single-file-exe-created-with-pyinstaller
@@ -10,6 +11,118 @@ import sys
 import os
 sys.path.append(os.path.dirname(sys.executable))
 from gear import *
+
+def format_bgwiki(ws_name, tp, player, best_metric):
+    #
+    # Input: A player class containing job and gear info.
+    # Output: None
+    #
+    # Prints to the terminal the player gearset in BG Wiki format, ignoring augments.
+    #
+    buffs = "Mid"
+
+
+    # Certain items have shortened names on BG Wiki. Use the item_list.txt file to find and replace these names for BG Wiki.
+    item_list = np.loadtxt("item_list.txt", unpack=False, dtype=str, delimiter=';', usecols=(1,2))
+    name_map = {k[0].lower():k[1] for k in item_list}
+
+    backaugs = []
+    for stat in player.gearset["back"]:
+        if stat.lower() in ["str","dex","vit","agi","int","mnd","chr","da","store tp","dual wield","crit rate","weapon skill damage", "magic attack"]:
+            backaugs.append(stat)
+    
+
+    # Moonshade natually looks best in the left ear slot.
+    if "moonshade" in player.gearset["ear2"]["Name"].lower():
+        ear2 = player.gearset["ear2"]
+        ear1 = player.gearset["ear1"]
+        player.gearset["ear1"] = ear2
+        player.gearset["ear2"] = ear1
+
+    # JSE earrings work in the right ear slot
+    jse_ears1 = [k + " Earring +1" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulker's", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
+    jse_ears2 = [k + " Earring +2" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulker's", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
+    if player.gearset["ear1"]["Name2"] in jse_ears1 or player.gearset["ear1"]["Name2"] in jse_ears2:
+        ear2 = player.gearset["ear2"]
+        ear1 = player.gearset["ear1"]
+        player.gearset["ear1"] = ear2
+        player.gearset["ear2"] = ear1
+
+    # Do it again because the above doesn't always work??
+    empy = ["Hattori", "Heathen", "Lethargy", "Eber", "Wicce", "Peltast", "Boii", "Bhikku", "Skulker", "Chevalier", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner", "Hashishin", "Chasseur", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]
+    for name in empy:
+        if name.lower() in player.gearset["ear1"]["Name"].lower():
+            ear2 = player.gearset["ear2"]
+            ear1 = player.gearset["ear1"]
+            player.gearset["ear1"] = ear2
+            player.gearset["ear2"] = ear1
+
+    # Epami looks best in the left ring slot, but only if sroda is not also equipped.
+    if "epami" in player.gearset["ring2"]["Name"].lower():
+        if "sroda" not in player.gearset["ring1"]["Name"].lower():
+            ring2 = player.gearset["ring2"]
+            ring1 = player.gearset["ring1"]
+            player.gearset["ring1"] = ring2
+            player.gearset["ring2"] = ring1
+
+    # Sroda looks best in the left ring slot.
+    if "sroda" in player.gearset["ring2"]["Name"].lower():
+            ring2 = player.gearset["ring2"]
+            ring1 = player.gearset["ring1"]
+            player.gearset["ring1"] = ring2
+            player.gearset["ring2"] = ring1
+
+    # Niqmaddu and Regal look best in the right ring slot
+    if ("niqmaddu" in player.gearset["ring1"]["Name"].lower() and "regal" not in player.gearset["ring2"]["Name"].lower()) or ("regal" in player.gearset["ring1"]["Name"].lower() and "niqmaddu" not in player.gearset["ring2"]["Name"].lower()):
+            ring2 = player.gearset["ring2"]
+            ring1 = player.gearset["ring1"]
+            player.gearset["ring1"] = ring2
+            player.gearset["ring2"] = ring1
+
+    # player.gearset[slot]["Name"] = name_map[player.gearset[slot]["Name"].lower()]
+
+    hardcode_gearset = {slot:name_map[player.gearset[slot]["Name"].lower()] for slot in player.gearset}
+    for slot in hardcode_gearset:
+        hardcode_gearset[slot] = "" if hardcode_gearset[slot].lower()=="empty" else hardcode_gearset[slot]
+
+    bgwiki_text = f"""
+    {'{'}{'{'}
+        Guide Equipment Set
+        |Set Name Background=#604028
+        |Set Name Text Color=
+        |Set Name Text Shadow=#000080
+        |Set Name= {ws_name}[[{ws_name}|*]]
+        |Set Border Color=#51414F
+        |Equipment Set=
+        {'{'}{'{'}
+            Equipment Set
+            |CaptionTop = 25% DT
+            |CaptionBottom = {best_metric**-1:.3f} s
+            |Main = {hardcode_gearset["main"]} (Level 119 III)
+            |Sub = {hardcode_gearset["sub"]}
+            |Range = {hardcode_gearset["ranged"]}
+            |Ammo = {hardcode_gearset["ammo"]}
+            |Head = {hardcode_gearset["head"]}
+            |Neck = {hardcode_gearset["neck"]}
+            |Ear1 = {hardcode_gearset["ear1"]}
+            |Ear2 = {hardcode_gearset["ear2"]}
+            |Body = {hardcode_gearset["body"]}
+            |Hands = {hardcode_gearset["hands"]}
+            |Ring1 = {hardcode_gearset["ring1"]}
+            |Ring2 = {hardcode_gearset["ring2"]}
+            |Back = {hardcode_gearset["back"]}
+            |BackAug = {", ".join(backaugs)}
+            |Waist = {hardcode_gearset["waist"]}
+            |Legs = {hardcode_gearset["legs"]}
+            |Feet = {hardcode_gearset["feet"]}
+            |List = Y
+            |Background =
+        {'}'}{'}'}
+        |Equipment Set Notes=ML{player.master_level} {player.main_job.upper()}/{player.sub_job.upper()}: {int(tp)} TP
+        Updated {datetime.now().strftime("%Y %b. %d")}
+    {'}'}{'}'}\n
+    """
+    print(bgwiki_text)
 
 def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name, spell_name, action_type, starting_tp, min_tp, max_tp, check_gear, starting_gearset, pdt_requirement, mdt_requirement, input_metric, print_swaps, next_best_percent, ):
     #
@@ -19,6 +132,8 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
     #
     n_iter = 10
     fitn = 2
+    
+    verbose_swaps = abilities.get("Verbose Swaps", False)
 
     ws_dict = {"Katana": ["Blade: Retsu", "Blade: Teki", "Blade: To", "Blade: Chi", "Blade: Ei", "Blade: Jin", "Blade: Ten", "Blade: Ku", "Blade: Yu", "Blade: Metsu", "Blade: Kamu", "Blade: Hi", "Blade: Shun", "Zesho Meppo",],
         "Great Katana": ["Tachi: Enpi", "Tachi: Goten", "Tachi: Kagero", "Tachi: Jinpu", "Tachi: Koki","Tachi: Yukikaze", "Tachi: Gekko", "Tachi: Kasha", "Tachi: Ageha","Tachi: Kaiten", "Tachi: Rana", "Tachi: Fudo", "Tachi: Shoha", "Tachi: Mumei"],
@@ -106,8 +221,8 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
             check_gear["ranged"] = [k for k in check_gear["ranged"] if k["Type"]=="Instrument"]
  
     # Define JSE earrings now. We'll use them later to prevent Balder's Earring+1 and a JSE+2 being equipped at the same time since we ignore right_ear requirement for testing.
-    jse_ears1 = [k + " Earring +1" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulkers", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
-    jse_ears2 = [k + " Earring +2" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulkers", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
+    jse_ears1 = [k + " Earring +1" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulker's", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
+    jse_ears2 = [k + " Earring +2" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulker's", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
     jse_ears = jse_ears1+jse_ears2
 
     Best_Gearset = starting_gearset.copy()
@@ -327,7 +442,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                             elif action_type=="attack round":
                                 decimals = 3 # How many decimals to show in the output.
                                 nondecimals = 8
-                                metric_base, output = average_attack_round(player, enemy, starting_tp, min_tp, input_metric)
+                                metric_base, output, _ = average_attack_round(player, enemy, starting_tp, min_tp, input_metric)
                                 invert = output[-1]
                                 metric = metric_base**invert
 
@@ -338,10 +453,10 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                             metric = 0.0001 if metric <= 0 else metric # Prevent divide-by-zero errors
                             if (metric > best_metric):
                                 if item1==item2:
-                                    print(f"[{slot1:<15s}]: [{best_set[slot1]['Name2']} ->  {item1['Name2']}   [{best_metric**invert:>{nondecimals}.{decimals}f} -> {metric**invert:>{nondecimals}.{decimals}f}]")
+                                    print(f"[{slot1:<15s}]: [{best_set[slot1]['Name2']} ->  {item1['Name2']}   [{best_metric**invert:>{nondecimals}.{decimals}f} -> {metric**invert:>{nondecimals}.{decimals}f}]") if verbose_swaps else None
                                     best_set[slot1] = item1
                                 else:
-                                    print(f"[{slot1:<6s} & {slot2:<6s}]: [{best_set[slot1]['Name2']} & {best_set[slot2]['Name2']}] -> [{item1['Name2']} & {item2['Name2']}] [{best_metric**invert:>{nondecimals}.{decimals}f} -> {metric**invert:>{nondecimals}.{decimals}f}]")
+                                    print(f"[{slot1:<6s} & {slot2:<6s}]: [{best_set[slot1]['Name2']} & {best_set[slot2]['Name2']}] -> [{item1['Name2']} & {item2['Name2']}] [{best_metric**invert:>{nondecimals}.{decimals}f} -> {metric**invert:>{nondecimals}.{decimals}f}]") if verbose_swaps else None
                                     best_metric = metric
                                     best_set[slot1] = item1
                                     best_set[slot2] = item2
@@ -421,7 +536,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
             print(f"Avg TP per round = {best_output[1]:<5.1f} TP")
         else:
             print(f"Avg Damage per round = {best_output[0]:<{nondecimals}.{decimals}f} damage")
-            print(f"Avg time per round = {best_output[2]:<5.1f} TP")
+            print(f"Avg time per round = {best_output[2]:<5.1f} s")
             print(f"Avg TP per round = {best_output[1]:<5.1f} TP")
     else:
         print(f"Avg Damage = {best_output[0]:<{nondecimals}.{decimals}f} damage")
@@ -435,6 +550,10 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
             for swap in swaps[slot]:
                 line = f"{slot:<6s} {swap[0]:<50s} {float(swap[1]):<{nondecimals}.{decimals}f} {best_metric%swap[1]**invert/best_metric*100:>5.1f}%"
                 print(line)
+
+    # Print additional output formatted for BG Wiki item sets.
+    if False:
+        format_bgwiki(header, (min_tp), best_player, best_metric)
 
     return(best_player, best_output)
 

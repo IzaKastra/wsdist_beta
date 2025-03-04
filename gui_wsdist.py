@@ -18,6 +18,8 @@ from fancy_plot import *
 
 from idlelib.tooltip import Hovertip # https://stackoverflow.com/questions/3221956/how-do-i-display-tooltips-in-tkinter
 
+from colorama import just_fix_windows_console # https://github.com/tartley/colorama?tab=readme-ov-file#initialisation
+
 def load_defaults(app,defaults):
     #
     # Read the input file for default values to use when opening a fresh GUI.
@@ -150,6 +152,7 @@ def load_defaults(app,defaults):
 
     # Load odyssey rank and TVR ring choices
     app.odyrank.set(defaults.get("odyrank","30"))
+    app.nyame_override_toggle.set(defaults.get("nyame<30",True))
     app.tvr_ring.set(defaults.get("tvrring","Cornelia's"))
 
     # Load damage metrics
@@ -159,6 +162,10 @@ def load_defaults(app,defaults):
 
     # Load 99999 damage limit preference
     app.damage_limit99999.set(defaults.get("DamageLimit",True))
+
+    app.verbose_swaps.set(defaults.get("VerboseSwaps",True))
+    app.verbose_dps_outputs.set(defaults.get("VerboseDPS",False))
+    app.very_verbose_dps_outputs.set(defaults.get("very_verboseDPS",False))
 
     # Finally, update the window size based on the input file.
     app.geometry(defaults.get("dimensions","700x885"))
@@ -178,6 +185,7 @@ def save_defaults():
         ofile.write(f"spell={app.spell_name.get()}\n")
         ofile.write(f"ws={app.ws_name.get()}\n")
         ofile.write(f"initialtp={app.tp0.get()}\n")
+        ofile.write(f"nyame<30={app.nyame_override_toggle.get()}\n")
         ofile.write(f"odyrank={app.odyrank.get()}\n")
         ofile.write(f"tvrring={app.tvr_ring.get()}\n")
 
@@ -279,8 +287,7 @@ def save_defaults():
         ofile.write(f"tp_legs={eval(app.selected_legs_tp.get())['Name2']}\n")
         ofile.write(f"tp_feet={eval(app.selected_feet_tp.get())['Name2']}\n")
 
-        print("\n")
-        ofile.write(f"ws_main={eval(app.selected_main_ws.get())['Name2']}\n")
+        ofile.write(f"\nws_main={eval(app.selected_main_ws.get())['Name2']}\n")
         ofile.write(f"ws_sub={eval(app.selected_sub_ws.get())['Name2']}\n")
         ofile.write(f"ws_ranged={eval(app.selected_ranged_ws.get())['Name2']}\n")
         ofile.write(f"ws_ammo={eval(app.selected_ammo_ws.get())['Name2']}\n")
@@ -299,6 +306,9 @@ def save_defaults():
 
         # Save 99999 damage limit preference
         ofile.write(f"\nDamageLimit={app.damage_limit99999.get()}\n")
+        ofile.write(f"VerboseDPS={app.verbose_dps_outputs.get()}\n")
+        ofile.write(f"very_verboseDPS={app.very_verbose_dps_outputs.get()}\n")
+        ofile.write(f"VerboseSwaps={app.verbose_swaps.get()}\n")
 
         # Save the current window size. Most/all of the widgets use a specific size anyway, so resizing the window is mostly pointless for now.
         ofile.write("\n# Window size:  widthxheight\n")
@@ -337,7 +347,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2024 June 29a)")
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 February 22a)") # pyinstaller --exclude-module gear --clean --onefile .\gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -367,9 +377,20 @@ class App(tk.Tk):
         self.menu_bar.add_cascade(label="File", menu=self.file_menu)
 
 
-        self.damage_limit99999 = tk.BooleanVar()
         self.settings_menu = tk.Menu(self.menu_bar, tearoff=False)
+
+        self.damage_limit99999 = tk.BooleanVar()
         self.settings_menu.add_checkbutton(label="Damage Limit", onvalue=True, offvalue=False, variable=self.damage_limit99999)
+
+        self.verbose_dps_outputs = tk.BooleanVar()
+        self.settings_menu.add_checkbutton(label="Verbose DPS", onvalue=True, offvalue=False, variable=self.verbose_dps_outputs)
+
+        self.very_verbose_dps_outputs = tk.BooleanVar()
+        self.settings_menu.add_checkbutton(label="Very Verbose DPS", onvalue=True, offvalue=False, variable=self.very_verbose_dps_outputs)
+
+        self.verbose_swaps = tk.BooleanVar()
+        self.settings_menu.add_checkbutton(label="Verbose Swaps", onvalue=True, offvalue=False, variable=self.verbose_swaps)
+
         self.menu_bar.add_cascade(label="Settings", menu=self.settings_menu)
         
 
@@ -440,7 +461,8 @@ class App(tk.Tk):
                                 "Blizzard","Blizzard II","Blizzard III","Blizzard IV","Blizzard V","Blizzard VI","Blizzaja",
                                 "Thunder","Thunder II","Thunder III","Thunder IV","Thunder V","Thunder VI", "Thundaja","Impact",
                                 "Ranged Attack"],
-                        "RDM":["Stone","Stone II","Stone III","Stone IV","Stone V",
+                        "RDM":["EnSpell", 
+                                "Stone","Stone II","Stone III","Stone IV","Stone V",
                                 "Water","Water II","Water III","Water IV","Water V",
                                 "Aero","Aero II","Aero III","Aero IV","Aero V",
                                 "Fire","Fire II","Fire III","Fire IV","Fire V",
@@ -595,6 +617,7 @@ class App(tk.Tk):
 
 
         # Note: the order and row number of these toggles (at this moment) does not matter at all. They get reorganized when swapping jobs and a job swap is trigged when the code starts.
+        # They should still not have repeated "row=" values.
         self.magic_burst_value = tk.BooleanVar()
         self.magic_burst_toggle = ttk.Checkbutton(self.ja_frame,variable=self.magic_burst_value, text="Magic Burst",width=-25, command=lambda event="magic_burst": self.update_special_checkboxes(event))
         self.magic_burst_toggle.state(["!alternate"])
@@ -602,7 +625,7 @@ class App(tk.Tk):
 
         self.warcry_value = tk.BooleanVar()
         self.warcry_toggle = ttk.Checkbutton(self.ja_frame,variable=self.warcry_value, text="Warcry",width=-25, command=lambda event="warcry": self.update_special_checkboxes(event))
-        self.warycry_tip = Hovertip(self.warcry_toggle,"Attack +((war_level)/4)+4.75)/256*100 (%)\nWAR mainjob: TP Bonus +700\nWAR mainjob: Attack +60",hover_delay=500)
+        self.warcry_tip = Hovertip(self.warcry_toggle,"Attack +((war_level)/4)+4.75)/256*100 (%)\nWAR mainjob: TP Bonus +700\nWAR mainjob: Attack +60",hover_delay=500)
         self.warcry_toggle.state(["!alternate"])
         self.warcry_toggle.grid(row=1,column=0,sticky="n")
 
@@ -616,55 +639,61 @@ class App(tk.Tk):
         self.aggressor_toggle = ttk.Checkbutton(self.ja_frame,variable=self.aggressor_value, text="Aggressor",width=-25, command=lambda event="aggressor": self.update_special_checkboxes(event))
         self.aggressor_tip = Hovertip(self.aggressor_toggle,"Accuracy +25\nWAR mainjob: Accuracy +20",hover_delay=500)
         self.aggressor_toggle.state(["!alternate"])
-        self.aggressor_toggle.grid(row=2,column=0,sticky="n")
+        self.aggressor_toggle.grid(row=3,column=0,sticky="n")
 
         self.mighty_strikes_value = tk.BooleanVar()
         self.mighty_strikes_toggle = ttk.Checkbutton(self.ja_frame,variable=self.mighty_strikes_value, text="Mighty Strikes",width=-25, command=lambda event="mighty_strikes": self.update_special_checkboxes(event))
         self.mighty_strikes_tip = Hovertip(self.mighty_strikes_toggle,"Crit Rate = 100%\nAccuracy +40",hover_delay=500)
         self.mighty_strikes_toggle.state(["!alternate"])
-        self.mighty_strikes_toggle.grid(row=3,column=0,sticky="n")
+        self.mighty_strikes_toggle.grid(row=4,column=0,sticky="n")
 
         self.focus_value = tk.BooleanVar()
         self.focus_toggle = ttk.Checkbutton(self.ja_frame,variable=self.focus_value, text="Focus",width=-25, command=lambda event="focus": self.update_special_checkboxes(event))
         self.focus_tip = Hovertip(self.focus_toggle,"Crit Rate +20%\nAccuracy +120",hover_delay=500)
         self.focus_toggle.state(["!alternate"])
-        self.focus_toggle.grid(row=4,column=0,sticky="n")
+        self.focus_toggle.grid(row=5,column=0,sticky="n")
 
         self.footwork_value = tk.BooleanVar()
         self.footwork_toggle = ttk.Checkbutton(self.ja_frame,variable=self.footwork_value, text="Footwork",width=-25, command=lambda event="footwork": self.update_special_checkboxes(event))
         self.footwork_tip = Hovertip(self.footwork_toggle,"Kick Attacks +20%\nKick Attacks Attack +26% (260/1024)\nKick DMG +40\nDragon/Tornado Kick use \"Kick DMG\" instead of \"H2H DMG\"",hover_delay=500)
         self.footwork_toggle.state(["!alternate"])
-        self.footwork_toggle.grid(row=5,column=0,sticky="n")
+        self.footwork_toggle.grid(row=6,column=0,sticky="n")
 
         self.impetus_value = tk.BooleanVar()
         self.impetus_toggle = ttk.Checkbutton(self.ja_frame,variable=self.impetus_value, text="Impetus",width=-25, command=lambda event="impetus": self.update_special_checkboxes(event))
         self.impetus_tip = Hovertip(self.impetus_toggle,"Crit Rate +45%\nAttack +136\nAccuracy +45\nBhikku Cylas equipped: Crit Damage +45%\n(assumes 90% max potency)",hover_delay=500)
         self.impetus_toggle.state(["!alternate"])
-        self.impetus_toggle.grid(row=6,column=0,sticky="n")
+        self.impetus_toggle.grid(row=7,column=0,sticky="n")
 
         self.manafont_value = tk.BooleanVar()
         self.manafont_toggle = ttk.Checkbutton(self.ja_frame,variable=self.manafont_value, text="Manafont",width=-25, command=lambda event="manafont": self.update_special_checkboxes(event))
         self.manafont_tip = Hovertip(self.manafont_toggle,"Magic Damage +60",hover_delay=500)
         self.manafont_toggle.state(["!alternate"])
-        self.manafont_toggle.grid(row=7,column=0,sticky="n")
+        self.manafont_toggle.grid(row=8,column=0,sticky="n")
 
         self.manawell_value = tk.BooleanVar()
         self.manawell_toggle = ttk.Checkbutton(self.ja_frame,variable=self.manawell_value, text="Manawell",width=-25, command=lambda event="manawell": self.update_special_checkboxes(event))
         self.manawell_tip = Hovertip(self.manawell_toggle,"Magic Damage +20",hover_delay=500)
         self.manawell_toggle.state(["!alternate"])
-        self.manawell_toggle.grid(row=8,column=0,sticky="n")
+        self.manawell_toggle.grid(row=9,column=0,sticky="n")
 
         self.chainspell_value = tk.BooleanVar()
         self.chainspell_toggle = ttk.Checkbutton(self.ja_frame,variable=self.chainspell_value, text="Chainspell",width=-25, command=lambda event="chainspell": self.update_special_checkboxes(event))
         self.chainspell_tip = Hovertip(self.chainspell_toggle,"Magic Damage +40",hover_delay=500)
         self.chainspell_toggle.state(["!alternate"])
-        self.chainspell_toggle.grid(row=9,column=0,sticky="n")
+        self.chainspell_toggle.grid(row=10,column=0,sticky="n")
+
+        self.enspell_value = tk.BooleanVar()
+        self.enspell_toggle = ttk.Checkbutton(self.ja_frame,variable=self.enspell_value, text="EnSpell",width=-25, command=lambda event="enspell": self.update_special_checkboxes(event))
+        self.enspell_tip = Hovertip(self.enspell_toggle,"Base damage is determined using the \"Enhancing Skill\" text entry.",hover_delay=500)
+        self.enspell_toggle.state(["!alternate"])
+        self.enspell_toggle.grid(row=49,column=0,sticky="n")
 
         self.composure_value = tk.BooleanVar()
         self.composure_toggle = ttk.Checkbutton(self.ja_frame,variable=self.composure_value, text="Composure",width=-25, command=lambda event="composure": self.update_special_checkboxes(event))
-        self.composuretip = Hovertip(self.composure_toggle,"Accuracy +20",hover_delay=500)
+        self.composuretip = Hovertip(self.composure_toggle,"Accuracy +20\nEnSpell Damage +200%",hover_delay=500)
         self.composure_toggle.state(["!alternate"])
-        self.composure_toggle.grid(row=10,column=0,sticky="n")
+        self.composure_toggle.grid(row=62,column=0,sticky="n")
 
         self.conspirator_value = tk.BooleanVar()
         self.conspirator_toggle = ttk.Checkbutton(self.ja_frame,variable=self.conspirator_value, text="Conspirator",width=-25, command=lambda event="conspirator": self.update_special_checkboxes(event))
@@ -674,7 +703,7 @@ class App(tk.Tk):
 
         self.enlight_value = tk.BooleanVar()
         self.enlight_toggle = ttk.Checkbutton(self.ja_frame,variable=self.enlight_value, text="Enlight II",width=-25, command=lambda event="enlight": self.update_special_checkboxes(event))
-        self.enlighttip = Hovertip(self.enlight_toggle,"Accuracy +112\n(assumes 80% max potency",hover_delay=500)
+        self.enlighttip = Hovertip(self.enlight_toggle,"Accuracy +120 at 600 skill\n(assumes 80% max potency",hover_delay=500)
         self.enlight_toggle.state(["!alternate"])
         self.enlight_toggle.grid(row=12,column=0,sticky="n")
 
@@ -686,7 +715,7 @@ class App(tk.Tk):
 
         self.endark_value = tk.BooleanVar()
         self.endark_toggle = ttk.Checkbutton(self.ja_frame,variable=self.endark_value, text="Endark II",width=-25, command=lambda event="endark": self.update_special_checkboxes(event))
-        self.endarktip = Hovertip(self.endark_toggle,"Accuracy +16\nAttack +120\n(assumes 80% max potency with 600 Dark Magic Skill)",hover_delay=500)
+        self.endarktip = Hovertip(self.endark_toggle,"Accuracy +20\n(assumes 80% max potency)\nAttack +125 at 600 skill",hover_delay=500)
         self.endark_toggle.state(["!alternate"])
         self.endark_toggle.grid(row=14,column=0,sticky="n")
 
@@ -814,8 +843,8 @@ class App(tk.Tk):
         self.trick_attack_toggle.grid(row=36,column=0,sticky="n")
 
         self.blood_rage_value = tk.BooleanVar()
-        self.blood_rage_toggle = ttk.Checkbutton(self.ja_frame,variable=self.blood_rage_value, text="Blood Rage",width=-25, command=lambda event="blood_rage": self.update_special_checkboxes(event))
-        self.bloodragetip = Hovertip(self.blood_rage_toggle,"Crit Rate +40%\n(20% base +20% JP Gifts)",hover_delay=500)
+        self.blood_rage_toggle = ttk.Checkbutton(self.ja_frame,variable=self.blood_rage_value, text="Blood Rage (WAR)",width=-25, command=lambda event="blood_rage": self.update_special_checkboxes(event))
+        self.bloodragetip = Hovertip(self.blood_rage_toggle,"Crit Rate +20%\n(WAR main: +20% Ranged Crit Rate)",hover_delay=500)
         self.blood_rage_toggle.state(["!alternate"])
         self.blood_rage_toggle.grid(row=37,column=0,sticky="n")
 
@@ -832,7 +861,7 @@ class App(tk.Tk):
 
         self.haste_samba_value = tk.BooleanVar()
         self.haste_samba_toggle = ttk.Checkbutton(self.ja_frame,variable=self.haste_samba_value, text="Haste Samba",width=-25, command=lambda event="haste_samba": self.update_special_checkboxes(event))
-        self.hastesamba_tip = Hovertip(self.haste_samba_toggle,"JA Haste: +5%\nDNC mainjob: JA Haste +5%",hover_delay=500)
+        self.hastesamba_tip = Hovertip(self.haste_samba_toggle,"DNC subjob: JA Haste +5%\nDNC mainjob: JA Haste +10%",hover_delay=500)
         self.haste_samba_toggle.state(["!alternate"])
         self.haste_samba_toggle.grid(row=40,column=0,sticky="n")
 
@@ -871,6 +900,102 @@ class App(tk.Tk):
         self.temper2_tip = Hovertip(self.temper2_toggle,"Provides Triple Attack based on Enhancing Magic Skill value",hover_delay=500)
         self.temper2_toggle.state(["!alternate"])
         self.temper2_toggle.grid(row=46,column=0,sticky="n")
+
+        self.warcry_main_value = tk.BooleanVar()
+        self.warcry_main_toggle = ttk.Checkbutton(self.ja_frame,variable=self.warcry_main_value, text="Warcry (WAR)",width=-25, command=lambda event="warcry_main": self.update_special_checkboxes(event))
+        self.warcry_main_tip = Hovertip(self.warcry_main_toggle,"Attack +11.3%\nTP Bonus +700\nWAR mainjob: Attack +60",hover_delay=500)
+        self.warcry_main_toggle.state(["!alternate"])
+        self.warcry_main_toggle.grid(row=47,column=0,sticky="n")
+
+        self.crimson_howl_value = tk.BooleanVar()
+        self.crimson_howl_toggle = ttk.Checkbutton(self.ja_frame,variable=self.crimson_howl_value, text="Crimson Howl",width=-25, command=lambda event="crimson_howl": self.update_special_checkboxes(event))
+        self.crimson_howl_tip = Hovertip(self.crimson_howl_toggle,"Attack +11.3%",hover_delay=500)
+        self.crimson_howl_toggle.state(["!alternate"])
+        self.crimson_howl_toggle.grid(row=48,column=0,sticky="n")
+
+        self.crystal_blessing_value = tk.BooleanVar()
+        self.crystal_blessing_toggle = ttk.Checkbutton(self.ja_frame,variable=self.crystal_blessing_value, text="Crystal Blessing",width=-25, command=lambda event="crystal_blessing": self.update_special_checkboxes(event))
+        self.crystal_blessing_tip = Hovertip(self.crystal_blessing_toggle,"TP Bonus +250",hover_delay=500)
+        self.crystal_blessing_toggle.state(["!alternate"])
+        self.crystal_blessing_toggle.grid(row=50,column=0,sticky="n")
+
+        self.haste_samba_main_value = tk.BooleanVar()
+        self.haste_samba_main_toggle = ttk.Checkbutton(self.ja_frame,variable=self.haste_samba_main_value, text="Haste Samba (DNC)",width=-25, command=lambda event="haste_samba_main": self.update_special_checkboxes(event))
+        self.hastesamba_main_tip = Hovertip(self.haste_samba_main_toggle,"JA Haste +10%",hover_delay=500)
+        self.haste_samba_main_toggle.state(["!alternate"])
+        self.haste_samba_main_toggle.grid(row=51,column=0,sticky="n")
+
+        self.mighty_guard_value = tk.BooleanVar()
+        self.mighty_guard_toggle = ttk.Checkbutton(self.ja_frame,variable=self.mighty_guard_value, text="Mighty Guard",width=-25, command=lambda event="mighty_guard": self.update_special_checkboxes(event))
+        self.mighty_guard_tip = Hovertip(self.mighty_guard_toggle,"Magic Haste +15%\nMagic Defense +15",hover_delay=500)
+        self.mighty_guard_toggle.state(["!alternate"])
+        self.mighty_guard_toggle.grid(row=52,column=0,sticky="n")
+
+        self.ifrit_favor_value = tk.BooleanVar()
+        self.ifrit_favor_toggle = ttk.Checkbutton(self.ja_frame,variable=self.ifrit_favor_value, text="Ifrit's Favor",width=-25, command=lambda event="ifrit_favor": self.update_special_checkboxes(event))
+        self.ifrit_favor_tip = Hovertip(self.ifrit_favor_toggle,"Double Attack +25%",hover_delay=500)
+        self.ifrit_favor_toggle.state(["!alternate"])
+        self.ifrit_favor_toggle.grid(row=53,column=0,sticky="n")
+
+        self.shiva_favor_value = tk.BooleanVar()
+        self.shiva_favor_toggle = ttk.Checkbutton(self.ja_frame,variable=self.shiva_favor_value, text="Shiva's Favor",width=-25, command=lambda event="shiva_favor": self.update_special_checkboxes(event))
+        self.shiva_favor_tip = Hovertip(self.shiva_favor_toggle,"Magic Atk. Bonus +39",hover_delay=500)
+        self.shiva_favor_toggle.state(["!alternate"])
+        self.shiva_favor_toggle.grid(row=54,column=0,sticky="n")
+
+        self.ramuh_favor_value = tk.BooleanVar()
+        self.ramuh_favor_toggle = ttk.Checkbutton(self.ja_frame,variable=self.ramuh_favor_value, text="Ramuh's Favor",width=-25, command=lambda event="ramuh_favor": self.update_special_checkboxes(event))
+        self.ramuh_favor_tip = Hovertip(self.ramuh_favor_toggle,"Crit. Rate +23%",hover_delay=500)
+        self.ramuh_favor_toggle.state(["!alternate"])
+        self.ramuh_favor_toggle.grid(row=55,column=0,sticky="n")
+
+        self.corrosive_ooze_value = tk.BooleanVar()
+        self.corrosive_ooze_toggle = ttk.Checkbutton(self.ja_frame,variable=self.corrosive_ooze_value, text="Corrosive Ooze",width=-25, command=lambda event="corrosive_ooze": self.update_special_checkboxes(event))
+        self.corrosive_ooze_tip = Hovertip(self.corrosive_ooze_toggle,"Enemy Defense -33%",hover_delay=500)
+        self.corrosive_ooze_toggle.state(["!alternate"])
+        self.corrosive_ooze_toggle.grid(row=56,column=0,sticky="n")
+
+        self.box_step_main_value = tk.BooleanVar()
+        self.box_step_main_toggle = ttk.Checkbutton(self.ja_frame,variable=self.box_step_main_value, text="Box Step (DNC)",width=-25, command=lambda event="box_step_main": self.update_special_checkboxes(event))
+        self.box_step_main_tip = Hovertip(self.box_step_main_toggle,"Enemy Defense -23%",hover_delay=500)
+        self.box_step_main_toggle.state(["!alternate"])
+        self.box_step_main_toggle.grid(row=57,column=0,sticky="n")
+
+        self.box_step_value = tk.BooleanVar()
+        self.box_step_toggle = ttk.Checkbutton(self.ja_frame,variable=self.box_step_value, text="Box Step",width=-25, command=lambda event="box_step": self.update_special_checkboxes(event))
+        self.box_step_tip = Hovertip(self.box_step_toggle,"Enemy Defense -13%",hover_delay=500)
+        self.box_step_toggle.state(["!alternate"])
+        self.box_step_toggle.grid(row=58,column=0,sticky="n")
+
+        self.rage_value = tk.BooleanVar()
+        self.rage_toggle = ttk.Checkbutton(self.ja_frame,variable=self.rage_value, text="Rage",width=-25, command=lambda event="Rage": self.update_special_checkboxes(event))
+        self.rage_tip = Hovertip(self.rage_toggle,"Attack +50%",hover_delay=500)
+        self.rage_toggle.state(["!alternate"])
+        self.rage_toggle.grid(row=59,column=0,sticky="n")
+
+        self.frenzied_rage_value = tk.BooleanVar()
+        self.frenzied_rage_toggle = ttk.Checkbutton(self.ja_frame,variable=self.frenzied_rage_value, text="Frenzied Rage",width=-25, command=lambda event="frenzied_rage": self.update_special_checkboxes(event))
+        self.frenzied_rage_tip = Hovertip(self.frenzied_rage_toggle,"Attack +25%",hover_delay=500)
+        self.frenzied_rage_toggle.state(["!alternate"])
+        self.frenzied_rage_toggle.grid(row=60,column=0,sticky="n")
+
+        self.swooping_frenzy_value = tk.BooleanVar()
+        self.swooping_frenzy_toggle = ttk.Checkbutton(self.ja_frame,variable=self.swooping_frenzy_value, text="Swooping Frenzy",width=-25, command=lambda event="swooping_frenzy": self.update_special_checkboxes(event))
+        self.swooping_frenzy_tip = Hovertip(self.swooping_frenzy_toggle,"Enemy Magic Defense -25\nEnemy Defense -25%",hover_delay=500)
+        self.swooping_frenzy_toggle.state(["!alternate"])
+        self.swooping_frenzy_toggle.grid(row=61,column=0,sticky="n")
+
+        self.closed_position_value = tk.BooleanVar()
+        self.closed_position_toggle = ttk.Checkbutton(self.ja_frame,variable=self.closed_position_value, text="Closed Position",width=-25, command=lambda event="closed_position": self.update_special_checkboxes(event))
+        self.closed_position_tip = Hovertip(self.closed_position_toggle,"+15 Accuracy, +15 Evasion\nDNC Relic+3 feet: Store TP +15",hover_delay=500)
+        self.closed_position_toggle.state(["!alternate"])
+        self.closed_position_toggle.grid(row=62,column=0,sticky="n")
+
+        self.armor_break_value = tk.BooleanVar()
+        self.armor_break_toggle = ttk.Checkbutton(self.ja_frame,variable=self.armor_break_value, text="Armor Break",width=-25, command=lambda event="armor_break": self.update_special_checkboxes(event))
+        self.armor_break_tip = Hovertip(self.armor_break_toggle,"Enemy Defense -25%",hover_delay=500)
+        self.armor_break_toggle.state(["!alternate"])
+        self.armor_break_toggle.grid(row=63,column=0,sticky="n")
 
         self.ja_canvas.create_window((0,0),window=self.ja_frame, anchor="nw")
         # ===========================================================================
@@ -991,7 +1116,7 @@ class App(tk.Tk):
             self.whm_combo3 = ttk.Combobox(self.whm_frame, values=self.whm_stat_spells, textvariable=self.whm_spell3,state="readonly")
             self.whm_combo3.grid(row=4,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
 
-            self.whm_spells4 = ["None"] +["Sandstorm","Sandstorm II","Rainstorm","Rainstorm II","Windstorm","Windstorm II","Firestorm","Firestorm II","Hailstorm","Hailstorm II","Thunderstorm","Thunderstorm II","Aurorastorm","Aurorastorm II","Voidstorm","Voidstorm II"]
+            self.whm_spells4 = ["None"] + ["Sandstorm","Sandstorm II","Rainstorm","Rainstorm II","Windstorm","Windstorm II","Firestorm","Firestorm II","Hailstorm","Hailstorm II","Thunderstorm","Thunderstorm II","Aurorastorm","Aurorastorm II","Voidstorm","Voidstorm II"]
             self.whm_spell4 = tk.StringVar(value="None")
             self.whm_combo4 = ttk.Combobox(self.whm_frame, values=self.whm_spells4, textvariable=self.whm_spell4,state="readonly")
             self.whm_combo4.grid(row=5,column=0,sticky="nw",padx=0,pady=2,columnspan=2)
@@ -1894,21 +2019,35 @@ class App(tk.Tk):
 # ====================================================================================================================================================================================
 
         self.select_frame = ttk.Frame(self.frame41,)
-        self.select_frame.grid(row=2,column=0,padx=0,pady=25)
+        self.select_frame.grid(row=3,column=0,padx=0,pady=25)
+
+
+
+        self.nyame_override_toggle = tk.BooleanVar(value=True)
+        self.nyame_override_checkbox = ttk.Checkbutton(self.select_frame, text="Nyame <= R25", variable=self.nyame_override_toggle) 
+        self.nyame_override_tip = Hovertip(self.nyame_override_checkbox,"When using \"Odyssey Rank\"=30, select Nyame R25B instead of Nyame R30B.",hover_delay=500)
+        self.nyame_override_checkbox.grid(row=0, column=1, sticky="ne", padx=0, pady=1)
 
         self.odyrank = tk.IntVar(value=30)
         self.odyrank_select = ttk.Combobox(self.select_frame, textvariable=self.odyrank,values=[30, 25, 20, 15, 0],state="readonly",width=5)
         self.odyrank_tip = Hovertip(self.odyrank_select,"Only select Odyssey equipment with this rank when using the \"Select ___\" buttons.",hover_delay=500)
-        self.odyrank_select.grid(row=0,column=1,padx=0,pady=0,sticky="e")
+        self.odyrank_select.grid(row=1,column=1,padx=0,pady=0,sticky="e")
         self.odyrank_label = ttk.Label(self.select_frame,text="Odyssey Rank", width=15)
-        self.odyrank_label.grid(row=0,column=0,padx=0,pady=0,sticky="w")
+        self.odyrank_label.grid(row=1,column=0,padx=0,pady=0,sticky="w")
+
+        self.soa_ring = tk.StringVar(value="Weatherspoon")
+        self.soa_ring_select = ttk.Combobox(self.select_frame, textvariable=self.soa_ring,values=["Weatherspoon","Karieyh", "Vocane", "None"],state="readonly",width=20)
+        self.soa_ring_tip = Hovertip(self.soa_ring_select,"Only select this SOA ring when using the \"Select ___\" buttons.",hover_delay=500)
+        self.soa_ring_select.grid(row=2,column=1,padx=0,pady=0,sticky="e")
+        self.soa_ring_label = ttk.Label(self.select_frame,text="SOA Ring", width=15)
+        self.soa_ring_label.grid(row=2,column=0,padx=0,pady=0,sticky="w")
 
         self.tvr_ring = tk.StringVar(value="Cornelia's")
-        self.tvr_ring_select = ttk.Combobox(self.select_frame, textvariable=self.tvr_ring,values=["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's"],state="readonly",width=20)
-        self.tvr_ring_tip = Hovertip(self.tvr_ring_select,"Only select this ring when using the \"Select ___\" buttons.",hover_delay=500)
-        self.tvr_ring_select.grid(row=1,column=1,padx=0,pady=0,sticky="e")
+        self.tvr_ring_select = ttk.Combobox(self.select_frame, textvariable=self.tvr_ring,values=["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's","None"],state="readonly",width=20)
+        self.tvr_ring_tip = Hovertip(self.tvr_ring_select,"Only select this TVR ring when using the \"Select ___\" buttons.",hover_delay=500)
+        self.tvr_ring_select.grid(row=3,column=1,padx=0,pady=0,sticky="e")
         self.tvr_ring_label = ttk.Label(self.select_frame,text="TVR Ring", width=15)
-        self.tvr_ring_label.grid(row=1,column=0,padx=0,pady=0,sticky="w")
+        self.tvr_ring_label.grid(row=3,column=0,padx=0,pady=0,sticky="w")
 
 
 
@@ -1946,7 +2085,7 @@ class App(tk.Tk):
         self.tpmetric_label.grid(row=3, column=0, sticky="w", padx=0, pady=1)
         self.tpmetric = tk.StringVar(value="Time to WS")
         self.tpmetric_combo = ttk.Combobox(self.conditions_frame, values=["Time to WS","TP return","Damage dealt","DPS",], textvariable=self.tpmetric,state="readonly",width=15)
-        self.tpmetric_combo_tip = Hovertip(self.tpmetric_combo,f"Choose what the algorithm prioritizes when building melee TP sets.\nTime to WS: Minimize real-world time to reach min. TP\nTP return: Maximize TP return per attack round; ignores damage dealt\nDamage dealt: Maximize damage dealt per attack round; ignores TP return\nDPS: Maximize damage per second during TP phase\n\nI personally do not trust the DPS metric since it ignores the WS phase.\nYou may get more total DPS from a faster TP set that let's you WS more often.",hover_delay=500)
+        self.tpmetric_combo_tip = Hovertip(self.tpmetric_combo,f"Choose what the algorithm prioritizes when building melee TP sets.\nTime to WS: Minimize real-world time to reach min. TP\nTP return: Maximize TP return per attack round; ignores damage dealt\nDamage dealt: Maximize damage dealt per attack round; ignores TP return\nDPS: Maximize damage per second during TP phase (not total DPS)",hover_delay=500)
         self.tpmetric_combo.grid(row=3,column=1,sticky="nw",padx=0,pady=2)
 
         self.spellmetric_label = ttk.Label(self.conditions_frame,text="Spell Metric:")
@@ -4249,7 +4388,7 @@ class App(tk.Tk):
         self.sim_frame.grid(row=2, column=0, padx=2, pady=10, sticky="w")
 
         self.sim_button = tk.Button(self.sim_frame, text="Run DPS simulations",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("damage simulation"))
-        self.sim_button_tip = Hovertip(self.sim_button,f"Simulate 10 hours of weapon skills using the above TP and WS sets.\nWeapon skills are used after reaching Minimum TP through normal attack rounds with the selected buffs.")
+        self.sim_button_tip = Hovertip(self.sim_button,f"Simulate attack rounds and weapon skills using the above TP and WS sets.\nWeapon skills are used after reaching Minimum TP value provided in the Inputs tab.")
         self.sim_button.grid(row=1,column=0,columnspan=2,padx=5,pady=5)
 
         self.build_dist = tk.Button(self.sim_frame, text="Create weapon skill\ndistribution plot",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("build distribution"))
@@ -4362,6 +4501,7 @@ class App(tk.Tk):
         # TODO: Dictionary these buttons/checkboxes/radio
         #
         tvr_rings = ["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's"]
+        soa_rings = ["Weatherspoon", "Karieyh", "Vocane"]
         jse_ear_names = {"nin":"Hattori","drk":"Heathen","blm":"Wicce","rdm":"Lethargy","drg":"Peltast","whm":"Ebers","sam":"Kasuga","sch":"Arbatel","war":"Boii","cor":"Chasseur","brd":"Fili","thf":"Skulker","mnk":"Bhikku","dnc":"Maculele","bst":"Nukumi","geo":"Azimuth","pld":"Chevalier","rng":"Amini","blu":"Hashishin","run":"Erilaz","pup":"Karagoz","smn":"Beckoner"}
 
         cbox_lists = {"main":[self.main_cbox_frame,self.x_main2,self.x_main2_var],
@@ -4429,6 +4569,9 @@ class App(tk.Tk):
                         if slot in ["ring1","ring2"] and " ".join(label.split()[0:-1]) in tvr_rings and " ".join(label.split()[0:-1])!=self.tvr_ring.get():
                             item.set(False)
 
+                        if slot in ["ring1","ring2"] and " ".join(label.split()[0:-2]) in soa_rings and " ".join(label.split()[0:-2])!=self.soa_ring.get():
+                            item.set(False)
+
                         # Odyssey Rank check
                         if d.get("Rank",self.odyrank.get())!=self.odyrank.get():
                             item.set(False)
@@ -4436,6 +4579,18 @@ class App(tk.Tk):
                         # Unselect Path A Nyame
                         if "Nyame" in label and "A"==label[-1]:
                             item.set(False)
+
+                        if label.split()[-1] == "V":
+                            item.set(False)
+
+                        # Unselect Nyame R30 in favor of R25
+                        if self.nyame_override_toggle.get() and "un" not in trigger:
+                            if "Nyame" in label and ("R30B" in label or "R25B" in label):
+                                item.set(False)
+                                if self.odyrank.get()==30 and "R25B" in label:
+                                    item.set(True)
+
+
 
                         # Unselect JSE +2 Earrings
                         if jse_ear_names[self.mainjob.get().lower()] in label and "+2" in label:
@@ -4572,7 +4727,7 @@ class App(tk.Tk):
         brd_hm_haste           = ((brd["Honor March"]["Magic Haste"][0] + min(4,nsong)*brd["Honor March"]["Magic Haste"][1])*(1.0+0.5*marcato if song1=="Honor March" else 1.0) if "Honor March" in active_songs else 0)*(1.0+1.0*soulvoice)
 
         # Aria PDL
-        brd_pdl = ((brd["Aria of Passion"]["PDL"][0] + max(3,nsong)*brd["Aria of Passion"]["PDL"][1])*(1.0+0.5*marcato if song1=="Aria of Passion" else 1.0) if "Aria of Passion" in active_songs else 0)*(1.0+1.0*soulvoice)
+        brd_pdl = ((brd["Aria of Passion"]["PDL"][0] + min(7, max(2,nsong))*brd["Aria of Passion"]["PDL"][1])*(1.0+0.5*marcato if song1=="Aria of Passion" else 1.0) if "Aria of Passion" in active_songs else 0)*(1.0+1.0*soulvoice)
 
         # Madrigals cap at Songs+9
         brd_swordmad_accuracy  = ((brd["Sword Madrigal"]["Accuracy"][0] + min(9,nsong)*brd["Sword Madrigal"]["Accuracy"][1])*(1.0+0.5*marcato if song1=="Sword Madrigal" else 1.0) if "Sword Madrigal" in active_songs else 0)*(1.0+1.0*soulvoice)
@@ -4735,6 +4890,7 @@ class App(tk.Tk):
             "VIT":self.enemy_vit.get(),
             "INT":self.enemy_int.get(),
             "MND":self.enemy_mnd.get(),
+            "Base Defense":self.enemy_defense.get(),
             "Defense":self.enemy_defense.get(),
             "Magic Defense":self.enemy_magic_defense.get(),
             "Evasion":self.enemy_evasion.get(),
@@ -4742,10 +4898,11 @@ class App(tk.Tk):
             })
 
         # Decrease enemy stats based on debuffs selected.
-        # TODO: Box Step, DEF/EVA- weapon skills.
-        enemy_reduced_defense = enemy.stats["Defense"] * (1-dia_potency) * (1-frailty_potency) * (1 - 0.2*self.angon_value.get())
+        # Tested in game: Defense debuffs stack additively and defense is floored at Def=1.
+        # enemy_reduced_defense = enemy.stats["Defense"] * (1-dia_potency) * (1-frailty_potency) * (1 - 0.2*self.angon_value.get()) * (1 - 0.33*self.corrosive_ooze_value.get()) * (1 - 0.13*self.box_step_value.get()) * (1 - 0.23*self.box_step_main_value.get()) * (1 - 0.25*self.swooping_frenzy_value.get())
+        enemy_reduced_defense = enemy.stats["Defense"] * (1-dia_potency - frailty_potency - 0.2*self.angon_value.get() - 0.25*self.armor_break_value.get() - 0.33*self.corrosive_ooze_value.get() - 0.13*self.box_step_value.get() - 0.23*self.box_step_main_value.get() - 0.25*self.swooping_frenzy_value.get())
         enemy.stats["Defense"] = enemy_reduced_defense if enemy_reduced_defense > 1 else 1 # Minimum enemy defense value is 1 for the purposes of this code.
-        enemy.stats["Magic Defense"] = (enemy.stats["Magic Defense"] - malaise_potency) if (enemy.stats["Magic Defense"]- malaise_potency) > -50 else -50
+        enemy.stats["Magic Defense"] = (enemy.stats["Magic Defense"] - malaise_potency - 25*self.swooping_frenzy_value.get()) if (enemy.stats["Magic Defense"]- malaise_potency) > -50 else -50
         enemy.stats["Evasion"] -= (torpor_potency + 280*self.distract3_value.get())
         enemy.stats["Magic Evasion"] -= languor_potency
 
@@ -4755,8 +4912,12 @@ class App(tk.Tk):
         #
         # Test a given gearset, either with a quick look or an optimization
         #
-        abilities = {"Magic Burst":self.magic_burst_value.get(),
+        abilities = {"Verbose DPS":self.verbose_dps_outputs.get(),
+                    "Very Verbose DPS":self.very_verbose_dps_outputs.get(),
+                    "Verbose Swaps":self.verbose_swaps.get(),
+                    "Magic Burst":self.magic_burst_value.get(),
                      "Warcry":self.warcry_value.get(),
+                     "warcry_main":self.warcry_main_value.get(),
                      "Berserk":self.berserk_value.get(),
                      "Aggressor":self.aggressor_value.get(),
                      "Mighty Strikes":self.mighty_strikes_value.get(),
@@ -4766,6 +4927,7 @@ class App(tk.Tk):
                      "Manafont":self.manafont_value.get(),
                      "Manawell":self.manawell_value.get(),
                      "Chainspell":self.chainspell_value.get(),
+                     "EnSpell":self.enspell_value.get(),
                      "Composure":self.composure_value.get(),
                      "Conspirator":self.conspirator_value.get(),
                      "Divine Emblem":self.divine_emblem_value.get(),
@@ -4783,6 +4945,7 @@ class App(tk.Tk):
                      "Innin":self.innin_value.get(),
                      "Futae":self.futae_value.get(),
                      "Nature's Meditation":self.natures_meditation_value.get(),
+                     "Mighty Guard":self.mighty_guard_value.get(),
                      "Triple Shot":self.triple_shot_value.get(),
                      "Building Flourish":self.building_flourish_value.get(),
                      "Climactic Flourish":self.climactic_flourish_value.get(),
@@ -4797,11 +4960,20 @@ class App(tk.Tk):
                      "Sneak Attack":self.sneak_attack_value.get(),
                      "Trick Attack":self.trick_attack_value.get(),
                      "Blood Rage":self.blood_rage_value.get(),
+                     "Crimson Howl":self.crimson_howl_value.get(),
+                     "Crystal Blessing":self.crystal_blessing_value.get(),
                      "Aftermath":self.am_level.get(),
                      "Haste Samba":self.haste_samba_value.get(),
+                     "haste_samba_main":self.haste_samba_main_value.get(),
                      "Klimaform":self.klimaform_value.get(),
                      "Overwhelm":self.overwhelm_value.get(),
+                     "closed_position":self.closed_position_value.get(),
                      "Distract III":self.distract3_value.get(),
+                     "ifrit_favor":self.ifrit_favor_value.get(),
+                     "shiva_favor":self.shiva_favor_value.get(),
+                     "ramuh_favor":self.ramuh_favor_value.get(),
+                     "Rage":self.rage_value.get(),
+                     "Frenzied Rage":self.frenzied_rage_value.get(),
                      "Temper":self.temper1_value.get(),
                      "Temper II":self.temper2_value.get(),
                      "Enh. Skill":self.enh_skill.get() if self.enh_skill.get() > 0 else 0,
@@ -4870,6 +5042,9 @@ class App(tk.Tk):
         player_tpset = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset_tp, buffs, abilities)
         player_wsset = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset_ws, buffs, abilities)
 
+        if self.tp2.get() < self.tp1.get():
+            self.tp2.set(self.tp1.get())
+
         effective_tp = (self.tp2.get() + self.tp1.get()) / 2 + player.stats.get("TP Bonus",0)
         effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
 
@@ -4888,7 +5063,7 @@ class App(tk.Tk):
 
         ws_name = self.ws_name.get()
 
-        if trigger in ["quicklook ws","quicklook spell", "build_distribution"]:
+        if trigger in ["quicklook ws", "quicklook spell", "build_distribution"]:
             if trigger=="quicklook ws":
                 if ws_name=="None":
                     print("No weapon skill selected.")
@@ -5853,24 +6028,47 @@ class App(tk.Tk):
         #
         # Disable and/or hide specific checkboxes based on the user's main/subjob and other checkboxes enabled.
         #
-        # Create a list containing: [[checkbox_object, job_required, ML required for subjob use]] to loop over
+        # Create a list containing: [[checkbox_object, job_required, ML required for subjob use]] to loop over. Intentionally in alphabetical order so the checkboxes are generated in alphabetical order.
+        # Abilities available to all jobs are intentionally placed at the end so they appear after main/sub job related abilities, also in alphabetical order.
+        # The final number decides the level at which the ability is unlocked. It is read as "The checkbox for ability X is visible for job Y at master level Z", where Z is the final number in the list.
+        #     Values of "0" mean the ability is available to all main and subjobs
+        #     Values of "999" mean the ability is only available to the main job
+        #     Other values, such as Ebullience at "30", mean the main job must be master level 30 or higher to use the ability through subjobs.
         special_checkbox_toggles = [[self.aggressor_toggle, self.aggressor_value,"war",0],
-                                    [self.barrage_toggle, self.barrage_value, "rng", 0], [self.berserk_toggle, self.berserk_value,"war",0], [self.blood_rage_toggle, self.blood_rage_value,"war",999],[self.building_flourish_toggle, self.building_flourish_value,"dnc",5],
-                                    [self.chainspell_toggle, self.chainspell_value,"rdm",999],[self.climactic_flourish_toggle, self.climactic_flourish_value,"dnc",999], [self.composure_toggle, self.composure_value,"rdm",999],[self.conspirator_toggle, self.conspirator_value,"thf",0], 
+                                    [self.barrage_toggle, self.barrage_value, "rng", 0], [self.berserk_toggle, self.berserk_value,"war",0], [self.box_step_toggle, self.box_step_value, "dnc", 0], [self.building_flourish_toggle, self.building_flourish_value,"dnc",5],
+                                    [self.chainspell_toggle, self.chainspell_value,"rdm",999], [self.climactic_flourish_toggle, self.climactic_flourish_value,"dnc",999], [self.closed_position_toggle, self.closed_position_value, "dnc", 999], [self.composure_toggle, self.composure_value,"rdm",999], [self.conspirator_toggle, self.conspirator_value,"thf",0], 
                                     [self.divine_emblem_toggle, self.divine_emblem_value,"pld",999], [self.double_shot_toggle, self.double_shot_value,"rng",999], 
-                                    [self.ebullience_toggle, self.ebullience_value,"sch",30],[self.endark_toggle, self.endark_value,"drk",0],[self.enlight_toggle, self.enlight_value,"pld",999],[self.enlightenment_toggle, self.enlightenment_value,"sch",999],
-                                    [self.focus_toggle, self.focus_value,"mnk",0], [self.footwork_toggle, self.footwork_value,"mnk",999], [self.futae_toggle, self.futae_value,"nin",999],
-                                    [self.hasso_toggle, self.hasso_value,"sam",0],[self.haste_samba_toggle, self.haste_samba_value,"dnc",0],[self.hover_shot_toggle, self.hover_shot_value,"rng",999],
-                                    [self.impetus_toggle, self.impetus_value,"mnk",999],[self.innin_toggle, self.innin_value,"nin",999],
+                                    [self.ebullience_toggle, self.ebullience_value,"sch",30], [self.endark_toggle, self.endark_value,"drk",0], [self.enlight_toggle, self.enlight_value,"pld",999], [self.enlightenment_toggle, self.enlightenment_value,"sch",999], [self.enspell_toggle, self.enspell_value,"rdm",0],
+                                    [self.focus_toggle, self.focus_value,"mnk",0], [self.footwork_toggle, self.footwork_value,"mnk",999], [self.frenzied_rage_toggle, self.frenzied_rage_value, "bst", 999], [self.futae_toggle, self.futae_value,"nin",999],
+                                    [self.hasso_toggle, self.hasso_value,"sam",0], [self.haste_samba_toggle, self.haste_samba_value,"dnc",0], [self.hover_shot_toggle, self.hover_shot_value,"rng",999],
+                                    [self.impetus_toggle, self.impetus_value,"mnk",999], [self.innin_toggle, self.innin_value,"nin",999],
                                     [self.klimaform_toggle, self.klimaform_value,"sch",0],
                                     [self.last_resort_toggle, self.last_resort_value,"drk",0],
-                                    [self.manafont_toggle, self.manafont_value,"blm",999], [self.manawell_toggle, self.manawell_value,"blm",999],[self.mighty_strikes_toggle, self.mighty_strikes_value,"war",999],
-                                    [self.natures_meditation_toggle, self.natures_meditation_value,"blu",0],
+                                    [self.manafont_toggle, self.manafont_value,"blm",999], [self.manawell_toggle, self.manawell_value,"blm",999], [self.mighty_strikes_toggle, self.mighty_strikes_value,"war",999],
                                     [self.overwhelm_toggle, self.overwhelm_value,"sam",999],
-                                    [self.saber_dance_toggle, self.saber_dance_value,"dnc",999],[self.sange_toggle, self.sange_value,"nin",999], [self.sharpshot_toggle, self.sharpshot_value,"rng",0],[self.sneak_attack_toggle, self.sneak_attack_value,"thf",0], [self.striking_flourish_toggle, self.striking_flourish_value,"dnc",999],[self.swordplay_toggle, self.swordplay_value,"run",0], 
-                                    [self.ternary_flourish_toggle, self.ternary_flourish_value,"dnc",999], [self.temper1_toggle, self.temper1_value,"run",999], [self.temper2_toggle, self.temper2_value,"rdm",999],[self.theurgic_focus_toggle, self.theurgic_focus_value,"geo",999],[self.trick_attack_toggle, self.trick_attack_value,"thf",0],[self.triple_shot_toggle, self.triple_shot_value,"cor",999],
+                                    [self.rage_toggle, self.rage_value, "bst", 999],
+                                    [self.saber_dance_toggle, self.saber_dance_value,"dnc",999], [self.sange_toggle, self.sange_value,"nin",999], [self.sharpshot_toggle, self.sharpshot_value,"rng",0], [self.sneak_attack_toggle, self.sneak_attack_value,"thf",0], [self.striking_flourish_toggle, self.striking_flourish_value,"dnc",999], [self.swordplay_toggle, self.swordplay_value,"run",0], 
+                                    [self.ternary_flourish_toggle, self.ternary_flourish_value,"dnc",999], [self.temper1_toggle, self.temper1_value,"run",999], [self.temper2_toggle, self.temper2_value,"rdm",999], [self.theurgic_focus_toggle, self.theurgic_focus_value,"geo",999], [self.trick_attack_toggle, self.trick_attack_value,"thf",0], [self.triple_shot_toggle, self.triple_shot_value,"cor",999], [self.true_shot_toggle, self.true_shot_value, "rng",999], [self.true_shot_toggle, self.true_shot_value, "cor",999],
                                     [self.velocity_shot_toggle, self.velocity_shot_value,"rng",999], 
-                                    [self.warcry_toggle, self.warcry_value,"war",0],]
+                                    [self.warcry_toggle, self.warcry_value,"war",0],
+                                    
+                                    [self.angon_toggle, self.angon_value, "all",0],
+                                    [self.armor_break_toggle, self.armor_break_value, "all",0],
+                                    [self.blood_rage_toggle, self.blood_rage_value, "all", 0],
+                                    [self.box_step_main_toggle, self.box_step_main_value, "all", 0],
+                                    [self.corrosive_ooze_toggle, self.corrosive_ooze_value, "all",0],
+                                    [self.crimson_howl_toggle, self.crimson_howl_value, "all", 0],
+                                    [self.crystal_blessing_toggle, self.crystal_blessing_value, "all", 0],
+                                    [self.distract3_toggle, self.distract3_value, "all", 0],
+                                    [self.haste_samba_main_toggle, self.haste_samba_main_value, "all", 0],
+                                    [self.ifrit_favor_toggle, self.ifrit_favor_value, "all", 0],
+                                    [self.mighty_guard_toggle, self.mighty_guard_value, "all", 0],
+                                    [self.natures_meditation_toggle, self.natures_meditation_value, "all", 0],
+                                    [self.ramuh_favor_toggle, self.ramuh_favor_value, "all", 0],
+                                    [self.shiva_favor_toggle, self.shiva_favor_value, "all", 0],
+                                    [self.swooping_frenzy_toggle, self.swooping_frenzy_value, "all", 0],
+                                    [self.warcry_main_toggle, self.warcry_main_value, "all",0],
+                                    ]
 
 
         # Disable and hide everything, then show only the toggles that the user's main/sub combo can use.
@@ -5878,35 +6076,64 @@ class App(tk.Tk):
         if trigger=="select_job":
 
             for i,k in enumerate(special_checkbox_toggles):
-
+                
                 # Set all values to False and hide all special toggle checkboxes
                 k[1].set(False)
                 k[0].grid_forget()
 
                 # Re-display checkboxes that can be used by the selected main/subjob combination
-                if (k[2].upper()==self.mainjob.get()) or (k[2].upper()==self.subjob.get() and int(self.masterlevel.get())>=k[3]):
-                    k[0].grid(row=i+4,column=0,sticky="n") # Update this i+4 for each permanent checkbox added. Right now we have MB, TS, Distract3, Angon, so we use +4
+                if (k[2].upper()==self.mainjob.get()) or (k[2].upper()==self.subjob.get() and int(self.masterlevel.get())>=k[3]) or (k[2]=="all"):
+                    k[0].grid(row=i+3,column=0,sticky="n") # Update this i+4 for each permanent checkbox added. For example, if we have "all jobs" checkboxes for Magic Burst, True Shot, Distract3, and Angon, then the checkbox slots [0,1,2,3] are taken, so we use "row=i+4"
+
+
+            # Hide certain checkboxes from specific jobs.
+            # WAR main job does not need to see or have access to the "Warcry" buff since it already has "Warcry (WAR)" for main job potency
+            if self.mainjob.get().lower()=="war":
+                self.warcry_value.set(False)
+                self.warcry_toggle.grid_forget()
+
+            if self.mainjob.get().lower()=="dnc":
+                self.haste_samba_value.set(False)
+                self.haste_samba_toggle.grid_forget()
+
+                self.box_step_value.set(False)
+                self.box_step_toggle.grid_forget()
+
+
+            # Automatically certain specific checkboxes for specific jobs
+            if "sam" in [self.subjob.get().lower(), self.mainjob.get().lower()]:
+                self.hasso_value.set(True)
+
+            if self.mainjob.get().lower() == "rdm":
+                self.temper2_value.set(True)
+                self.enspell_value.set(True)
+
+            if self.mainjob.get().lower() == "run":
+                self.temper1_value.set(True)
+
+            if self.mainjob.get().lower() == "drk":
+                self.endark_value.set(True)
+
+            if self.mainjob.get().lower() == "pld":
+                self.enlight_value.set(True)
+
+
+
+
+
 
             mb_jobs = ["whm","blm","rdm","pld","drk","nin","blu","sch","geo"] # Magic Burst jobs
             ts_jobs = ["rng","cor"] # True Shot jobs
             if self.mainjob.get().lower() in mb_jobs or self.subjob.get().lower() in mb_jobs:
-                self.magic_burst_toggle.grid(row=2,column=0,sticky="n")
+                self.magic_burst_toggle.grid(row=0,column=0,sticky="n")
             else:
                 self.magic_burst_toggle.grid_forget()
                 self.magic_burst_value.set(False)
             if self.mainjob.get().lower() in ts_jobs or self.subjob.get().lower() in ts_jobs:
-                self.true_shot_toggle.grid(row=3,column=0,sticky="n")
+                self.true_shot_toggle.grid(row=1,column=0,sticky="n")
             else:
                 self.true_shot_toggle.grid_forget()
                 self.true_shot_value.set(False)
-
-            self.angon_value.set(False) # All jobs can use Angon, but disable it when swapping jobs just to be consistent.
-            self.angon_toggle.grid(row=0,column=0,sticky="n")
-
-            self.distract3_value.set(False) 
-            self.distract3_toggle.grid(row=1,column=0,sticky="n")
-
-
 
             # Swap Boost-spells for Gain-spells when using RDM main.
             if self.mainjob.get().lower() == "rdm":
@@ -5935,12 +6162,10 @@ class App(tk.Tk):
             else:
                 self.enh_skill.set(value=500)
                 
-            if self.mainjob.get().lower() == "rdm":
-                self.temper2_value.set(True)
-            if self.mainjob.get().lower() == "run":
-                self.temper1_value.set(True)
 
 
+
+        # Automatically disable specific checkboxes when others are enabled.
         # Climactic/Striking/Ternary flourishes can not exist together. Disable the others when one is enabled.
         if trigger=="climactic_flourish" and self.climactic_flourish_value.get():
             self.striking_flourish_value.set(False)
@@ -5962,6 +6187,56 @@ class App(tk.Tk):
         if trigger=="triple_shot" and self.triple_shot_value.get():
             self.barrage_value.set(False)
             self.double_shot_value.set(False)
+
+        # Warcry, Blood Rage, and Crimson Howl overwrite each other
+        if trigger=="warcry_main":
+            self.warcry_value.set(False)
+            self.blood_rage_value.set(False)
+            self.crimson_howl_value.set(False)
+        elif trigger=="warcry":
+            self.warcry_main_value.set(False)
+            self.blood_rage_value.set(False)
+            self.crimson_howl_value.set(False)
+        elif trigger=="blood_rage":
+            self.warcry_value.set(False)
+            self.warcry_main_value.set(False)
+            self.crimson_howl_value.set(False)
+        elif trigger=="crimson_howl":
+            self.warcry_value.set(False)
+            self.warcry_main_value.set(False)
+            self.blood_rage_value.set(False)
+
+        if trigger=="haste_samba_main":
+            self.haste_samba_value.set(False)
+        elif trigger=="haste_samba":
+            self.haste_samba_main_value.set(False)
+
+        if trigger=="angon":
+            self.armor_break_value.set(False)
+            self.swooping_frenzy_value.set(False)
+        elif trigger=="armor_break":
+            self.angon_value.set(False)
+            self.swooping_frenzy_value.set(False)
+        elif trigger=="swooping_frenzy":
+            self.angon_value.set(False)
+            self.armor_break_value.set(False)
+
+
+        if trigger=="box_step_main":
+            self.box_step_value.set(False)
+        elif trigger=="box_step":
+            self.box_step_main_value.set(False)
+
+        if trigger=="enlight":
+            self.enspell_value.set(False)
+            self.endark_value.set(False)
+        elif trigger=="endark":
+            self.enspell_value.set(False)
+            self.enlight_value.set(False)
+        elif trigger=="enspell":
+            self.endark_value.set(False)
+            self.enlight_value.set(False)
+
 
 
         # # Update the scroll region of the box

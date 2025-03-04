@@ -20,9 +20,6 @@ enemies = [
 
 
 
-
-# Do not modify below this line.
-
 # Check that all necessary stats are included in all enemies
 missing_stat = False
 for enemy in enemies:

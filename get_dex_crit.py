@@ -1,7 +1,4 @@
 #
-# Created by Kastra on Asura.
-# Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
-#
 # Version date: 2022 January 22
 #
 from numba import njit
@@ -9,7 +6,7 @@ from numba import njit
 @njit
 def get_dex_crit(player_dex, enemy_agi):
     #
-    # Calculate DEX-based crit using the equation from BG wiki
+    # Calculate DEX-based critical hit rate bonus using the equation from BG wiki
     # https://www.bg-wiki.com/ffxi/Critical_Hit_Rate
     #
     ddex = player_dex - enemy_agi

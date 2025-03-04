@@ -1,10 +1,6 @@
-# TODO thoughts:
-#  Auspice checkbox
-#  Enlight checkbox (Accuracy+20 on PLD) to go with the Endark checkbox
-#
-#
-#
 from enemies import *
+
+
 class create_enemy:
     #
     # Create an enemy class so that we may modify its stats more easily.
@@ -230,7 +226,7 @@ class create_player:
         # Warrior abilities
         if "war" in jobs:
             if self.abilities.get("Warcry",False):
-                if self.main_job=="war":
+                if self.main_job=="war": # main_job WAR does not have access to this buff (TODO: delete first part of this if-statement to remove redundant code)
                     self.stats["Attack%"] = self.stats.get("Attack%",0) + 118./1024
                     self.stats["Attack"] = self.stats.get("Attack",0) + 60
                     self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + 500+200 # (5/5 Savagery Merits with Relic head)
@@ -246,8 +242,6 @@ class create_player:
                 if self.abilities.get("Mighty Strikes",False):
                     self.stats["Crit Rate"] = 100
                     self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 40
-                if self.abilities.get("Blood Rage",False):
-                    self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 20 + 20
         # ===========================================================================
         # ===========================================================================
         # Monk abilities
@@ -258,14 +252,19 @@ class create_player:
                     self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 100 + 20
                 if self.abilities.get("Footwork",False):
                     self.stats["Kick Attacks"] = self.stats.get("Kick Attacks",0) + 20
-                    self.stats["Kick Attacks Attack%"] = self.stats.get("Kick Attacks Attack%",0) + 100./1024 + 160./1024
+                    self.stats["Kick Attacks Attack%"] = self.stats.get("Kick Attacks Attack%",0) + 100./1024 + (130./1024 if "Bhikku Gaiters +2"==self.gearset["feet"]["Name"] else 160./1024)
                     self.stats["Kick Attacks DMG"] = self.stats.get("Kick Attacks DMG",0) + 20 + 20 # Activating footwork increases Kick DMG by 20, with an additional 20 from job points
                 if self.abilities.get("Impetus",False):
                     impetus_potency = 0.9
                     self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 50*impetus_potency
                     self.stats["Attack"] = self.stats.get("Attack",0) + (100+40)*impetus_potency
-                    self.stats["Crit Damage"] = self.stats.get("Crit Damage",0) + 50*impetus_potency*(self.gearset["body"]["Name"]=="Bhikku Cyclas +3")
-                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 100*impetus_potency
+                    self.stats["Crit Damage"] = self.stats.get("Crit Damage",0) + 50*impetus_potency*("Bhikku Cyclas" in self.gearset["body"]["Name"])
+                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 100*impetus_potency*("Bhikku Cyclas" in self.gearset["body"]["Name"])
+            if self.sub_job=="mnk":
+                if self.abilities.get("Focus",False):
+                    self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 20*(1 - (99 - (self.sub_job_level))/100)
+                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 100*(1 - (99 - (self.sub_job_level))/100)
+
         # ===========================================================================
         # ===========================================================================
         # Black Mage abilities
@@ -284,7 +283,8 @@ class create_player:
                     self.stats["Magic Damage"] = self.stats.get("Magic Damage",0) + 40
                 if self.abilities.get("Composure",False):
                     self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 20 + 50 # +50 from Lv99 base and +20 from JP
-                    self.stats["EnSpell Damage%"] = self.stats.get("EnSpell Damage%",0) + 200 # +200% EnSpell damage. (Base_damage + Ayanmo)*(composure + crocea)
+                    self.stats["EnSpell Damage%"] = self.stats.get("EnSpell Damage%",0) + 200 # +200% EnSpell damage from Composure
+                    self.stats["EnSpell Damage"] = self.stats.get("EnSpell Damage",0)
         # ===========================================================================
         # ===========================================================================
         # Thief abilities
@@ -305,12 +305,12 @@ class create_player:
                     divine_skill = self.abilities.get("Enh. Skill",0)
                     divine_skill = 0 if divine_skill < 0 else divine_skill
                     if divine_skill <=500:
-                        enlight_acc = 2*((divine_skill + 85)/13) + ((divine_skill + 85)/26) + 20 # +20 from JP
+                        enlight_acc = 2*((divine_skill + 85)/13) + ((divine_skill + 85)/26)
                     else:
-                        enlight_acc = 2*((divine_skill + 400)/20) + ((divine_skill + 400)/40) + 20 # +20 from JP
+                        enlight_acc = 2*((divine_skill + 400)/20) + ((divine_skill + 400)/40)
 
                     enlight_potency = 0.80
-                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + enlight_acc*enlight_potency
+                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + enlight_acc*enlight_potency + 20 # +20 from JP.  +120 accuracy at 600 skill
         # ===========================================================================
         # ===========================================================================
         # Dark Knight abilities
@@ -320,10 +320,11 @@ class create_player:
                 self.stats["Attack"] = self.stats.get("Attack",0) + 40*(self.main_job=="drk")
                 self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 15 + 10*(self.main_job=="drk") if self.gearset["main"]["Skill Type"] in two_handed else self.stats.get("JA Haste",0)
             if self.main_job=="drk":
-                if self.abilities.get("Endark II",False): # Assuming 600 Dark Magic Skill
+                if self.abilities.get("Endark II",False): # https://ffxiclopedia.fandom.com/wiki/Endark_II
                     endark_potency = 0.80
-                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + (20)*endark_potency
-                    self.stats["Attack"] = self.stats.get("Attack",0) + (131+20)*endark_potency
+                    dark_magic_skill = self.abilities.get("Enh. Skill",0)
+                    self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 20
+                    self.stats["Attack"] = self.stats.get("Attack",0) + (((dark_magic_skill + 20)/13 + 5)*2.5) * endark_potency + 20 # +125 attack at 600 skill
         # # ===========================================================================
         # # ===========================================================================
         # # Bard abilities
@@ -343,7 +344,7 @@ class create_player:
                 if self.abilities.get("Velocity Shot",False):
                     self.stats["Ranged Attack"] = self.stats.get("Ranged Attack",0) + 40
                     self.stats["JA Haste"] = self.stats.get("JA Haste",0) - 15
-                    self.stats["Ranged Attack%"] = self.stats.get("Ranged Attack%",0) + 152./1024 + 112./1024*("Amini Caban" in self.gearset["body"]["Name"]) + 20./1024*("Belenus" in self.gearset["back"]["Name"])
+                    self.stats["Ranged Attack%"] = self.stats.get("Ranged Attack%",0) + 152./1024 + 112./1024*("Amini Caban +3"==self.gearset["body"]["Name"]) + 92./1024*("Amini Caban +2"==self.gearset["body"]["Name"]) + 20./1024*("Belenus" in self.gearset["back"]["Name"])
                 if self.abilities.get("Double Shot",False):
                     self.stats["Double Shot"] = self.stats.get("Double Shot",0) + 40 + 5*("Arcadian Jerkin" in self.gearset["body"]["Name"])
                     if "Arcadian Jerkin" in self.gearset["body"]["Name"]: # Half of your Double Shot becomes Triple Shot with the relic body equipped. This ratio is assumed from the Triple>Quad ratio for COR linked below.
@@ -384,14 +385,9 @@ class create_player:
                 self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + (innin_potency*(30-10) + 10)
                 self.stats["Ninjutsu Damage%"] = self.stats.get("Ninjutsu Damage%",0) + (innin_potency*(30-10) + 10)
                 self.stats["Evasion"] = self.stats.get("Evasion",0) + (innin_potency*(-30 - -10) + -10)
+                self.stats["DA"] = self.stats.get("DA",0) + self.stats.get("Innin DA%",0)
             if self.abilities.get("Futae",False):
                 self.stats["Ninjutsu Magic Damage"] = self.stats.get("Ninjutsu Magic Damage",0) + 100
-        # ===========================================================================
-        # ===========================================================================
-        # Blue Mage abilities
-        if self.main_job=="blu":
-            if self.abilities.get("Nature's Meditation",False):
-                self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.20
         # ===========================================================================
         # ===========================================================================
         # Corsair abilities
@@ -422,6 +418,9 @@ class create_player:
             # We deal with Climactic, Striking, and Ternary Flourish in the main code since they are special cases that apply some stuff only to the first hit.
             if self.abilities.get("Saber Dance",False):
                 self.stats["DA"] = self.stats.get("DA",0) + 25 # Assume minimum potency Saber Dance since it decays quickly.
+            if self.abilities.get("closed_position", False):
+                self.stats["Store TP"] = self.stats.get("Store TP",0) + (3*5)*("Horos Toe Shoes +3"==self.gearset["feet"]["Name"]) # DNC Relic+3 feet provide +3 Store TP for each merit into Closed Position
+
         # ===========================================================================
         # ===========================================================================
         # Scholar abilities.
@@ -450,6 +449,15 @@ class create_player:
                 swordplay_potency = 0.9 # Assume 90% potency
                 self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 60*swordplay_potency
                 self.stats["Evasion"] = self.stats.get("Evasion",0) + 60*swordplay_potency
+        # ===========================================================================
+        # ===========================================================================
+        # Corsair abilities
+        if self.main_job=="bst":
+            if self.abilities.get("Rage",False):
+                self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.50
+            if self.abilities.get("Frenzied Rage",False):
+                self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.25
+
         # ===========================================================================
         # ===========================================================================
 
@@ -588,12 +596,50 @@ class create_player:
 
             # Empyrean Aftermath is entirely handled in the main code when calculating damage.
 
+        # Add buffs accessible to all jobs from assumed party members (SMN, BLU, BST, WAR, etc)
+
         # Add WHM Auspice checkbox here. TODO
         if self.abilities.get("Auspice",False):
             self.stats["Subtle Blow"] = self.stats.get("Subtle Blow",0) + 29
 
         if self.abilities.get("Shell V",False):
             self.stats["MDT"] = self.stats.get("MDT",0) - 29
+
+        if self.abilities.get("Blood Rage",False):
+            self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 20
+            if self.main_job=="war":
+                self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 20
+
+        if self.abilities.get("warcry_main", False):
+            self.stats["Attack%"] = self.stats.get("Attack%",0) + int(99/4 + 4.75)/256
+            self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + 500+200
+
+        if self.abilities.get("Crimson Howl", False):
+            self.stats["Attack%"] = self.stats.get("Attack%",0) + int(99/4 + 4.75)/256
+
+        if self.abilities.get("Crystal Blessing", False):
+            self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + 250
+
+        if self.abilities.get("ifrit_favor", False):
+            self.stats["DA"] = self.stats.get("DA",0) + 25
+
+        if self.abilities.get("shiva_favor", False):
+            self.stats["Magic Attack"] = self.stats.get("Magic Attack",0) + 39
+
+        if self.abilities.get("ramuh_favor", False):
+            self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 23
+
+
+        if self.abilities.get("haste_samba_main", False):
+            self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 10.1
+
+        if self.abilities.get("Nature's Meditation",False): # https://www.bg-wiki.com/ffxi/Nat._Meditation
+            self.stats["Attack%"] = self.stats.get("Attack%",0) + 52./256
+
+        if self.abilities.get("Mighty Guard",False): # https://www.bg-wiki.com/ffxi/Nat._Meditation
+            self.stats["Magic Haste"] = self.stats.get("Magic Haste",0) + 0.15
+            self.stats["Magic Defense"] = self.stats.get("Magic Defense",0) + 15
+            
 
 
     # def add_gear_stats(self, stats, gearset):
@@ -613,7 +659,7 @@ class create_player:
                     # A list of combat skills to ignore when seen in the main or sub slots. These skills apply only to their respective slots on weapons so we create a new stat for them.
                     ignore_main_sub_skills = ["Hand-to-Hand Skill","Dagger Skill","Sword Skill","Great Sword Skill","Axe Skill","Great Axe Skill","Scythe Skill","Polearm Skill","Katana Skill","Great Katana Skill","Club Skill","Staff Skill","Evasion Skill","Divine Magic Skill","Elemental Magic Skill","Dark Magic Skill","Ninjutsu Skill","Summoning Magic Skill","Blue Magic Skill","Magic Accuracy Skill"]
                     if not (slot in ["main","sub"] and stat in ignore_main_sub_skills):
-                        if stat in ["OA8","OA7","OA6","OA5","OA4","OA3","OA2"]: # OAX stats apply only to the weapon they are attached to.
+                        if stat in ["OA8","OA7","OA6","OA5","OA4","OA3","OA2","EnSpell Damage","EnSpell Damage%"] and slot in ["main", "sub"]: # OAX stats apply only to the weapon they are attached to.
                             self.stats[f"{stat} {slot}"] = self.stats.get(f"{stat} {slot}",0) + self.gearset[slot][stat]
                         elif stat=="WSC":
                             self.stats[stat] = self.stats.get(stat,[]) + [self.gearset[slot][stat]]
@@ -668,13 +714,13 @@ class create_player:
         regal_ring_count = 5 if regal_ring_count > 5 else regal_ring_count
         regal_earring_count = 5 if regal_earring_count > 5 else regal_earring_count
 
-        self.stats["STR"] = self.stats.get("STR",0) + ((ayanmo_count)*8 if ayanmo_count >= 2 else 0) + ((flamma_count)*8 if flamma_count >= 2 else 0) 
-        self.stats["DEX"] = self.stats.get("DEX",0) + ((mummu_count)*8 if mummu_count >= 2 else 0) + ((flamma_count)*8 if flamma_count >= 2 else 0) 
-        self.stats["VIT"] = self.stats.get("VIT",0) + ((mummu_count)*8 if mummu_count >= 2 else 0) + ((flamma_count)*8 if flamma_count >= 2 else 0) + ((ayanmo_count)*8 if ayanmo_count >= 2 else 0) + ((mallquis_count)*8 if mallquis_count >= 2 else 0)
-        self.stats["AGI"] = self.stats.get("AGI",0) + ((mummu_count)*8 if mummu_count >= 2 else 0)
-        self.stats["INT"] = self.stats.get("INT",0) + ((mallquis_count)*8 if mallquis_count >= 2 else 0)
-        self.stats["MND"] = self.stats.get("MND",0) + ((mallquis_count)*8 if mallquis_count >= 2 else 0) + ((ayanmo_count)*8 if ayanmo_count >= 2 else 0)
-        self.stats["CHR"] = self.stats.get("CHR",0) + ((mummu_count)*8 if mummu_count >= 2 else 0)
+        self.stats["STR"] = self.stats.get("STR",0) + ((ayanmo_count-1)*8 if ayanmo_count >= 2 else 0) + ((flamma_count-1)*8 if flamma_count >= 2 else 0) 
+        self.stats["DEX"] = self.stats.get("DEX",0) + ((mummu_count-1)*8 if mummu_count >= 2 else 0) + ((flamma_count-1)*8 if flamma_count >= 2 else 0) 
+        self.stats["VIT"] = self.stats.get("VIT",0) + ((mummu_count-1)*8 if mummu_count >= 2 else 0) + ((flamma_count-1)*8 if flamma_count >= 2 else 0) + ((ayanmo_count-1)*8 if ayanmo_count >= 2 else 0) + ((mallquis_count-1)*8 if mallquis_count >= 2 else 0)
+        self.stats["AGI"] = self.stats.get("AGI",0) + ((mummu_count-1)*8 if mummu_count >= 2 else 0)
+        self.stats["INT"] = self.stats.get("INT",0) + ((mallquis_count-1)*8 if mallquis_count >= 2 else 0)
+        self.stats["MND"] = self.stats.get("MND",0) + ((mallquis_count-1)*8 if mallquis_count >= 2 else 0) + ((ayanmo_count-1)*8 if ayanmo_count >= 2 else 0)
+        self.stats["CHR"] = self.stats.get("CHR",0) + ((mummu_count-1)*8 if mummu_count >= 2 else 0)
         self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + (adhemar_count*2 if adhemar_count > 1 else 0)
         self.stats["Magic Attack"] = self.stats.get("Magic Attack",0) + ((amalric_count)*10 if amalric_count >= 2 else 0)
         self.stats["Weapon Skill Damage"] = self.stats.get("Weapon Skill Damage",0) + ((lustratio_count)*2 if lustratio_count >= 2 else 0)
@@ -786,6 +832,8 @@ class create_player:
              # Since we add traits immediately after base parameters, all stats should be 0 except those from <main_job> traits. This ordering ensures that we can cleanly compare <main_job> and <sub_job> trait tiers and keep only the highest without stacking them.
             if self.sub_job in traits[trait]:
                 for k in traits[trait][self.sub_job]:
+                    if trait=="DA" and self.main_job=="dnc" and self.sub_job=="war" and self.abilities.get("Saber Dance",False): # Saber Dance does not stack with DA traits apparently.
+                        continue
                     if self.sub_job_level >= k[0]:
                         self.stats[trait] = max(self.stats.get(trait,0), k[1]) # Only keep the highest tier trait between your <main_job> and <sub_job>.
                         break
@@ -834,7 +882,7 @@ class create_player:
                             "mnk":{"Kick Attacks":5,},
                             "whm":{},
                             "blm":{"Magic Attack":10, "Magic Accuracy":25,},
-                            "rdm":{"Magic Accuracy":15+25,"Accuracy":25*0,},
+                            "rdm":{"Magic Accuracy":15+25,"Accuracy":25*0, "EnSpell Damage":15},
                             "thf":{"TA":5,"Accuracy":15,"Ranged Accuracy":15,},
                             "pld":{},
                             "drk":{},
@@ -842,13 +890,13 @@ class create_player:
                             "brd":{},
                             "rng":{"Recycle":25},
                             "smn":{},
-                            "sam":{"Zanshin":5,"Store TP":10,"Weapon Skill Damage":19 * self.abilities.get("Overwhelm",False)}, # Overwhelm is treated as a checkbox toggle and only applies when enabled. Currently applies to Ranged WSs as well, which is incorrect.
+                            "sam":{"Zanshin":5, "Store TP":10, "Weapon Skill Damage":19 * self.abilities.get("Overwhelm",False)}, # Overwhelm is treated as a checkbox toggle and only applies when enabled. Currently applies to Ranged WSs as well, which is incorrect.
                             "nin":{"Subtle Blow":5,"Ninjutsu Magic Accuracy":25,"Ninjutsu Magic Attack":20+10,"Ninjutsu Magic Damage":0}, # Including +10 matk from group1 and +20 matk from group 2. 
                             "drg":{},
                             "blu":{},
                             "cor":{},
                             "pup":{},
-                            "dnc":{}, # Ignoring Saber Dance, Fan Dance, and Closed Position.
+                            "dnc":{"Accuracy":15*self.abilities.get("closed_position", False), "Evasion":15*self.abilities.get("closed_position",False)}, # +15 Accuracy and Evasion when Closed Position is enabled. DNC Relic+3 feet handled later.
                             "sch":{"Helix Magic Accuracy":15,"Helix Magic Attack":10},
                             "geo":{},
                             "run":{},
@@ -874,7 +922,7 @@ class create_player:
                             "mnk":{"Accuracy":41, "Ranged Accuracy":41, "Attack":40, "Ranged Attack":40, "Magic Accuracy":36,"Evasion":42,"Magic Evasion":36,"Subtle Blow":10,"Martial Arts":10,"Kick Attacks Attack":40,"Kick Attacks Accuracy":20},
                             "whm":{"Accuracy":14, "Ranged Accuracy":14, "Magic Accuracy":20+50, "Magic Attack":22,"Magic Defense":50,"Divine Magic Skill":36,},
                             "blm":{"Magic Burst Damage Trait":20+23, "Magic Accuracy":20, "Magic Damage":20+23, "Magic Defense":14, "Magic Attack":50, "Magic Evasion":42, "Magic Accuracy":32, "Elemental Magic Skill":36, "Dark Magic Skill":36,},
-                            "rdm":{"Magic Attack":20+28,"Magic Accuracy":20+70,"Magic Defense":28,"Magic Evasion":56,"Accuracy":22,"Ranged Accuracy":22,}, # Composure Accuracy+20 is added later
+                            "rdm":{"Magic Attack":20+28,"Magic Accuracy":20+70,"Magic Defense":28,"Magic Evasion":56,"Accuracy":22,"Ranged Accuracy":22,"EnSpell Damage":23}, # Composure Accuracy+20 is added later
                             "thf":{"Sneak Attack Bonus":20,"Trick Attack Bonus":20,"Attack":50,"Ranged Attack":50,"Evasion":70,"Accuracy":36,"Ranged Accuracy":36,"Magic Evasion":36,"Magic Accuracy":36,"TA":8,"Crit Damage":8,"Dual Wield":5,"TA Attack":20},
                             "pld":{"Accuracy":28,"Ranged Accuracy":28,"Attack":28,"Ranged Attack":28,"Evasion":22,"Magic Evasion":42,"Divine Magic Skill":36,"Magic Accuracy":42},
                             "drk":{"Attack":106,"Ranged Attack":106,"Evasion":22,"Magic Evasion":36,"Accuracy":22,"Ranged Accuracy":22,"Magic Accuracy":42,"Dark Magic Skill":36,"Crit Damage":8,"Weapon Skill Damage":8,},
@@ -942,8 +990,8 @@ class create_player:
             self.stats["Store TP"] = self.stats.get("Store TP",0) + 10 # Kakka: Ichi
             self.stats["Subtle Blow"] = self.stats.get("Subtle Blow",0) + 10 # Myoshu: Ichi
             
-        if "dnc" in [self.main_job, self.sub_job] and self.abilities.get("Haste Samba",False):
-            self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 10 if self.main_job == "dnc" else self.stats.get("JA Haste",0) + 5 # Haste Samba
+        if self.sub_job=="dnc" and self.abilities.get("Haste Samba",False):
+            self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 5.1
 
 
 

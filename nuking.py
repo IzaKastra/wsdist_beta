@@ -1,8 +1,35 @@
+#
 # Author: Kastra (Asura)
 # Version date: 2023 March 06
-
+#
 from get_dint_m_v import *
 import numpy as np
+
+def get_enspell_damage(enhancing_magic_skill, enspell_damage_percent, enspell_damage):
+    '''
+    Calculate EnSpell damage based on Enhancing Magic Skill and EnSpell enhancing equipment.
+    https://www.bg-wiki.com/ffxi/Category:Enspell
+    '''
+    if enhancing_magic_skill > 500:
+        damage = int( 3*(enhancing_magic_skill+50)/25)
+
+    elif enhancing_magic_skill >= 400:
+        damage = int( (enhancing_magic_skill+20)/8 )
+
+    elif enhancing_magic_skill > 150:
+        damage = int( (enhancing_magic_skill/20) + 5)
+
+    elif enhancing_magic_skill > 0:
+        damage = int( (enhancing_magic_skill**0.5) - 1)
+
+    else:
+        damage = 0
+
+    damage += enspell_damage
+    damage *= (1 + enspell_damage_percent/100)
+
+    return(damage)
+
 
 def quickdraw(rng_dmg, ammo_dmg, element, gearset, player_matk, player_magic_damage, enemy_int, enemy_mdb, enemy_meva, job_abilities):
     #
@@ -10,19 +37,19 @@ def quickdraw(rng_dmg, ammo_dmg, element, gearset, player_matk, player_magic_dam
     #
     magic_accuracy = gearset.playerstats["Magic Accuracy"] # Read base Magic Accuracy from playerstats, including traits and gear with "Magic Accuracy"
 
-    magic_accuracy_skill = gearset.playerstats["Magic Accuracy Skill"] # Magic Accuracy from Magic Accuracy Skill. Currently includes off-hand weapon stats.
+    magic_accuracy_skill = gearset.playerstats["Magic Accuracy Skill"] # Magic Accuracy from Magic Accuracy Skill. Currently includes off-hand weapon stats, but we remove this on the next line.
     magic_accuracy_skill -= gearset.gear["sub"].get("Magic Accuracy Skill",0) # Subtract off the Magic Accuracy Skill from the off-hand slot, since it does not contribute to spell accuracy.
     magic_accuracy += magic_accuracy_skill # Add on the "Magic Accuracy Skill" stat
 
     dstat_macc = gearset.playerstats.get("AGI",0)/2 # Apparently quick draw gets magic accuracy from AGI. No info on BG, but ffxiclopedia suggests 2 AGI = 1 MAcc.
-                                                    # 2:1 seems like a reasonable estimate.
+
     magic_accuracy += dstat_macc # Add on magic accuracy from dstat
 
     if "Death Penalty" in gearset.gear["ranged"]["Name2"]:
         magic_accuracy += 60
 
     base_damage = ((rng_dmg+ammo_dmg)*2 + gearset.playerstats["Quick Draw"] + player_magic_damage)
-    damage = base_damage * (1 + gearset.playerstats["Quick Draw II"]/100) # Death Penalty + Empyrean feet.
+    damage = base_damage * (1 + gearset.playerstats["Quick Draw II"]/100) # Death Penalty + Empyrean feet damage bonuses.
 
     storms = {"Sandstorm II":"Earth","Rainstorm II":"Water","Windstorm II":"Wind","Firestorm II":"Fire","Hailstorm II":"Ice","Thunderstorm II":"Thunder","Aurorastorm II":"Light","Voidstorm II":"Dark"}
     storm_element = storms.get(job_abilities["storm spell"],"None")
@@ -44,13 +71,15 @@ def quickdraw(rng_dmg, ammo_dmg, element, gearset, player_matk, player_magic_dam
     damage *= (100+player_matk)/(100+enemy_mdb)
     damage *= dayweather
     damage *= elemental_damage_bonus
-    damage *= (1 + 0.25 * gearset.playerstats["Magic Crit Rate II"]/100) # Magic Crit Rate II is apparently +25% damage x% of the time. Only Sroda tathlum atm
+    damage *= (1 + 0.25 * gearset.playerstats["Magic Crit Rate II"]/100) # The "Magic Crit Rate II +x%" stat is apparently +25% damage x% of the time. Only Sroda Tathlum uses this at the moment.
     damage *= resist_state
 
     return(damage)
 
 def nuking(spell, spelltype, tier, element, job_abilities, main_job, sub_job, gearset, player_INT, player_matk, mdmg, enemy_INT, enemy_mdb, enemy_meva, ninjutsu_damage, futae=False, burst=False, ebullience=False):
-
+    #
+    # Does this function even get used anymore? Commenting it out seems to do nothing and there are no matches for searches for "nuking("
+    #
     steps = 2 # 2-step skillchain
 
     # print(spelltype, tier, element, gearset, player_INT, player_matk, mdmg, enemy_INT, enemy_mdb, ninjutsu_damage, futae, burst, steps)
@@ -58,7 +87,7 @@ def nuking(spell, spelltype, tier, element, job_abilities, main_job, sub_job, ge
     # Determine Magic Accuracies
     spelltype_skill = gearset.playerstats[f"{spelltype} Skill"] # Magic Accuracy from Ninjutsu Skill.
 
-    magic_accuracy_skill = gearset.playerstats["Magic Accuracy Skill"] # Magic Accuracy from Magic Accuracy Skill. Currently includes off-hand weapon stats.
+    magic_accuracy_skill = gearset.playerstats["Magic Accuracy Skill"] # Magic Accuracy from Magic Accuracy Skill. Currently includes off-hand weapon stats, but we remove this on the next line.
     magic_accuracy_skill -= gearset.gear["sub"].get("Magic Accuracy Skill",0) # Subtract off the Magic Accuracy Skill from the off-hand slot, since it does not contribute to spell accuracy.
 
     dstat_macc = get_dstat_macc(player_INT, enemy_INT) # Get magic accuracy from dINT
