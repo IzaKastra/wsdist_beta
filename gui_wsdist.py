@@ -347,7 +347,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 February 22a)") # pyinstaller --exclude-module gear --clean --onefile .\gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 March 04a)") # pyinstaller --exclude-module gear --clean --onefile .\gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
