@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 # Add tabs to a "notebook" of ctk
 # https://github.com/TomSchimansky/ctk/issues/1104#issuecomment-1402174614
 import tkinter as tk
@@ -170,11 +171,15 @@ def load_defaults(app,defaults):
     # Finally, update the window size based on the input file.
     app.geometry(defaults.get("dimensions","700x885"))
 
-def save_defaults():
+def save_job():
+    suf = f'_{app.mainjob.get()}'
+    save_defaults(suf)
+
+def save_defaults(suf=''):
     #
     # Write the state of input widgets to an output file.
     #
-    with open("defaults.txt","w") as ofile:
+    with open(f"defaults{suf}.txt","w") as ofile:
         ofile.write("# Basic inputs\n")
         ofile.write(f"ml={app.masterlevel.get()}\n")
         ofile.write(f"mainjob={app.mainjob.get()}\n")
@@ -347,7 +352,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 March 04a)") # pyinstaller --exclude-module gear --clean --onefile .\gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 February 22a)") # pyinstaller --exclude-module gear --clean --onefile .\gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -371,7 +376,9 @@ class App(tk.Tk):
         # tkinter Menu  https://blog.teclado.com/how-to-add-menu-to-tkinter-app/
         self.menu_bar = tk.Menu(self)
         self.file_menu = tk.Menu(self.menu_bar, tearoff=False)
+        self.file_menu.add_command(label="Load Defaults", command=open_file)
         self.file_menu.add_command(label="Save Defaults", command=save_defaults)
+        self.file_menu.add_command(label="Save Job", command=save_job)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Close GUI", command=self.destroy)
         self.menu_bar.add_cascade(label="File", menu=self.file_menu)
@@ -6333,6 +6340,32 @@ class App(tk.Tk):
                 self.update_buttons(slot)
             self.notebook.select(self.inputs_tab)
 
+def load_file(f = "defaults.txt"):
+    # Update the GUI entries before starting mainloop based on an input file.
+    # https://mail.python.org/pipermail/tkinter-discuss/2008-April/001392.html
+    defaults = {}
+    try:
+        with open(f,"r") as ifile:
+            for line in ifile:
+                if line!="\n" and line[0]!="#":
+                    key,value = line.strip().split("=")
+                    defaults[key]=value
+    except:
+        print("Failed to read input file \"defaults.txt\"")
+    return defaults
+
+def reload(f = "defaults.txt"):
+    defaults = load_file(f)
+
+    load_defaults(app,defaults) # If the input file fails to load, then it'll load a set of default defaults.
+
+    app.mainloop()
+
+def open_file():
+    filename = filedialog.askopenfilename(
+            title='Open a file',
+            initialdir='./',)
+    reload(filename)        
 
 if __name__ == "__main__":
     from create_player import *
@@ -6350,19 +6383,4 @@ if __name__ == "__main__":
     app.bind('<Configure>', on_configure)
     app.wait_visibility()
 
-
-    # Update the GUI entries before starting mainloop based on an input file.
-    # https://mail.python.org/pipermail/tkinter-discuss/2008-April/001392.html
-    defaults = {}
-    try:
-        with open("defaults.txt","r") as ifile:
-            for line in ifile:
-                if line!="\n" and line[0]!="#":
-                    key,value = line.strip().split("=")
-                    defaults[key]=value
-    except:
-        print("Failed to read input file \"defaults.txt\"")
-
-    load_defaults(app,defaults) # If the input file fails to load, then it'll load a set of default defaults.
-
-    app.mainloop()
+    reload()

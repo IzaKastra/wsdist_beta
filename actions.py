@@ -11,20 +11,36 @@ from get_tp import get_tp
 from nuking import *
 from get_dint_m_v import *
 from get_delay_timing import *
+from tkinter import Entry, StringVar, Tk, Label, LEFT, RIGHT, CENTER, W, E
+
+terminal = False
+fh = open('actions.txt', 'w')
+colors = {"yellow":"", "red":"","cyan":"","green":"",}
+color_cancel = ''
+if terminal:
+    colors = {"yellow":"\033[93m",
+              "red":"\033[91m",
+              "cyan":"\033[96m",
+              "green":"\033[92m",}
+    color_cancel = "\033[0m"
+simNumber = 0
+simMetrics = {} #key is the metric, value is list of results, index = simNumber
+metrics = []
+diffMetrics = {}
+
+def printme(*args, **kwargs):
+    if terminal:
+        print(args, kwargs)
+    else:
+        if args:
+            fh.write(f'{args[0]}\n')
 
 def color_text(color, text):
     #
     # Print colored text to windows powershell.
     # Colors taken from https://stackoverflow.com/questions/287871/how-do-i-print-colored-text-to-the-terminal, but I should find the main source.
     #
-    colors = {"yellow":"\033[93m",
-              "red":"\033[91m",
-              "cyan":"\033[96m",
-              "green":"\033[92m",}
-    color_cancel = "\033[0m"
-
     colored_text = f"{colors[color]}{text}{color_cancel}"
-    
     return(colored_text)
 
 
@@ -37,29 +53,30 @@ def verbose_output(phys_dmg, magic_dmg, tp_return, crit, special="other"):
     tp_return2 = f"+{tp_return:.1f}"
 
     if special == "main":
-        print(f"    {'Main-hand:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        printme(f"    {'Main-hand:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "sub":
-        print(f"    {'Off-hand:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        printme(f"    {'Off-hand:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "hybrid":
-        print(f"    {'Hybrid:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        printme(f"    {'Hybrid:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "magic":
-        print(f"    {'Magic:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        printme(f"    {'Magic:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "zanshin":
-        print(f"    {'Zanshin:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        printme(f"    {'Zanshin:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "daken":
-        print(f"    {'Daken:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        printme(f"    {'Daken:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "kick":
-        print(f"    {'Kick:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        printme(f"    {'Kick:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "ranged":
-        print(f"    {'Ranged:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        printme(f"    {'Ranged:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     else:
-        print(f"                {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        printme(f"                {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
         
 
 def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, plot_dps=False, verbose=False):
-    #
-    #
-    #
+    global metrics
+    global diffMetrics
+    global simNumber
+    global simMetrics
     verbose_dps = player_tp.abilities.get("Verbose DPS", False)
     very_verbose_dps = player_tp.abilities.get("Very Verbose DPS", False)
     dual_wield = ((player_tp.gearset["sub"].get("Type",None) == "Weapon") or (player_tp.gearset["main"]["Skill Type"] == "Hand-to-Hand")) and ((player_ws.gearset["sub"].get("Type",None) == "Weapon") or (player_ws.gearset["main"]["Skill Type"] == "Hand-to-Hand"))
@@ -107,7 +124,7 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
             tp += tp_return
             regain_tp_return = round((time_per_attack_round/3)*(regain_tp),1) # Extra TP from regain, averaged over time per attack round to simplify things
             tp += regain_tp_return
-            print(f"    Regain bonus: +{regain_tp_return:.1f} TP") if (very_verbose_dps or verbose_dps) and regain_tp_return>0 else None
+            printme(f"    Regain bonus: +{regain_tp_return:.1f} TP") if (very_verbose_dps or verbose_dps) and regain_tp_return>0 else None
             time += time_per_attack_round
             avg_tp_dmg.append(physical_damage + magical_damage)
 
@@ -128,9 +145,9 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         time += 2.0 # 2.0 seconds of delay after using a WS  (see https://www.bg-wiki.com/ffxi/Forced_Delay)
         regain_ws_return = round((2./3)*(regain_ws),1) # Extra TP gained from Regain during the 2s delay after using a WS.
         tp += regain_ws_return
-        print(f"    Regain bonus: +{regain_ws_return:.1f} TP") if (very_verbose_dps or verbose_dps) and regain_ws_return>0 else None
-        print() if (verbose_dps or very_verbose_dps) else None
-        print() if (verbose_dps or very_verbose_dps) else None
+        printme(f"    Regain bonus: +{regain_ws_return:.1f} TP") if (very_verbose_dps or verbose_dps) and regain_ws_return>0 else None
+        printme() if (verbose_dps or very_verbose_dps) else None
+        printme() if (verbose_dps or very_verbose_dps) else None
 
         avg_ws_dmg.append(ws_sim[0])
         damage_list.append(damage)
@@ -158,22 +175,251 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         plt.legend()
         plt.show()
 
-    print()
-    print(f"""
-    =========================
-    Total time: {(time/3600):5.1f} h
-    Time/Attack: {time_per_attack_round:7.3f} s
-    Average Dmg/Attack: {np.average(avg_tp_dmg):8.1f}
-        Physical: {np.average(phys_dmg_list):8.1f} ({np.average(phys_dmg_list)/np.average(avg_tp_dmg)*100:5.1f}%)
-         Magical: {np.average(magic_dmg_list):8.1f} ({np.average(magic_dmg_list)/np.average(avg_tp_dmg)*100:5.1f}%)
-    Average Dmg/WS: {np.average(avg_ws_dmg):8.1f}
-    Average TP/WS: {np.average(avg_ws_tp):4.0f} TP (+{player_ws.stats.get("TP Bonus",0)} TP Bonus)
-    Total Damage: {damage/1e6:5.1f}M damage (Total DPS: {damage/time:7.1f})
-    TP Damage: {tp_damage/1e6:5.1f}M damage (TP DPS: {tp_damage/time:7.1f}; {tp_damage/damage*100:5.1f}%)
-    WS Damage: {ws_damage/1e6:5.1f}M damage (WS DPS: {ws_damage/time:7.1f}; {ws_damage/damage*100:5.1f}%)
-    =========================
-    """)
+    if not simNumber:
+        metric = 'Iteration'
+        metrics.append(metric)
+        simMetrics[metric] = [simNumber]
+        metric = 'Main Job'
+        metrics.append(metric)
+        simMetrics[metric] = [player_tp.main_job]
+        metric = 'Main Job Level'
+        metrics.append(metric)
+        simMetrics[metric] = [player_tp.main_job_level]
+        metric = 'Master Level'
+        metrics.append(metric)
+        simMetrics[metric] = [player_tp.master_level]
+        metric = 'Subjob'
+        metrics.append(metric)
+        simMetrics[metric] = [player_tp.sub_job]
+        metric = 'Subjob Level'
+        metrics.append(metric)
+        simMetrics[metric] = [player_tp.sub_job_level]
+        metric = 'Enemy'
+        metrics.append(metric)
+        simMetrics[metric] = [enemy.name]
+        for stat in enemy.stats:
+            metric = f'Enemy {stat}'
+            metrics.append(metric)
+            simMetrics[metric] = [enemy.stats[stat]]
+        for buff in player_tp.buffs:
+            for stat in player_tp.buffs[buff]:
+                metric = f'Buff {buff} {stat}'
+                metrics.append(metric)
+                simMetrics[metric] = [player_tp.buffs[buff][stat]]
+        for abil in player_tp.abilities:
+            metric = f'Abilities {abil}'
+            metrics.append(metric)
+            simMetrics[metric] = [player_tp.abilities[abil]]
+        for stat in player_tp.stats:
+            metric = f'TP {stat}'
+            metrics.append(metric)
+            simMetrics[metric] = [int(player_tp.stats[stat])]
+        for gear in player_tp.gearset:
+            metric = f'TP Gear {gear}'
+            metrics.append(metric)
+            simMetrics[metric] = [player_tp.gearset[gear]['Name']]
+        for stat in player_ws.stats:
+            metric = f'WS {stat}'
+            metrics.append(metric)
+            simMetrics[metric] = [int(player_ws.stats[stat])]
+        for gear in player_ws.gearset:
+            metric = f'WS Gear {gear}'
+            metrics.append(metric)
+            simMetrics[metric] = [player_ws.gearset[gear]['Name']]
+        metric = 'Weaponskill'    
+        metrics.append(metric)
+        simMetrics[metric] = [ws_name]
+        metric = 'WS Threshold'    
+        metrics.append(metric)
+        simMetrics[metric] = [ws_threshold]
+        metric = 'Total Time (h)'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{(time/3600):5.1f}']
+        metric = 'Time/Attack (s)'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{time_per_attack_round:7.3f}']
+        metric = 'Average Dmg/Attack'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{np.average(avg_tp_dmg):8.1f}']
+        metric = 'Physical'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{np.average(phys_dmg_list):8.1f}']
+        metric = 'Physical %'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{np.average(phys_dmg_list)/np.average(avg_tp_dmg)*100:5.1f}']
+        metric = 'Magical'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{np.average(magic_dmg_list):8.1f}']
+        metric = 'Magical %'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{np.average(magic_dmg_list)/np.average(avg_tp_dmg)*100:5.1f}']
+        metric = 'Average Dmg/WS'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{np.average(avg_ws_dmg):8.1f}']
+        metric = 'Average TP/WS'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{np.average(avg_ws_tp):4.0f}']
+        metric = 'TP Bonus+'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{player_ws.stats.get('TP Bonus',0)}']
+        metric = 'TP Damage (M)'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{tp_damage/1e6:5.1f}']
+        metric = 'TP DPS'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{tp_damage/time:7.1f}']
+        metric = 'TP %'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{tp_damage/damage*100:5.1f}']
+        metric = 'WS Damage (M)'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{ws_damage/1e6:5.1f}']
+        metric = 'WS DPS'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{ws_damage/time:7.1f}']
+        metric = 'WS %'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{ws_damage/damage*100:5.1f}']
+        metric = 'Total DPS'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{damage/time:7.1f}']
+        metric = 'Total Damage (M)'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{damage/1e6:5.1f}']
+    else:
+        metric = 'Iteration'
+        simMetrics[metric].append(simNumber)
+        metric = 'Main Job'
+        simMetrics[metric].append(player_tp.main_job)
+        metric = 'Main Job Level'
+        simMetrics[metric].append(player_tp.main_job_level)
+        metric = 'Master Level'
+        simMetrics[metric].append(player_tp.master_level)
+        metric = 'Subjob'
+        simMetrics[metric].append(player_tp.sub_job)
+        metric = 'Subjob Level'
+        simMetrics[metric].append(player_tp.sub_job_level)
+        metric = 'Enemy'
+        simMetrics[metric].append(enemy.name)
+        for stat in enemy.stats:
+            metric = f'Enemy {stat}'
+            simMetrics[metric].append(enemy.stats[stat])
+        for buff in player_tp.buffs:
+            for stat in player_tp.buffs[buff]:
+                metric = f'Buff {buff} {stat}'
+                simMetrics[metric].append(player_tp.buffs[buff][stat])
+        for abil in player_tp.abilities:
+            metric = f'Abilities {abil}'
+            simMetrics[metric].append(player_tp.abilities[abil])
+        for stat in player_tp.stats:
+            metric = f'TP {stat}'
+            simMetrics[metric].append(int(player_tp.stats[stat]))
+        for gear in player_tp.gearset:
+            metric = f'TP Gear {gear}'
+            simMetrics[metric].append(player_tp.gearset[gear]['Name'])
+        for stat in player_ws.stats:
+            metric = f'WS {stat}'
+            simMetrics[metric].append(int(player_ws.stats[stat]))
+        for gear in player_ws.gearset:
+            metric = f'WS Gear {gear}'
+            simMetrics[metric].append(player_ws.gearset[gear]['Name'])
+        metric = 'Weaponskill'    
+        simMetrics[metric].append(ws_name)
+        metric = 'WS Threshold'    
+        simMetrics[metric].append(ws_threshold)
+        metric = 'Total Time (h)'    
+        simMetrics[metric].append(f'{(time/3600):5.1f}')
+        metric = 'Time/Attack (s)'    
+        simMetrics[metric].append(f'{time_per_attack_round:7.3f}')
+        metric = 'Average Dmg/Attack'    
+        simMetrics[metric].append(f'{np.average(avg_tp_dmg):8.1f}')
+        metric = 'Physical'    
+        simMetrics[metric].append(f'{np.average(phys_dmg_list):8.1f}')
+        metric = 'Physical %'    
+        simMetrics[metric].append(f'{np.average(phys_dmg_list)/np.average(avg_tp_dmg)*100:5.1f}')
+        metric = 'Magical'    
+        simMetrics[metric].append(f'{np.average(magic_dmg_list):8.1f}')
+        metric = 'Magical %'    
+        simMetrics[metric].append(f'{np.average(magic_dmg_list)/np.average(avg_tp_dmg)*100:5.1f}')
+        metric = 'Average Dmg/WS'    
+        simMetrics[metric].append(f'{np.average(avg_ws_dmg):8.1f}')
+        metric = 'Average TP/WS'    
+        simMetrics[metric].append(f'{np.average(avg_ws_tp):4.0f}')
+        metric = 'TP Bonus+'    
+        simMetrics[metric].append(f'{player_ws.stats.get('TP Bonus',0)}')
+        metric = 'TP Damage (M)'    
+        simMetrics[metric].append(f'{tp_damage/1e6:5.1f}')
+        metric = 'TP DPS'    
+        simMetrics[metric].append(f'{tp_damage/time:7.1f}')
+        metric = 'TP %'    
+        simMetrics[metric].append(f'{tp_damage/damage*100:5.1f}')
+        metric = 'WS Damage (M)'    
+        simMetrics[metric].append(f'{ws_damage/1e6:5.1f}')
+        metric = 'WS DPS'    
+        simMetrics[metric].append(f'{ws_damage/time:7.1f}')
+        metric = 'WS %'    
+        simMetrics[metric].append(f'{ws_damage/damage*100:5.1f}')
+        metric = 'Total DPS'    
+        simMetrics[metric].append(f'{damage/time:7.1f}')
+        metric = 'Total Damage (M)'    
+        simMetrics[metric].append(f'{damage/1e6:5.1f}')
+    maxw = 0        
+    simf = open(f'simulation_summary_{simNumber}.txt', 'w')
+    simd = open(f'sim_diff_summary.txt', 'w')
+    with open(f'simulation_summary_{simNumber}.txt', 'w') as simf:
+        for metric in metrics:
+            simf.write(f"{metric}:\t{simMetrics[metric][simNumber]}\n")
+            if simMetrics[metric][0] != simMetrics[metric][simNumber]:
+                diffMetrics[metric] = 1
+                if len(metric) > maxw:
+                    maxw = len(metric)
+    if simNumber:
+        simwin = Tk()
+        simwin.title("Simulation Summary Differences")
+        width = maxw
+        oddColor = "#FFFFFF"
+        evenColor = "#FFFFCC"
+        better = "#12FF12"
+        worse = "#FF1212"
+        txt = "#000000"
+        lowerBetter = ['Time/Attack (s)', 'TP DT', 'WS DT']
+        with open(f'sim_diff_summary.txt', 'w') as simd:            
+            row = 0
+            color = evenColor
+            for metric in metrics:
+                if metric in diffMetrics:
+                    simd.write(f"{metric}:\t")
+                    l = Label(simwin, text=metric, background=color, width=width, foreground=txt)
+                    l.grid(row=row, column=0, sticky=W)
+                    for i in range(0, simNumber+1):
+                        col = i + 1
+                        simd.write(f"{simMetrics[metric][i]}\t")
+                        fg = txt
+                        if simNumber and metric != 'Iteration':
+                            try:
+                                if float(simMetrics[metric][i]) > float(simMetrics[metric][0]):
+                                    fg = better
+                                elif float(simMetrics[metric][i]) < float(simMetrics[metric][0]):
+                                    fg = worse
+                                if metric in lowerBetter:
+                                    if fg == better:
+                                        fg = worse
+                                    elif fg == worse:
+                                        fg = better
+                            except:
+                                pass
+                        l = Label(simwin, text=simMetrics[metric][i], background=color, width=width, foreground=fg)
+                        l.grid(row=row, column=col, sticky=E)
+                    simd.write(f'\n') 
+                    row += 1
+                    if color == evenColor:
+                        color = oddColor
+                    else:    
+                        color = evenColor
+    simNumber += 1
 
+
+            
 def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric, simulation=False, verbose=False):
     #
     # Calculate the damage dealt from a typical attack round.
@@ -381,7 +627,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
 
     if simulation:
 
-        print(f"Auto-attack round starting with {starting_tp:.1f} TP:") if (verbose_dps or very_verbose_dps) else None
+        printme(f"Auto-attack round starting with {starting_tp:.1f} TP:") if (verbose_dps or very_verbose_dps) else None
 
         striking_flourish = False
         ternary_flourish = False
@@ -426,7 +672,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                 magical_damage += magic_dmg_ph
             verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "main") if very_verbose_dps else None
         else:
-                print(f"    {'Main-hand':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
+                printme(f"    {'Main-hand':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
 
     
         # Off-hand hit
@@ -444,11 +690,11 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                     magical_damage += magic_dmg_ph
                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "sub") if very_verbose_dps else None
             else:
-                print(f"    {'Off-hand':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
+                printme(f"    {'Off-hand':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
 
         # Check main-hand multi-attack
         if qa_proc_main:
-            print("    Main-hand Quad. Attack:") if (verbose_dps or very_verbose_dps) else None
+            printme("    Main-hand Quad. Attack:") if (verbose_dps or very_verbose_dps) else None
             main_ma_proc = True
             for i in range(3): # 3 bonus hits on a Quad. Attack
                 if attempted_hits < 8:
@@ -466,11 +712,11 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                             magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
 
 
         elif ta_proc_main:
-            print("    Main-hand Triple Attack:") if (verbose_dps or very_verbose_dps) else None
+            printme("    Main-hand Triple Attack:") if (verbose_dps or very_verbose_dps) else None
             main_ta_proc = True # Used to increase damage of all hits of a TA for "TA Damage%" stats
             main_ma_proc = True
             for i in range(2):
@@ -489,9 +735,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                             magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
         elif da_proc_main:
-            print("    Main-hand Double Attack:") if (verbose_dps or very_verbose_dps) else None
+            printme("    Main-hand Double Attack:") if (verbose_dps or very_verbose_dps) else None
             main_da_proc = True
             main_ma_proc = True
             for i in range(1):
@@ -510,9 +756,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                             magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
         elif np.random.uniform() < oa8_main:
-            print("    Main-hand OA8:") if (verbose_dps or very_verbose_dps) else None
+            printme("    Main-hand OA8:") if (verbose_dps or very_verbose_dps) else None
             main_oa8_proc = True
             main_ma_proc = True
             for i in range(7):
@@ -531,9 +777,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                             magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
         elif np.random.uniform() < oa7_main:
-            print("    Main-hand OA7:") if (verbose_dps or very_verbose_dps) else None
+            printme("    Main-hand OA7:") if (verbose_dps or very_verbose_dps) else None
             main_ma_proc = True
             for i in range(6):
                 if attempted_hits < 8:
@@ -551,9 +797,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                             magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
         elif np.random.uniform() < oa6_main:
-            print("    Main-hand OA6:") if (verbose_dps or very_verbose_dps) else None
+            printme("    Main-hand OA6:") if (verbose_dps or very_verbose_dps) else None
             main_ma_proc = True
             for i in range(5):
                 if attempted_hits < 8:
@@ -571,9 +817,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                             magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
         elif np.random.uniform() < oa5_main:
-            print("    Main-hand OA5:") if (verbose_dps or very_verbose_dps) else None
+            printme("    Main-hand OA5:") if (verbose_dps or very_verbose_dps) else None
             main_ma_proc = True
             for i in range(4):
                 if attempted_hits < 8:
@@ -591,9 +837,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                             magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
         elif np.random.uniform() < oa4_main:
-            print("    Main-hand OA4:") if (verbose_dps or very_verbose_dps) else None
+            printme("    Main-hand OA4:") if (verbose_dps or very_verbose_dps) else None
             main_ma_proc = True
             for i in range(3):
                 if attempted_hits < 8:
@@ -611,9 +857,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                             magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
         elif np.random.uniform() < oa3_main:
-            print("    Main-hand OA3:") if (verbose_dps or very_verbose_dps) else None
+            printme("    Main-hand OA3:") if (verbose_dps or very_verbose_dps) else None
             main_ma_proc = True
             for i in range(2):
                 if attempted_hits < 8:
@@ -631,9 +877,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                             magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
         elif np.random.uniform() < oa2_main:
-            print("    Main-hand OA2:") if (verbose_dps or very_verbose_dps) else None
+            printme("    Main-hand OA2:") if (verbose_dps or very_verbose_dps) else None
             main_ma_proc = True
             for i in range(1):
                 if attempted_hits < 8:
@@ -651,14 +897,14 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                             magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
         physical_damage += main_hit_damage
 
         # Check off-hand multi-attack.
         if dual_wield:
             if attempted_hits < 8:
                 if qa_proc_sub:
-                    print("    Off-hand Quad. Attack:") if (verbose_dps or very_verbose_dps) else None
+                    printme("    Off-hand Quad. Attack:") if (verbose_dps or very_verbose_dps) else None
                     for i in range(3): # 3 bonus hits on a Quad. Attack
                         if attempted_hits < 8:
                             attempted_hits += 1
@@ -675,9 +921,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     magical_damage += magic_dmg_ph
                                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                             else:
-                                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                 elif ta_proc_sub:
-                    print("    Off-hand Triple Attack:") if (verbose_dps or very_verbose_dps) else None
+                    printme("    Off-hand Triple Attack:") if (verbose_dps or very_verbose_dps) else None
                     sub_ta_proc = True
                     for i in range(2):
                         if attempted_hits < 8:
@@ -695,9 +941,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     magical_damage += magic_dmg_ph
                                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                             else:
-                                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                 elif da_proc_sub:
-                    print("    Off-hand Double Attack:") if (verbose_dps or very_verbose_dps) else None
+                    printme("    Off-hand Double Attack:") if (verbose_dps or very_verbose_dps) else None
                     sub_da_proc = True
                     for i in range(1):
                         if attempted_hits < 8:
@@ -715,9 +961,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     magical_damage += magic_dmg_ph
                                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                             else:
-                                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                 elif np.random.uniform() < oa8_sub:
-                    print("    Off-hand OA8:") if (verbose_dps or very_verbose_dps) else None
+                    printme("    Off-hand OA8:") if (verbose_dps or very_verbose_dps) else None
                     for i in range(7):
                         if attempted_hits < 8:
                             attempted_hits += 1
@@ -734,9 +980,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     magical_damage += magic_dmg_ph
                                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                             else:
-                                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                 elif np.random.uniform() < oa7_sub:
-                    print("    Off-hand OA7:") if (verbose_dps or very_verbose_dps) else None
+                    printme("    Off-hand OA7:") if (verbose_dps or very_verbose_dps) else None
                     for i in range(6):
                         if attempted_hits < 8:
                             attempted_hits += 1
@@ -753,9 +999,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     magical_damage += magic_dmg_ph
                                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                             else:
-                                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                 elif np.random.uniform() < oa6_sub:
-                    print("    Off-hand OA6:") if (verbose_dps or very_verbose_dps) else None
+                    printme("    Off-hand OA6:") if (verbose_dps or very_verbose_dps) else None
                     for i in range(5):
                         if attempted_hits < 8:
                             attempted_hits += 1
@@ -772,9 +1018,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     magical_damage += magic_dmg_ph
                                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                             else:
-                                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                 elif np.random.uniform() < oa5_sub:
-                    print("    Off-hand OA5:") if (verbose_dps or very_verbose_dps) else None
+                    printme("    Off-hand OA5:") if (verbose_dps or very_verbose_dps) else None
                     for i in range(4):
                         if attempted_hits < 8:
                             attempted_hits += 1
@@ -791,9 +1037,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     magical_damage += magic_dmg_ph
                                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                             else:
-                                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                 elif np.random.uniform() < oa4_sub:
-                    print("    Off-hand OA4:") if (verbose_dps or very_verbose_dps) else None
+                    printme("    Off-hand OA4:") if (verbose_dps or very_verbose_dps) else None
                     for i in range(3):
                         if attempted_hits < 8:
                             attempted_hits += 1
@@ -810,9 +1056,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     magical_damage += magic_dmg_ph
                                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                             else:
-                                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                 elif np.random.uniform() < oa3_sub:
-                    print("    Off-hand OA3:") if (verbose_dps or very_verbose_dps) else None
+                    printme("    Off-hand OA3:") if (verbose_dps or very_verbose_dps) else None
                     for i in range(2):
                         if attempted_hits < 8:
                             attempted_hits += 1
@@ -829,9 +1075,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     magical_damage += magic_dmg_ph
                                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                             else:
-                                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                 elif np.random.uniform() < oa2_sub:
-                    print("    Off-hand OA2:") if (verbose_dps or very_verbose_dps) else None
+                    printme("    Off-hand OA2:") if (verbose_dps or very_verbose_dps) else None
                     for i in range(1):
                         if attempted_hits < 8:
                             attempted_hits += 1
@@ -848,7 +1094,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                     magical_damage += magic_dmg_ph
                                 verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                             else:
-                                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
             physical_damage += sub_hit_damage
 
 
@@ -857,7 +1103,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
             if ((not main_hit_connects) or (np.random.uniform() < zanhasso)) and (not dual_wield) and (main_skill_type in two_handed_skills):
                 if not main_ma_proc: # Even with ZanHasso, Zanshin will not proc if you get a multi-attack proc
                     if np.random.uniform() < zanshin_oa2:
-                        print("    Zanshin OA2:") if (verbose_dps or very_verbose_dps) else None
+                        printme("    Zanshin OA2:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(2):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -874,7 +1120,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                         magical_damage += magic_dmg_ph
                                     verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
 
                     elif np.random.uniform() < zanshin:
                         for i in range(1):
@@ -893,7 +1139,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                                         magical_damage += magic_dmg_ph
                                     verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "zanshin") if very_verbose_dps else None
                                 else:
-                                    print(f"     {'Zanshin:':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme(f"     {'Zanshin:':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
         physical_damage += zanshin_damage
 
 
@@ -914,7 +1160,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                         magical_damage += magic_dmg_ph
                         verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "kick") if very_verbose_dps else None
                     else:
-                        print(f"     {'Kick:':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme(f"     {'Kick:':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
 
                     # Kick attacks are probably not affected by Verethragna aftermath
         physical_damage += kickattacks_damage
@@ -933,14 +1179,14 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                     # Daken is not affected by Kannagi aftermath
                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "daken") if very_verbose_dps else None
                 else:
-                    print(f"     {'Daken:':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
+                    printme(f"     {'Daken:':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
 
         physical_damage += daken_damage
 
         if verbose_dps or very_verbose_dps:
-            print(f"    =       Phys. Damage: {physical_damage:>6.0f}")
-            print(f"    =       Magic Damage: {magical_damage:>6.0f}")
-            print(f"    =       TP Returned:  {tp_return:>6.1f}")
+            printme(f"    =       Phys. Damage: {physical_damage:>6.0f}")
+            printme(f"    =       Magic Damage: {magical_damage:>6.0f}")
+            printme(f"    =       TP Returned:  {tp_return:>6.1f}")
 
         return(physical_damage, tp_return, magical_damage)
 
@@ -1560,7 +1806,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
     tp = input_tp # TP Bonus is added when calling this function in gui_wsdist.py
     tp = 1000 if tp < 1000 else 3000 if tp > 3000 else tp
 
-    print(f"{ws_name} at {base_tp:.1f} TP (+{tp_bonus:.0f} TP Bonus; Effective TP: {input_tp:.1f} TP)") if (verbose_dps or very_verbose_dps) and simulation else None
+    printme(f"{ws_name} at {base_tp:.1f} TP (+{tp_bonus:.0f} TP Bonus; Effective TP: {input_tp:.1f} TP)") if (verbose_dps or very_verbose_dps) and simulation else None
 
     dual_wield = (player.gearset["sub"].get("Type",None) == "Weapon") or (player.gearset["main"]["Skill Type"] == "Hand-to-Hand")
 
@@ -1743,11 +1989,11 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
             offhand_damage = get_avg_phys_damage(sub_dmg, fstr_sub, wsc, offhand_pdif, ftp2, crit_rate, crit_dmg, 0, ws_bonus, ws_trait)
             physical_damage += offhand_damage*sub_hits
 
-            # print("------------------------------------------------------")
-            # print("first_main_hit: ",player_attack1, main_skill_type, first_main_hit_pdif, first_main_hit_damage,main_hits,hit_rate11,hit_rate12,accuracy1,ftp)
-            # print("mainhand: ",player_attack1, main_skill_type, main_hit_pdif, main_hit_damage,main_hits,hit_rate11,hit_rate12,accuracy1,ftp2)
-            # print("offhand: ",player_attack2, sub_skill_type, offhand_pdif, offhand_damage,sub_hits,hit_rate21,hit_rate22,accuracy2,ftp2)
-            # print("stats: ",wsd,ws_trait,ws_bonus,crit_rate,crit_dmg,player.stats["DEX"],player.stats["STR"])
+            # printme("------------------------------------------------------")
+            # printme("first_main_hit: ",player_attack1, main_skill_type, first_main_hit_pdif, first_main_hit_damage,main_hits,hit_rate11,hit_rate12,accuracy1,ftp)
+            # printme("mainhand: ",player_attack1, main_skill_type, main_hit_pdif, main_hit_damage,main_hits,hit_rate11,hit_rate12,accuracy1,ftp2)
+            # printme("offhand: ",player_attack2, sub_skill_type, offhand_pdif, offhand_damage,sub_hits,hit_rate21,hit_rate22,accuracy2,ftp2)
+            # printme("stats: ",wsd,ws_trait,ws_bonus,crit_rate,crit_dmg,player.stats["DEX"],player.stats["STR"])
         
             # Calculate melee WS TP return.
             tp_return += get_tp(hit_rate11, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp) # Calculate TP return from the first main hit, which gains full TP. H2H hits each use half of the total mdelay for TP return, but time between attack rounds is still the same full mdelay.
@@ -1799,7 +2045,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                 tp_return += tp_ph
                 verbose_output(phys_dmg_ph, 0, tp_ph, crit, "main") if very_verbose_dps else None
             else:
-                print(f"    {'Main-hand':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
+                printme(f"    {'Main-hand':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
 
             # First off-hand hit
             if dual_wield:
@@ -1812,7 +2058,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                     tp_return += tp_ph
                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "sub") if very_verbose_dps else None
                 else:
-                    print(f"    {'Off-hand':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
+                    printme(f"    {'Off-hand':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
 
             # nhits-1 main-hand hits (Blade: Shun is 5 hits, so this is the 4 extra main-hand hits)
             for i in range(nhits-1):
@@ -1826,7 +2072,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                         tp_return += tp_ph
                         verbose_output(phys_dmg_ph, 0, tp_ph, crit, "main") if very_verbose_dps else None
                     else:
-                        print(f"    {'Main-hand':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme(f"    {'Main-hand':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
 
             # Main hit MA check(s): QA > TA > DA > OA8 > OA7 > OA6 > OA5 > OA4 > OA3 > OA2
             # Main-hand gets two multi-attack checks if the WS has at least two native hits and the player is not dual wielding.
@@ -1834,7 +2080,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
             for k in range(main_hand_multi_attacks):
                 if attempted_hits < 8:
                     if np.random.uniform() < qa:
-                        print(f"    Main-hand Quad. Attack:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Main-hand Quad. Attack:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(3): # 3 bonus hits on a Quad. Attack
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1846,9 +2092,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < ta:
-                        print(f"    Main-hand Triple Attack:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Main-hand Triple Attack:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(2):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1860,9 +2106,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < da:
-                        print(f"    Main-hand Double Attack:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Main-hand Double Attack:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(1):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1874,9 +2120,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa8_main:
-                        print(f"    Main-hand OA8:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Main-hand OA8:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(7):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1888,9 +2134,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa7_main:
-                        print(f"    Main-hand OA7:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Main-hand OA7:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(6):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1902,9 +2148,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa6_main:
-                        print(f"    Main-hand OA6:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Main-hand OA6:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(5):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1916,9 +2162,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa5_main:
-                        print(f"    Main-hand OA5:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Main-hand OA5:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(4):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1930,9 +2176,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa4_main:
-                        print(f"    Main-hand OA4:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Main-hand OA4:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(3):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1944,9 +2190,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa3_main:
-                        print(f"    Main-hand OA3:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Main-hand OA3:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(2):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1958,9 +2204,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa2_main:
-                        print(f"    Main-hand OA2:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Main-hand OA2:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(1):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1972,13 +2218,13 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
 
             # Off-hand hit MA check.
             if dual_wield:
                 if attempted_hits < 8:
                     if np.random.uniform() < qa:
-                        print(f"    Off-hand Quad. Attack:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Off-hand Quad. Attack:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(3):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -1990,9 +2236,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < ta:
-                        print(f"    Off-hand Triple Attack:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Off-hand Triple Attack:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(2):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -2004,9 +2250,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < da:
-                        print(f"    Off-hand Double Attack:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Off-hand Double Attack:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(1):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -2018,9 +2264,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa8_sub:
-                        print(f"    Off-hand OA8:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Off-hand OA8:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(7):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -2032,9 +2278,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa7_sub:
-                        print(f"    Off-hand OA7:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Off-hand OA7:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(6):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -2046,9 +2292,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa6_sub:
-                        print(f"    Off-hand OA6:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Off-hand OA6:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(5):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -2060,9 +2306,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa5_sub:
-                        print(f"    Off-hand OA5:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Off-hand OA5:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(4):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -2074,9 +2320,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa4_sub:
-                        print(f"    Off-hand OA4:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Off-hand OA4:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(3):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -2088,9 +2334,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa3_sub:
-                        print(f"    Off-hand OA3:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Off-hand OA3:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(2):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -2102,9 +2348,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
                     elif np.random.uniform() < oa2_sub:
-                        print(f"    Off-hand OA2:") if (verbose_dps or very_verbose_dps) else None
+                        printme(f"    Off-hand OA2:") if (verbose_dps or very_verbose_dps) else None
                         for i in range(1):
                             if attempted_hits < 8:
                                 attempted_hits += 1
@@ -2116,20 +2362,20 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                                     tp_return += tp_ph
                                     verbose_output(phys_dmg_ph, 0, tp_ph, crit, "other") if very_verbose_dps else None
                                 else:
-                                    print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                                    printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
 
             fotia_chance =  (0.01*(player.gearset["neck"]["Name"]=="Fotia Gorget")) + (0.01*(player.gearset["waist"]["Name"]=="Fotia Belt"))
             if np.random.uniform() < fotia_chance:
                 tp_return += (base_tp) # Fotia gorget/belt each include +1% chance to retain TP on WS (before TP bonus)
                 fotia_tp = f"+{base_tp:.1f}"
-                print(f"    " + color_text("cyan", "Fotia:") + f"                                  {fotia_tp:>7s} TP") if (verbose_dps or very_verbose_dps) else None
+                printme(f"    " + color_text("cyan", "Fotia:") + f"                                  {fotia_tp:>7s} TP") if (verbose_dps or very_verbose_dps) else None
 
             conserve_tp_chance = player.stats.get("Conserve TP",0)/100
             if np.random.uniform() < conserve_tp_chance:
                 conserve_tp_return = int(np.random.uniform(10,200))
                 tp_return += conserve_tp_return
                 conservetp_tp = f"+{conserve_tp_return:.1f}"
-                print(f"    " + color_text("cyan", "Conserve TP:") + f"                            {conservetp_tp:>7s} TP") if (verbose_dps or very_verbose_dps) else None
+                printme(f"    " + color_text("cyan", "Conserve TP:") + f"                            {conservetp_tp:>7s} TP") if (verbose_dps or very_verbose_dps) else None
 
     elif ws_type == "ranged" and not magical:
 
@@ -2186,7 +2432,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                 tp_return += tp_ph
                 verbose_output(phys_dmg_ph, 0, tp_ph, crit, "ranged") if very_verbose_dps else None
             else:
-                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
 
             # Additional nhits-1 ranged hits
             for i in range(nhits-1):
@@ -2199,7 +2445,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                         tp_return += tp_ph
                         verbose_output(phys_dmg_ph, 0, tp_ph, crit, "ranged") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        printme("                      "+color_text("red","Missed.")) if very_verbose_dps else None
 
 
     total_damage += physical_damage
@@ -2304,9 +2550,9 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
             total_damage = 99999 if total_damage > 99999 else total_damage
 
         if verbose_dps or very_verbose_dps:
-            print(f"    =       Phys. Damage: {physical_damage:>6.0f}")
-            print(f"    =       Magic Damage: {magical_damage:>6.0f}")
-            print(f"    =       TP Returned:  {tp_return:>6.1f}")
+            printme(f"    =       Phys. Damage: {physical_damage:>6.0f}")
+            printme(f"    =       Magic Damage: {magical_damage:>6.0f}")
+            printme(f"    =       TP Returned:  {tp_return:>6.1f}")
             
         return(total_damage, tp_return)
     else:
@@ -2384,12 +2630,12 @@ if __name__ == "__main__":
     x = average_ws(player, enemy, ws_name, tp, "melee", "Damage dealt")
     # x = cast_spell(player, enemy, spell_name, "Ranged Attack")
     # x = average_attack_round(player, enemy)
-    print()
-    print('----------------')
-    print(player.stats)
+    printme()
+    printme('----------------')
+    printme(player.stats)
     for k in player.gearset:
-        print(k,player.gearset[k]["Name2"])
-    print(x)
+        printme(k,player.gearset[k]["Name2"])
+    printme(x)
 
     if False:
         import cProfile
