@@ -1582,6 +1582,15 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         element = "Dark"
         dSTAT = (player_mnd - enemy_mnd)*2 # No known cap
         sc = ["Gravitation","Transfixion"]
+    elif ws_name == "Garland of Bliss":
+        ftp = 2.25
+        ftp_rep = False
+        wsc = 0.7*player_mnd + 0.3*player_str
+        nhits = 1
+        magical = True
+        element = "Light"
+        dSTAT = (player_mnd - enemy_mnd)*2 # No known cap
+        sc = ["Fusion", "Reverberation"]
     elif ws_name == "Gate of Tartarus":
         ftp = 3.0
         ftp_rep = False
