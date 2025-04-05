@@ -70,7 +70,6 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
     regain_ws = player_ws.stats.get("Dual Wield",0)*(player_ws.gearset["main"]["Name"]=="Gokotai") + player_ws.stats.get("Regain",0) # Total regain in WS set
 
     time = 0 # Time since simulation start in seconds
-    n_ws = 10000 # Number of weapon skills to simulate
     tp = 0
 
     damage = 0  # Total damage dealt
@@ -1531,7 +1530,7 @@ def real_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     pass
 
 
-def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulation=False):
+def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulation=False, single=False):
     #
     # Calculate average weapon skill damage.
     #
@@ -1550,8 +1549,8 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
     # ===========================================================================
     # Read in the weapon skill information, including the updated player stats (such as Accuracy, Attack, and Crit Rate) from TP scaling.
 
-    verbose_dps = player.abilities.get("Verbose DPS", False)
-    very_verbose_dps = player.abilities.get("Very Verbose DPS", False)
+    verbose_dps = player.abilities.get("Verbose DPS", False) or single
+    very_verbose_dps = player.abilities.get("Very Verbose DPS", False) or single
     tp_bonus = player.stats.get("TP Bonus",0)
     base_tp = input_tp - tp_bonus
 
@@ -1622,7 +1621,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
 
     wsd = player.stats.get("Weapon Skill Damage",0)/100 # Applies only to the first WS hit.
     ws_trait = player.stats.get("Weapon Skill Damage Trait",0)/100 # WS damage trait from DRG. Applies to all WS hits.
-    ws_bonus = get_weapon_bonus(player.gearset["main"]["Name"], player.gearset["ranged"]["Name"], ws_name) # WS damage from Ambuscade weapons and augmented REMA. Applies to all WS hits.
+    ws_bonus = get_weapon_bonus(player.gearset["main"]["Name2"], player.gearset["ranged"]["Name2"], ws_name) # WS damage from Ambuscade weapons and augmented REMA. Applies to all WS hits.
 
     crit_dmg = player.stats.get("Crit Damage",0)/100 # Crit rate was read in earlier directly from the WS attributes.
     stp = player.stats.get("Store TP",0)/100
@@ -1722,7 +1721,6 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
             physical_damage += main_hits*main_hit_damage
 
             # Calculate the correction to the first hit based on the full set of buffs and bonuses.
-
             first_main_hit_pdif = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, first_main_hit_crit_rate)
             first_main_hit_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, first_main_hit_pdif, ftp, first_main_hit_crit_rate, adjusted_crit_dmg, wsd, ws_bonus, ws_trait, sneak_attack_bonus, trick_attack_bonus, climactic_flourish_bonus, striking_flourish_bonus, ternary_flourish_bonus)
 
@@ -2368,7 +2366,6 @@ if __name__ == "__main__":
     enemy = create_enemy(apex_toad)
     tp1 = 1000
     tp2 = 1500
-    tp0 = 0
 
     ws_name = "Blade: Chi"
     player = create_player(main_job, sub_job, master_level, gearset, buffs, abilities)

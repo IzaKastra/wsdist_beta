@@ -35,8 +35,6 @@ def load_defaults(app,defaults):
     app.ws_name.set(defaults.get("ws","None"))
     app.am_level.set(int(defaults.get("aftermath",0)))
     app.tp1.set(int(defaults.get("mintp",1000)))
-    app.tp2.set(int(defaults.get("maxtp",1000)))
-    app.tp0.set(int(defaults.get("initialtp",0)))
 
     app.pdt_req.set(int(defaults.get("pdtreq",100)))
     app.mdt_req.set(int(defaults.get("mdtreq",100)))
@@ -181,10 +179,8 @@ def save_defaults():
         ofile.write(f"subjob={app.subjob.get()}\n")
         ofile.write(f"aftermath={app.am_level.get()}\n")
         ofile.write(f"mintp={app.tp1.get()}\n")
-        ofile.write(f"maxtp={app.tp2.get()}\n")
         ofile.write(f"spell={app.spell_name.get()}\n")
         ofile.write(f"ws={app.ws_name.get()}\n")
-        ofile.write(f"initialtp={app.tp0.get()}\n")
         ofile.write(f"nyame<30={app.nyame_override_toggle.get()}\n")
         ofile.write(f"odyrank={app.odyrank.get()}\n")
         ofile.write(f"tvrring={app.tvr_ring.get()}\n")
@@ -347,7 +343,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 March 04a)") # pyinstaller --exclude-module gear --clean --onefile .\gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 April 05a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -510,7 +506,7 @@ class App(tk.Tk):
                         "Great Sword":["Hard Slash", "Freezebite", "Shockwave", "Sickle Moon", "Spinning Slash", "Ground Strike", "Herculean Slash", "Resolution", "Scourge", "Dimidiation", "Torcleaver", "Fimbulvetr", ], 
                         "Club":["Shining Strike", "Seraph Strike", "Skullbreaker", "True Strike", "Judgment", "Hexa Strike", "Black Halo", "Randgrith", "Exudation", "Mystic Boon", "Realmrazer", "Dagda"], 
                         "Polearm":["Double Thrust", "Thunder Thrust", "Raiden Thrust", "Penta Thrust", "Wheeling Thrust", "Impulse Drive", "Sonic Thrust", "Geirskogul", "Drakesbane", "Camlann's Torment", "Stardiver", "Diarmuid", ], 
-                        "Staff":["Heavy Swing", "Rock Crusher", "Earth Crusher", "Starburst", "Sunburst", "Shell Crusher", "Full Swing", "Cataclysm", "Retribution", "Gate of Tartarus", "Omniscience", "Vidohunir", "Shattersoul", "Oshala"], 
+                        "Staff":["Heavy Swing", "Rock Crusher", "Earth Crusher", "Starburst", "Sunburst", "Shell Crusher", "Full Swing", "Cataclysm", "Retribution", "Gate of Tartarus", "Omniscience", "Vidohunir", "Garland of Bliss", "Shattersoul", "Oshala"], 
                         "Great Axe":["Iron Tempest", "Shield Break", "Armor Break", "Weapon Break", "Raging Rush", "Full Break", "Steel Cyclone", "Fell Cleave", "Metatron Torment", "King's Justice", "Ukko's Fury", "Upheaval", "Disaster"], 
                         "Axe":["Raging Axe", "Spinning Axe", "Rampage", "Calamity", "Mistral Axe", "Decimation", "Bora Axe", "Onslaught", "Primal Rend", "Cloudsplitter", "Ruinator", "Blitz", ], 
                         "Archery":["Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow", "Empyreal Arrow", "Refulgent Arrow", "Namas Arrow", "Jishnu's Radiance", "Apex Arrow", "Sarv"], 
@@ -570,26 +566,26 @@ class App(tk.Tk):
 
 
             # Add labels and text entries (https://github.com/TomSchimansky/ctk/wiki/Entry)
-            self.min_tp_label = ttk.Label(self.player_inputs_frame,text="Min. TP:")
+            self.min_tp_label = ttk.Label(self.player_inputs_frame,text="TP Value")
             self.min_tp_label.grid(row=6, column=0, sticky="w", padx=0, pady=1)
             self.tp1 = tk.IntVar(value=1000)
             self.min_tp = ttk.Entry(self.player_inputs_frame,textvariable=self.tp1,justify="right")
             self.min_tp.configure(width=6)
             self.min_tp.grid(row=6,column=1,padx=0,pady=1,sticky='w')
 
-            self.max_tp_label = ttk.Label(self.player_inputs_frame,text="Max. TP:")
-            self.max_tp_label.grid(row=7, column=0, sticky="w", padx=0, pady=1)
-            self.tp2 = tk.IntVar(value=1300)
-            self.max_tp = ttk.Entry(self.player_inputs_frame,textvariable=self.tp2,justify="right",)
-            self.max_tp.configure(width=6)
-            self.max_tp.grid(row=7,column=1,padx=0,pady=1,sticky='w')
+            # self.max_tp_label = ttk.Label(self.player_inputs_frame,text="Max. TP:")
+            # self.max_tp_label.grid(row=7, column=0, sticky="w", padx=0, pady=1)
+            # self.tp2 = tk.IntVar(value=1300)
+            # self.max_tp = ttk.Entry(self.player_inputs_frame,textvariable=self.tp2,justify="right",)
+            # self.max_tp.configure(width=6)
+            # self.max_tp.grid(row=7,column=1,padx=0,pady=1,sticky='w')
 
-            self.start_tp_label = ttk.Label(self.player_inputs_frame,text="Initial TP:")
-            self.start_tp_label.grid(row=8, column=0, sticky="w", padx=0, pady=1)
-            self.tp0 = tk.IntVar(value=0)
-            self.start_tp = ttk.Entry(self.player_inputs_frame,textvariable=self.tp0,justify="right")
-            self.start_tp.configure(width=6)
-            self.start_tp.grid(row=8, column=1,padx=0,pady=1,sticky='w')
+            # self.start_tp_label = ttk.Label(self.player_inputs_frame,text="Initial TP:")
+            # self.start_tp_label.grid(row=8, column=0, sticky="w", padx=0, pady=1)
+            # self.tp0 = tk.IntVar(value=0)
+            # self.start_tp = ttk.Entry(self.player_inputs_frame,textvariable=self.tp0,justify="right")
+            # self.start_tp.configure(width=6)
+            # self.start_tp.grid(row=8, column=1,padx=0,pady=1,sticky='w')
 
         # ===========================================================================
         # ===========================================================================
@@ -4389,11 +4385,16 @@ class App(tk.Tk):
 
         self.sim_button = tk.Button(self.sim_frame, text="Run DPS simulations",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("damage simulation"))
         self.sim_button_tip = Hovertip(self.sim_button,f"Simulate attack rounds and weapon skills using the above TP and WS sets.\nWeapon skills are used after reaching Minimum TP value provided in the Inputs tab.")
-        self.sim_button.grid(row=1,column=0,columnspan=2,padx=5,pady=5)
+        self.sim_button.grid(row=1,column=0,columnspan=1,padx=5,pady=2)
+
+        self.sim1_button = tk.Button(self.sim_frame, text="Simulate One WS",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("run one ws"))
+        self.sim1_button_tip = Hovertip(self.sim1_button,f"Perform a single weapon skill at the Min. TP value set in the inputs tab.")
+        self.sim1_button.grid(row=2,column=0,columnspan=1,padx=5,pady=2)
+
 
         self.build_dist = tk.Button(self.sim_frame, text="Create weapon skill\ndistribution plot",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("build distribution"))
         self.build_dist_tip = Hovertip(self.build_dist,f"Simulate 50,000 weapon skills using the current buffs and the equipped WS set and plot the resulting damage distribution.")
-        self.build_dist.grid(row=2,column=0,columnspan=2,padx=5,pady=5)
+        self.build_dist.grid(row=3,column=0,columnspan=2,padx=5,pady=2)
 
         self.plot_dps = tk.BooleanVar(value=False)
         self.plot_dps_cbox = ttk.Checkbutton(self.sim_frame,variable=self.plot_dps,text="Plot DPS")
@@ -4504,6 +4505,13 @@ class App(tk.Tk):
         soa_rings = ["Weatherspoon", "Karieyh", "Vocane"]
         jse_ear_names = {"nin":"Hattori","drk":"Heathen","blm":"Wicce","rdm":"Lethargy","drg":"Peltast","whm":"Ebers","sam":"Kasuga","sch":"Arbatel","war":"Boii","cor":"Chasseur","brd":"Fili","thf":"Skulker","mnk":"Bhikku","dnc":"Maculele","bst":"Nukumi","geo":"Azimuth","pld":"Chevalier","rng":"Amini","blu":"Hashishin","run":"Erilaz","pup":"Karagoz","smn":"Beckoner"}
 
+        rema_weapons = ["Amanomurakumo", "Annihilator", "Apocalypse", "Bravura", "Excalibur", "Gungnir", "Guttler", "Kikoku", "Mandau", "Mjollnir", "Ragnarok", "Spharai", "Yoichinoyumi",
+                        "Almace", "Armageddon", "Caladbolg", "Farsha", "Gandiva", "Kannagi", "Masamune", "Redemption", "Rhongomiant", "Twashtar", "Ukonvasara", "Verethragna",
+                        "Aymur", "Burtgang", "Carnwenhan", "Conqueror", "Death Penalty", "Gastraphetes", "Glanzfaust", "Kenkonken", "Kogarasumaru", "Laevateinn", "Liberator", "Murgleis", "Nagi", "Ryunohige", "Terpsichore", "Tizona", "Tupsimati", "Nirvana", "Vajra", "Yagrush", 
+                        "Epeolatry", "Idris",
+                        "Aeneas", "Anguta", "Chango", "Dojikiri Yasutsuna", "Fail-not", "Fomalhaut", "Godhands", "Heishi Shorinken", "Khatvanga", "Lionheart", "Sequence", "Tishtrya", "Tri-edge", "Trishula",
+                        ]
+
         cbox_lists = {"main":[self.main_cbox_frame,self.x_main2,self.x_main2_var],
                         "sub":[self.sub_cbox_frame,self.x_sub2,self.x_sub2_var],
                         "ranged":[self.ranged_cbox_frame,self.x_ranged2,self.x_ranged2_var],
@@ -4571,6 +4579,11 @@ class App(tk.Tk):
 
                         if slot in ["ring1","ring2"] and " ".join(label.split()[0:-2]) in soa_rings and " ".join(label.split()[0:-2])!=self.soa_ring.get():
                             item.set(False)
+
+                        # Only select R15 REMA by default
+                        if slot in ["main", "sub", "ranged"] and "R15" not in label and label in rema_weapons:
+                            item.set(False)
+
 
                         # Odyssey Rank check
                         if d.get("Rank",self.odyrank.get())!=self.odyrank.get():
@@ -5042,10 +5055,7 @@ class App(tk.Tk):
         player_tpset = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset_tp, buffs, abilities)
         player_wsset = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset_ws, buffs, abilities)
 
-        if self.tp2.get() < self.tp1.get():
-            self.tp2.set(self.tp1.get())
-
-        effective_tp = (self.tp2.get() + self.tp1.get()) / 2 + player.stats.get("TP Bonus",0)
+        effective_tp = self.tp1.get() + player.stats.get("TP Bonus",0)
         effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
 
         spell_name = self.spell_name.get()
@@ -5063,7 +5073,7 @@ class App(tk.Tk):
 
         ws_name = self.ws_name.get()
 
-        if trigger in ["quicklook ws", "quicklook spell", "build_distribution"]:
+        if trigger in ["quicklook ws", "quicklook spell"]:
             if trigger=="quicklook ws":
                 if ws_name=="None":
                     print("No weapon skill selected.")
@@ -5084,7 +5094,7 @@ class App(tk.Tk):
             self.quicktp.configure(text=f"{'Average TP = ':>17s}{avg_tp:>9.1f}")
 
         elif trigger=="quicklook tp":
-            outputs = average_attack_round(player, enemy, self.tp0.get(), self.tp1.get(),"Time to WS")
+            outputs = average_attack_round(player, enemy, 0, self.tp1.get(),"Time to WS")
             avg_time = outputs[0]
             avg_tp = outputs[1][1]
             self.quickdamage.configure(text=f"{'Time per WS = ':>17}{avg_time:>7.3f} s")
@@ -5097,17 +5107,34 @@ class App(tk.Tk):
             for k in range(50000):
 
                 # Randomly sample TP between the upper and lower limits.
-                effective_tp = np.random.uniform(self.tp1.get(), self.tp2.get()) + player_wsset.stats.get("TP Bonus",0)
+                effective_tp = self.tp1.get() + player_wsset.stats.get("TP Bonus",0)
                 effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
 
                 outputs = average_ws(player_wsset, enemy, ws_name, effective_tp, ws_type, "Damage dealt", simulation=True)
                 damage_list.append(outputs[0])
                 tp_list.append(outputs[1])
-            plot_final(damage_list, player_wsset, self.tp1.get(), self.tp2.get(), ws_name)
+
+            plot_final(damage_list, player_wsset, self.tp1.get(), ws_name)
+
+        elif trigger=="run one ws":
+            ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
+
+            effective_tp = self.tp1.get() + player_wsset.stats.get("TP Bonus",0)
+            effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
+            print()
+            print()
+            average_ws(player_wsset, enemy, ws_name, effective_tp, ws_type, "Damage dealt", simulation=True, single=True)
+            print()
+            print()
+            return
 
         elif trigger=="damage simulation":
             ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
             run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, self.plot_dps.get())
+
+        elif trigger=="run one ws":
+            ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
+            run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, False, True)
 
 
         elif trigger=="all stats":
@@ -5255,14 +5282,14 @@ class App(tk.Tk):
                         print("No weapon skill selected.")
                         return
 
-                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "weapon skill", self.tp0.get(), self.tp1.get(), self.tp2.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.wsmetric.get(), print_swaps, next_best_percent, )
+                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "weapon skill", self.tp1.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.wsmetric.get(), print_swaps, next_best_percent, )
                 elif trigger=="run magic":
                     if spell_name=="None":
                         print("No spell selected.")
                         return
-                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "spell cast", self.tp0.get(), self.tp1.get(), self.tp2.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.spellmetric.get(), print_swaps, next_best_percent, )
+                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "spell cast", self.tp1.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.spellmetric.get(), print_swaps, next_best_percent, )
                 elif trigger=="run tp":
-                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "attack round", self.tp0.get(), self.tp1.get(), self.tp2.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.tpmetric.get(), print_swaps, next_best_percent, )
+                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "attack round", self.tp1.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.tpmetric.get(), print_swaps, next_best_percent, )
 
                 # print(self.best_player.stats)
                 # print(self.best_output)
