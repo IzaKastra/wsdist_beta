@@ -34,7 +34,7 @@ def get_image_ids(gearset):
 
     return(ids)
 
-def plot_final(damage, player, tp1, tp2, WS_name,):
+def plot_final(damage, player, tp1, WS_name,):
 
     items_file = "item_list.txt"
     icons_path = "icons32/"
@@ -124,7 +124,7 @@ def plot_final(damage, player, tp1, tp2, WS_name,):
         labelleft=False,
         labelbottom=True)
 
-    ax.set_title(f"ML{player.master_level} {player.main_job.upper()}/{player.sub_job.upper()}\n{f'TP=[{tp1},{tp2}]':>15s} {'Minimum':>8s} {'Mean':>8s} {'Median':>8s} {'Maximum':>8s}\n{WS_name:>15s} {np.min(damage):>8.1f} {int(np.average(damage)):>8.1f} {int(np.median(damage)):>8.1f} {np.max(damage):>8.1f}",loc="left")
+    ax.set_title(f"ML{player.master_level} {player.main_job.upper()}/{player.sub_job.upper()}\n{f'TP={tp1}':>15s} {'Minimum':>8s} {'Mean':>8s} {'Median':>8s} {'Maximum':>8s}\n{WS_name:>15s} {np.min(damage):>8.1f} {int(np.average(damage)):>8.1f} {int(np.median(damage)):>8.1f} {np.max(damage):>8.1f}",loc="left")
     # plt.legend()
 
     savepath = "."
