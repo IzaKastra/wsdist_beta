@@ -124,7 +124,7 @@ def format_bgwiki(ws_name, tp, player, best_metric):
     """
     print(bgwiki_text)
 
-def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name, spell_name, action_type, starting_tp, min_tp, max_tp, check_gear, starting_gearset, pdt_requirement, mdt_requirement, input_metric, print_swaps, next_best_percent, ):
+def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name, spell_name, action_type, min_tp, check_gear, starting_gearset, pdt_requirement, mdt_requirement, input_metric, print_swaps, next_best_percent, ):
     #
     # Build a valid gear set, test it, and return the best set found.
     #
@@ -424,7 +424,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
 
 
                             # Prepare to test the set.
-                            effective_tp = (max_tp + min_tp)/2 + player.stats.get("TP Bonus",0)
+                            effective_tp = min_tp + player.stats.get("TP Bonus",0)
                             effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
 
                             if action_type=="weapon skill":
@@ -442,7 +442,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                             elif action_type=="attack round":
                                 decimals = 3 # How many decimals to show in the output.
                                 nondecimals = 8
-                                metric_base, output, _ = average_attack_round(player, enemy, starting_tp, min_tp, input_metric)
+                                metric_base, output, _ = average_attack_round(player, enemy, 0, min_tp, input_metric)
                                 invert = output[-1]
                                 metric = metric_base**invert
 
@@ -568,9 +568,7 @@ if __name__ == "__main__":
     ws_name = "Blade: Metsu"
     spell_name = "Waterja"
     action_type = "weapon skill"
-    starting_tp = 0
     min_tp = 1000
-    max_tp = 1300
     check_gear = gear_dict
     starting_gearset = { "main" : Heishi,
                         'sub' : Crepuscular_Knife,
@@ -595,7 +593,7 @@ if __name__ == "__main__":
 
     metric = "Damage Dealt"
 
-    player, output = build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name, spell_name, action_type, starting_tp, min_tp, max_tp, check_gear, starting_gearset, pdt_requirement, mdt_requirement, metric, print_swaps, next_best_percent)
+    player, output = build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name, spell_name, action_type, min_tp, check_gear, starting_gearset, pdt_requirement, mdt_requirement, metric, print_swaps, next_best_percent)
     print(player.stats)
 
 
