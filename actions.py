@@ -11,7 +11,7 @@ from get_tp import get_tp
 from nuking import *
 from get_dint_m_v import *
 from get_delay_timing import *
-from tkinter import Entry, StringVar, Tk, Label, LEFT, RIGHT, CENTER, W, E
+from tkinter import Entry, StringVar, Tk, Label, LEFT, RIGHT, CENTER, W, E, Canvas, NW, Scrollbar, VERTICAL, NE, Frame
 
 terminal = False
 fh = open('actions.txt', 'w')
@@ -313,13 +313,23 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
             simMetrics[metric].append(player_tp.abilities[abil])
         for stat in player_tp.stats:
             metric = f'TP {stat}'
-            simMetrics[metric].append(int(player_tp.stats[stat]))
+            try:
+                simMetrics[metric].append(int(player_tp.stats[stat]))
+            except:
+                zeros = [0]*(simNumber-1)
+                simMetrics[metric] = zeros
+                simMetrics[metric].append(int(player_tp.stats[stat]))
         for gear in player_tp.gearset:
             metric = f'TP Gear {gear}'
             simMetrics[metric].append(player_tp.gearset[gear]['Name'])
         for stat in player_ws.stats:
             metric = f'WS {stat}'
-            simMetrics[metric].append(int(player_ws.stats[stat]))
+            try:
+                simMetrics[metric].append(int(player_ws.stats[stat]))
+            except:
+                zeros = [0]*(simNumber-1)
+                simMetrics[metric] = zeros
+                simMetrics[metric].append(int(player_ws.stats[stat]))
         for gear in player_ws.gearset:
             metric = f'WS Gear {gear}'
             simMetrics[metric].append(player_ws.gearset[gear]['Name'])
@@ -383,13 +393,22 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         worse = "#FF1212"
         txt = "#000000"
         lowerBetter = ['Time/Attack (s)', 'TP DT', 'WS DT']
+        canvas = Canvas(simwin)
+        canvas.grid(row=0, column=0, sticky="nsew")
+        yscrollbar = Scrollbar(simwin, orient="vertical", command=canvas.yview)
+        yscrollbar.grid(row=0, column=1, sticky="ns")
+        xscrollbar = Scrollbar(simwin, orient="horizontal", command=canvas.xview)
+        xscrollbar.grid(row=1, column=0, sticky="ew")
+        canvas.configure(xscrollcommand=xscrollbar.set, yscrollcommand=yscrollbar.set)
+        frame = Frame(canvas)
+        canvas.create_window((0, 0), window=frame, anchor="nw")
         with open(f'sim_diff_summary.txt', 'w') as simd:            
             row = 0
             color = evenColor
             for metric in metrics:
                 if metric in diffMetrics:
                     simd.write(f"{metric}:\t")
-                    l = Label(simwin, text=metric, background=color, width=width, foreground=txt)
+                    l = Label(frame, text=metric, background=color, width=width, foreground=txt)
                     l.grid(row=row, column=0, sticky=W)
                     for i in range(0, simNumber+1):
                         col = i + 1
@@ -408,7 +427,7 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
                                         fg = better
                             except:
                                 pass
-                        l = Label(simwin, text=simMetrics[metric][i], background=color, width=width, foreground=fg)
+                        l = Label(frame, text=simMetrics[metric][i], background=color, width=width, foreground=fg)
                         l.grid(row=row, column=col, sticky=E)
                     simd.write(f'\n') 
                     row += 1
@@ -416,7 +435,16 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
                         color = oddColor
                     else:    
                         color = evenColor
+        # Update the Canvas scroll region after the labels are created
+        frame.update_idletasks()
+        canvas.config(scrollregion=canvas.bbox("all"))
+
+        # Configure row and column weights to make the grid expandable
+        simwin.grid_rowconfigure(0, weight=1)
+        simwin.grid_columnconfigure(0, weight=1)
+        # simwin.mainloop()
     simNumber += 1
+    
 
 
             

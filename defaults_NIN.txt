@@ -1,0 +1,133 @@
+# Basic inputs
+ml=18
+mainjob=NIN
+subjob=WAR
+aftermath=0
+mintp=1000
+maxtp=2100
+spell=Doton: Ichi
+ws=Blade: Hi
+initialtp=0
+nyame<30=False
+odyrank=0
+tvrring=Cornelia's
+tpmetric=Time to WS
+spellmetric=Damage dealt
+wsmetric=Damage dealt
+pdtreq=0
+mdtreq=0
+
+# WHM inputs
+whm=True
+shell5=True
+dia=Dia II
+haste=Haste II
+boost=None
+storm=None
+
+# BRD inputs
+brd=True
+nsongs=Songs +0
+song1=Honor March
+song2=Adv. March
+song3=None
+song4=None
+song5=None
+marcato=False
+soulvoice=False
+
+# COR inputs
+cor=False
+nrolls=Rolls +0
+roll1value=X
+roll1=Chaos
+roll2v=IX
+roll2=Samurai
+crookedcards=False
+jobbonus=False
+lightshot=False
+
+# GEO inputs
+geo=False
+nbubble=Geomancy +10
+geopotency=25
+indi=Indi-Fury
+geo=Geo-Frailty
+entrust=None
+blaze=False
+bolster=False
+
+# Enemy inputs
+ename=Apex Bat
+elocation=Outer Ra'Kaznar
+elevel=135
+eevasion=1224
+edefense=1338
+emagicevasion=0
+emagicdefense=0
+eagi=340
+evit=289
+eint=267
+emnd=267
+
+# Equipment and food inputs
+food=Grape Daifuku
+main=Kannagi R15
+sub=Achiuchikapu
+ranged=Empty
+ammo=Togakushi Shuriken
+head=Hachiya Hatsuburi +3
+neck=Fotia Gorget
+ear1=Suppanomimi
+ear2=Ishvara Earring
+body=Herculean Vest Aug
+hands=Herculean Gloves Aug
+ring1=Cornelia's ring
+ring2=Epaminondas's Ring
+back=Andartia's Mantle DEX Weapon Skill Damage
+waist=Fotia Belt
+legs=Mochizuki Hakama +3
+feet=Hattori Kyahan +2
+
+# Simulation inputs
+tp_main=Kannagi R15
+tp_sub=Achiuchikapu
+tp_ranged=Empty
+tp_ammo=Togakushi Shuriken
+tp_head=Hattori Zukin +2
+tp_neck=Combatant's Torque
+tp_ear1=Suppanomimi
+tp_ear2=Hattori Earring +1
+tp_body=Hachiya Chainmail +3
+tp_hands=Herculean Gloves Aug
+tp_ring1=Epona's Ring
+tp_ring2=Hetairoi Ring
+tp_back=Yokaze Mantle Aug
+tp_waist=Sarissaphoroi Belt
+tp_legs=Mochizuki Hakama +3
+tp_feet=Hizamaru Sune-ate +2
+
+ws_main=Achiuchikapu
+ws_sub=Achiuchikapu
+ws_ranged=Empty
+ws_ammo=Togakushi Shuriken
+ws_head=Hachiya Hatsuburi +3
+ws_neck=Fotia Gorget
+ws_ear1=Suppanomimi
+ws_ear2=Ishvara Earring
+ws_body=Herculean Vest Aug
+ws_hands=Herculean Gloves Aug
+ws_ring1=Cornelia's ring
+ws_ring2=Epaminondas's Ring
+ws_back=Andartia's Mantle DEX Weapon Skill Damage
+ws_waist=Fotia Belt
+ws_legs=Mochizuki Hakama +3
+ws_feet=Hattori Kyahan +2
+
+DamageLimit=True
+VerboseDPS=True
+very_verboseDPS=True
+VerboseSwaps=False
+
+# Window size:  widthxheight
+dimensions=700x885

@@ -2099,7 +2099,7 @@ class App(tk.Tk):
         self.spellmetric_label.grid(row=4, column=0, sticky="w", padx=0, pady=1)
         self.spellmetric = tk.StringVar(value="Damage dealt")
         self.spellmetric_combo = ttk.Combobox(self.conditions_frame, values=["Damage dealt","TP return","Damage > TP", "TP > Damage"], textvariable=self.spellmetric,state="readonly",width=15)
-        self.spellmetric_combo_tip = Hovertip(self.spellmetric_combo,f"Choose what the algorithm prioritizes when building spellcasting and ranged attack sets.\nTP Return: Maximize TP return per attack; ignores damage dealt\nDamage dealt: Maximize damage dealt per attack; ignores TP return\Damage > TP: Maximize Damage*Damage*TP\nTP > Damage: Maximize Damage*TP*TP",hover_delay=500)
+        self.spellmetric_combo_tip = Hovertip(self.spellmetric_combo,f"Choose what the algorithm prioritizes when building spellcasting and ranged attack sets.\nTP Return: Maximize TP return per attack; ignores damage dealt\nDamage dealt: Maximize damage dealt per attack; ignores TP return\nDamage > TP: Maximize Damage*Damage*TP\nTP > Damage: Maximize Damage*TP*TP",hover_delay=500)
         self.spellmetric_combo.grid(row=4,column=1,sticky="nw",padx=0,pady=2)
 
         self.wsmetric_label = ttk.Label(self.conditions_frame,text="WS Metric:")
