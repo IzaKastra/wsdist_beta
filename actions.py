@@ -27,6 +27,8 @@ simNumber = 0
 simMetrics = {} #key is the metric, value is list of results, index = simNumber
 metrics = []
 diffMetrics = {}
+maxdamage = 0
+maxdmgSim = 0
 
 def printme(*args, **kwargs):
     if terminal:
@@ -73,8 +75,10 @@ def verbose_output(phys_dmg, magic_dmg, tp_return, crit, special="other"):
         
 
 def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, plot_dps=False, verbose=False):
-    global metrics
     global diffMetrics
+    global maxdamage
+    global maxdmgSim
+    global metrics
     global simNumber
     global simMetrics
     verbose_dps = player_tp.abilities.get("Verbose DPS", False)
@@ -211,17 +215,24 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
             metrics.append(metric)
             simMetrics[metric] = [player_tp.abilities[abil]]
         for stat in player_tp.stats:
-            metric = f'TP {stat}'
-            metrics.append(metric)
-            simMetrics[metric] = [int(player_tp.stats[stat])]
+            if stat != 'WSC':
+                metric = f'TP {stat}'
+                metrics.append(metric)
+                simMetrics[metric] = [int(player_tp.stats[stat])]
         for gear in player_tp.gearset:
             metric = f'TP Gear {gear}'
             metrics.append(metric)
             simMetrics[metric] = [player_tp.gearset[gear]['Name']]
         for stat in player_ws.stats:
-            metric = f'WS {stat}'
-            metrics.append(metric)
-            simMetrics[metric] = [int(player_ws.stats[stat])]
+            if stat != 'WSC':
+                metric = f'WS {stat}'
+                metrics.append(metric)
+                simMetrics[metric] = [int(player_ws.stats[stat])]
+            else:
+                for (s, v) in player_ws.stats[stat]:
+                    metric = f'WS {stat} {s}'
+                    metrics.append(metric)
+                    simMetrics[metric] = [int(v)]
         for gear in player_ws.gearset:
             metric = f'WS Gear {gear}'
             metrics.append(metric)
@@ -253,15 +264,6 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         metric = 'Magical %'    
         metrics.append(metric)
         simMetrics[metric] = [f'{np.average(magic_dmg_list)/np.average(avg_tp_dmg)*100:5.1f}']
-        metric = 'Average Dmg/WS'    
-        metrics.append(metric)
-        simMetrics[metric] = [f'{np.average(avg_ws_dmg):8.1f}']
-        metric = 'Average TP/WS'    
-        metrics.append(metric)
-        simMetrics[metric] = [f'{np.average(avg_ws_tp):4.0f}']
-        metric = 'TP Bonus+'    
-        metrics.append(metric)
-        simMetrics[metric] = [f'{player_ws.stats.get('TP Bonus',0)}']
         metric = 'TP Damage (M)'    
         metrics.append(metric)
         simMetrics[metric] = [f'{tp_damage/1e6:5.1f}']
@@ -271,6 +273,18 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         metric = 'TP %'    
         metrics.append(metric)
         simMetrics[metric] = [f'{tp_damage/damage*100:5.1f}']
+        metric = 'TP Bonus+'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{player_ws.stats.get('TP Bonus',0)}']
+        metric = 'Number of WS'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{len(avg_ws_dmg):,}']
+        metric = 'Average TP/WS'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{np.average(avg_ws_tp):4.0f}']
+        metric = 'Average Dmg/WS'    
+        metrics.append(metric)
+        simMetrics[metric] = [f'{np.average(avg_ws_dmg):8.1f}']
         metric = 'WS Damage (M)'    
         metrics.append(metric)
         simMetrics[metric] = [f'{ws_damage/1e6:5.1f}']
@@ -286,6 +300,9 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         metric = 'Total Damage (M)'    
         metrics.append(metric)
         simMetrics[metric] = [f'{damage/1e6:5.1f}']
+        if damage > maxdamage:
+            maxdamage = damage
+            maxdmgSim = simNumber
     else:
         metric = 'Iteration'
         simMetrics[metric].append(simNumber)
@@ -313,23 +330,34 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
             simMetrics[metric].append(player_tp.abilities[abil])
         for stat in player_tp.stats:
             metric = f'TP {stat}'
-            try:
-                simMetrics[metric].append(int(player_tp.stats[stat]))
-            except:
-                zeros = [0]*(simNumber-1)
-                simMetrics[metric] = zeros
-                simMetrics[metric].append(int(player_tp.stats[stat]))
+            if stat != 'WSC':
+                try:
+                    simMetrics[metric].append(int(player_tp.stats[stat]))
+                except:
+                    zeros = [0]*(simNumber-1)
+                    simMetrics[metric] = zeros
+                    simMetrics[metric].append(int(player_tp.stats[stat]))
         for gear in player_tp.gearset:
             metric = f'TP Gear {gear}'
             simMetrics[metric].append(player_tp.gearset[gear]['Name'])
         for stat in player_ws.stats:
-            metric = f'WS {stat}'
-            try:
-                simMetrics[metric].append(int(player_ws.stats[stat]))
-            except:
-                zeros = [0]*(simNumber-1)
-                simMetrics[metric] = zeros
-                simMetrics[metric].append(int(player_ws.stats[stat]))
+            if stat != 'WSC':
+                try:
+                    metric = f'WS {stat}'
+                    simMetrics[metric].append(int(player_ws.stats[stat]))
+                except:
+                    zeros = [0]*(simNumber-1)
+                    simMetrics[metric] = zeros
+                    simMetrics[metric].append(int(player_ws.stats[stat]))
+            else:
+                for (s, v) in player_ws.stats[stat]:
+                    try:
+                        metric = f'WS {stat} {s}'
+                        simMetrics[metric].append(int(v))
+                    except:
+                        zeros = [0]*(simNumber-1)
+                        simMetrics[metric] = zeros
+                        simMetrics[metric].append(int(v))
         for gear in player_ws.gearset:
             metric = f'WS Gear {gear}'
             simMetrics[metric].append(player_ws.gearset[gear]['Name'])
@@ -351,18 +379,20 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         simMetrics[metric].append(f'{np.average(magic_dmg_list):8.1f}')
         metric = 'Magical %'    
         simMetrics[metric].append(f'{np.average(magic_dmg_list)/np.average(avg_tp_dmg)*100:5.1f}')
-        metric = 'Average Dmg/WS'    
-        simMetrics[metric].append(f'{np.average(avg_ws_dmg):8.1f}')
-        metric = 'Average TP/WS'    
-        simMetrics[metric].append(f'{np.average(avg_ws_tp):4.0f}')
-        metric = 'TP Bonus+'    
-        simMetrics[metric].append(f'{player_ws.stats.get('TP Bonus',0)}')
         metric = 'TP Damage (M)'    
         simMetrics[metric].append(f'{tp_damage/1e6:5.1f}')
         metric = 'TP DPS'    
         simMetrics[metric].append(f'{tp_damage/time:7.1f}')
         metric = 'TP %'    
         simMetrics[metric].append(f'{tp_damage/damage*100:5.1f}')
+        metric = 'TP Bonus+'    
+        simMetrics[metric].append(f'{player_ws.stats.get('TP Bonus',0)}')
+        metric = 'Number of WS'    
+        simMetrics[metric].append(f'{len(avg_ws_dmg):,}')
+        metric = 'Average TP/WS'    
+        simMetrics[metric].append(f'{np.average(avg_ws_tp):4.0f}')
+        metric = 'Average Dmg/WS'    
+        simMetrics[metric].append(f'{np.average(avg_ws_dmg):8.1f}')
         metric = 'WS Damage (M)'    
         simMetrics[metric].append(f'{ws_damage/1e6:5.1f}')
         metric = 'WS DPS'    
@@ -373,12 +403,19 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         simMetrics[metric].append(f'{damage/time:7.1f}')
         metric = 'Total Damage (M)'    
         simMetrics[metric].append(f'{damage/1e6:5.1f}')
+        if damage > maxdamage:
+            maxdamage = damage
+            maxdmgSim = simNumber
     maxw = 0        
     simf = open(f'simulation_summary_{simNumber}.txt', 'w')
     simd = open(f'sim_diff_summary.txt', 'w')
     with open(f'simulation_summary_{simNumber}.txt', 'w') as simf:
         for metric in metrics:
-            simf.write(f"{metric}:\t{simMetrics[metric][simNumber]}\n")
+            try:
+                simf.write(f"{metric}:\t{simMetrics[metric][simNumber]}\n")
+            except IndexError: #if a metric disappeared from a later iteration
+                simMetrics[metric].append(0)
+                simf.write(f"{metric}:\t{simMetrics[metric][simNumber]}\n")
             if simMetrics[metric][0] != simMetrics[metric][simNumber]:
                 diffMetrics[metric] = 1
                 if len(metric) > maxw:
@@ -400,6 +437,8 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         xscrollbar = Scrollbar(simwin, orient="horizontal", command=canvas.xview)
         xscrollbar.grid(row=1, column=0, sticky="ew")
         canvas.configure(xscrollcommand=xscrollbar.set, yscrollcommand=yscrollbar.set)
+        rfont=("Arial", 10)
+        bfont=("Arial", 10, "bold")
         frame = Frame(canvas)
         canvas.create_window((0, 0), window=frame, anchor="nw")
         with open(f'sim_diff_summary.txt', 'w') as simd:            
@@ -408,7 +447,9 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
             for metric in metrics:
                 if metric in diffMetrics:
                     simd.write(f"{metric}:\t")
+                    usefont = rfont
                     l = Label(frame, text=metric, background=color, width=width, foreground=txt)
+                    l.configure(font=usefont)
                     l.grid(row=row, column=0, sticky=W)
                     for i in range(0, simNumber+1):
                         col = i + 1
@@ -428,6 +469,11 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
                             except:
                                 pass
                         l = Label(frame, text=simMetrics[metric][i], background=color, width=width, foreground=fg)
+                        usefont = rfont
+                        if i == maxdmgSim:
+                            if metric in ('Total DPS', 'Total Damage (M)'):
+                                usefont = bfont
+                        l.configure(font=usefont)
                         l.grid(row=row, column=col, sticky=E)
                     simd.write(f'\n') 
                     row += 1
@@ -442,7 +488,6 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         # Configure row and column weights to make the grid expandable
         simwin.grid_rowconfigure(0, weight=1)
         simwin.grid_columnconfigure(0, weight=1)
-        # simwin.mainloop()
     simNumber += 1
     
 
