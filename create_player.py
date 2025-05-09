@@ -1,4 +1,4 @@
-from enemies import *
+# from enemies import *
 
 
 class create_enemy:
@@ -107,7 +107,10 @@ class create_player:
 
         # Update Ranged Attack
         ranged_skill = self.gearset["ranged"].get("Skill Type","None") + " Skill"
-        ammo_skill = self.gearset["ammo"].get("Skill Type","None") + " Skill"
+        askill = self.gearset["ammo"].get("Skill Type","None")
+        if not askill:
+            askill = ''
+        ammo_skill = f"{askill} Skill"
         if ammo_skill=="Throwing Skill": # For Shuriken
             self.stats["Ranged Attack"] += 8 + self.stats.get(ammo_skill,0) + self.stats.get("STR",0)
         elif ranged_skill in ["Marksmanship Skill","Archery Skill"]:
@@ -214,7 +217,8 @@ class create_player:
         for source in self.buffs:
             for stat in self.buffs[source]:
                 if stat not in ignore_stats:
-                    self.stats[stat] = self.stats.get(stat,0) + self.buffs[source][stat]
+                    if self.buffs[source][stat]:
+                        self.stats[stat] = self.stats.get(stat,0) + self.buffs[source][stat]
 
         jobs  = [self.main_job, self.sub_job]
         sub_job_level = int(99/2) + self.master_level/5
@@ -651,6 +655,8 @@ class create_player:
         ignore_stats = ["Name","Name2","Type","DMG","Delay","Jobs","Skill Type","Rank"]
         for slot in self.gearset:
             for stat in self.gearset[slot]:
+                if stat in ("Slot"):
+                    continue
                 if stat=="Triple Shot" and self.main_job=="rng": # Skip Triple Shot bonuses on Oshosi for RNG
                     continue
                 if stat=="Double Shot" and self.main_job=="cor": # Skip Double Shot bonuses on Oshosi for COR
@@ -660,13 +666,16 @@ class create_player:
                     ignore_main_sub_skills = ["Hand-to-Hand Skill","Dagger Skill","Sword Skill","Great Sword Skill","Axe Skill","Great Axe Skill","Scythe Skill","Polearm Skill","Katana Skill","Great Katana Skill","Club Skill","Staff Skill","Evasion Skill","Divine Magic Skill","Elemental Magic Skill","Dark Magic Skill","Ninjutsu Skill","Summoning Magic Skill","Blue Magic Skill","Magic Accuracy Skill"]
                     if not (slot in ["main","sub"] and stat in ignore_main_sub_skills):
                         if stat in ["OA8","OA7","OA6","OA5","OA4","OA3","OA2","EnSpell Damage","EnSpell Damage%"] and slot in ["main", "sub"]: # OAX stats apply only to the weapon they are attached to.
-                            self.stats[f"{stat} {slot}"] = self.stats.get(f"{stat} {slot}",0) + self.gearset[slot][stat]
+                            if self.gearset[slot][stat]:
+                                self.stats[f"{stat} {slot}"] = self.stats.get(f"{stat} {slot}",0) + self.gearset[slot][stat]
                         elif stat=="WSC":
                             self.stats[stat] = self.stats.get(stat,[]) + [self.gearset[slot][stat]]
                         else:
-                            self.stats[stat] = self.stats.get(stat,0) + self.gearset[slot][stat]
+                            if self.gearset[slot][stat]:
+                                self.stats[stat] = self.stats.get(stat,0) + self.gearset[slot][stat]
                     else:
-                        self.stats[f"{slot} {stat}"] = self.stats.get(f"{slot} {stat}",0) + self.gearset[slot][stat]
+                        if self.gearset[slot][stat]:
+                            self.stats[f"{slot} {stat}"] = self.stats.get(f"{slot} {stat}",0) + self.gearset[slot][stat]
 
         # Count the number of set-bonus gear equipped.
         mummu_count = 0 # Mummu +2 gives DEX/AGI/VIT/CHR

@@ -24,5 +24,7 @@ def get_avg_phys_damage(wpn_dmg, fstr_wpn, wsc, pdif, ftp, crit_rate, crit_dmg, 
     # Calculate average physical damage dealt for a single attack.
     # https://www.bg-wiki.com/ffxi/Weapon_Skill_Damage
     #
+    if not wpn_dmg:
+        wpn_dmg = 0
     phys = int(  ((wpn_dmg + fstr_wpn + wsc)*ftp  * (1+wsd)*(1+ws_bonus)*(1+ws_trait)) + sneak_attack_bonus + trick_attack_bonus + climactic_flourish_bonus + striking_flourish_bonus + ternary_flourish_bonus) * pdif * (1 + min(crit_rate,1.0)*min(crit_dmg,1.0))
     return(phys)

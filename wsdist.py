@@ -10,7 +10,7 @@ from datetime import datetime # For timestamping new sets to put on BG Wiki
 import sys
 import os
 sys.path.append(os.path.dirname(sys.executable))
-from gear import *
+from gear import Empty
 
 def format_bgwiki(ws_name, tp, player, best_metric):
     #
@@ -124,7 +124,7 @@ def format_bgwiki(ws_name, tp, player, best_metric):
     """
     print(bgwiki_text)
 
-def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name, spell_name, action_type, starting_tp, min_tp, max_tp, check_gear, starting_gearset, pdt_requirement, mdt_requirement, input_metric, print_swaps, next_best_percent, ):
+def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name, spell_name, action_type, min_tp, check_gear, starting_gearset, pdt_requirement, mdt_requirement, input_metric, print_swaps, next_best_percent, ):
     #
     # Build a valid gear set, test it, and return the best set found.
     #
@@ -143,7 +143,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
         "Great Sword":["Hard Slash", "Freezebite", "Shockwave", "Sickle Moon", "Spinning Slash", "Ground Strike", "Herculean Slash", "Resolution", "Scourge", "Dimidiation", "Torcleaver", "Fimbulvetr", ], 
         "Club":["Shining Strike", "Seraph Strike", "Skullbreaker", "True Strike", "Judgment", "Hexa Strike", "Black Halo", "Randgrith", "Exudation", "Mystic Boon", "Realmrazer", "Dagda"], 
         "Polearm":["Double Thrust", "Thunder Thrust", "Raiden Thrust", "Penta Thrust", "Wheeling Thrust", "Impulse Drive", "Sonic Thrust", "Geirskogul", "Drakesbane", "Camlann's Torment", "Stardiver", "Diarmuid", ], 
-        "Staff":["Heavy Swing", "Rock Crusher", "Earth Crusher", "Starburst", "Sunburst", "Shell Crusher", "Full Swing", "Cataclysm", "Retribution", "Gate of Tartarus", "Omniscience", "Vidohunir", "Shattersoul", "Oshala"], 
+        "Staff":["Heavy Swing", "Rock Crusher", "Earth Crusher", "Starburst", "Sunburst", "Shell Crusher", "Full Swing", "Cataclysm", "Retribution", "Gate of Tartarus", "Omniscience", "Vidohunir", "Garland of Bliss", "Shattersoul", "Oshala"], 
         "Great Axe":["Iron Tempest", "Shield Break", "Armor Break", "Weapon Break", "Raging Rush", "Full Break", "Steel Cyclone", "Fell Cleave", "Metatron Torment", "King's Justice", "Ukko's Fury", "Upheaval", "Disaster"], 
         "Axe":["Raging Axe", "Spinning Axe", "Rampage", "Calamity", "Mistral Axe", "Decimation", "Bora Axe", "Onslaught", "Primal Rend", "Cloudsplitter", "Ruinator", "Blitz", ], 
         "Archery":["Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow", "Empyreal Arrow", "Refulgent Arrow", "Namas Arrow", "Jishnu's Radiance", "Apex Arrow", "Sarv"], 
@@ -424,7 +424,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
 
 
                             # Prepare to test the set.
-                            effective_tp = (max_tp + min_tp)/2 + player.stats.get("TP Bonus",0)
+                            effective_tp = min_tp + player.stats.get("TP Bonus",0)
                             effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
 
                             if action_type=="weapon skill":
@@ -442,7 +442,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                             elif action_type=="attack round":
                                 decimals = 3 # How many decimals to show in the output.
                                 nondecimals = 8
-                                metric_base, output, _ = average_attack_round(player, enemy, starting_tp, min_tp, input_metric)
+                                metric_base, output, _ = average_attack_round(player, enemy, 0, min_tp, input_metric)
                                 invert = output[-1]
                                 metric = metric_base**invert
 
@@ -557,46 +557,45 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
 
     return(best_player, best_output)
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    main_job = sys.argv[1]
-    sub_job = sys.argv[2]
-    master_level = int(sys.argv[3])
-    buffs = {}
-    abilities = {}
-    enemy = create_enemy(apex_toad)
-    ws_name = "Blade: Metsu"
-    spell_name = "Waterja"
-    action_type = "weapon skill"
-    starting_tp = 0
-    min_tp = 1000
-    max_tp = 1300
-    check_gear = gear_dict
-    starting_gearset = { "main" : Heishi,
-                        'sub' : Crepuscular_Knife,
-                        'ranged' : Empty,
-                        'ammo' : Seki,
-                        'head' : Malignance_Chapeau,
-                        'body' : Tatenashi_Haramaki,
-                        'hands' : Malignance_Gloves,
-                        'legs' : Samnuha_Tights,
-                        'feet' : Malignance_Boots,
-                        'neck' : Ninja_Nodowa,
-                        'waist' : Sailfi_Belt,
-                        'ear1' : Dedition_Earring,
-                        'ear2' : Telos_Earring,
-                        'ring1' : Gere_Ring,
-                        'ring2' : Epona_Ring,
-                        'back' : np.random.choice([k for k in capes if "nin" in k["Jobs"] and "DEX Store TP" in k["Name2"] and "Ranged" not in k])}
-    pdt_requirement = -50
-    mdt_requirement = -21
-    print_swaps = True
-    next_best_percent = 1
+    # main_job = sys.argv[1]
+    # sub_job = sys.argv[2]
+    # master_level = int(sys.argv[3])
+    # buffs = {}
+    # abilities = {}
+    # enemy = create_enemy(apex_toad)
+    # ws_name = "Blade: Metsu"
+    # spell_name = "Waterja"
+    # action_type = "weapon skill"
+    # min_tp = 1000
+    # check_gear = gear_dict
+    # starting_gearset = { "main" : {"Name": "Heishi Shorinken", "Name2": "Heishi Shorinken R15", "Skill Type": "Katana", "Type":"Weapon", "DMG": 159+7, "Delay": 227, "Store TP": 10, "Accuracy": 0+30, "Magic Accuracy":0+30, "TP Bonus": 500, "Katana Skill": 269, "Magic Accuracy Skill": 242, "Magic Damage": 186, "Jobs":["nin"]},
+                        # 'sub' : Crepuscular_Knife,
+                        # 'ranged' : Empty,
+                        # 'ammo' : Seki,
+                        # 'head' : Malignance_Chapeau,
+                        # 'body' : Tatenashi_Haramaki,
+                        # 'hands' : Malignance_Gloves,
+                        # 'legs' : Samnuha_Tights,
+                        # 'feet' : Malignance_Boots,
+                        # 'neck' : Ninja_Nodowa,
+                        # 'waist' : Sailfi_Belt,
+                        # 'ear1' : Dedition_Earring,
+                        # 'ear2' : Telos_Earring,
+                        # 'ring1' : Gere_Ring,
+                        # 'ring2' : Epona_Ring,
+                        # 'back' : np.random.choice([k for k in capes if "nin" in k["Jobs"] and "DEX Store TP" in k["Name2"] and "Ranged" not in k])}
+    # pdt_requirement = -50
+    # mdt_requirement = -21
+    # print_swaps = True
+    # next_best_percent = 1
 
-    metric = "Damage Dealt"
+    # metric = "Damage Dealt"
 
-    player, output = build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name, spell_name, action_type, starting_tp, min_tp, max_tp, check_gear, starting_gearset, pdt_requirement, mdt_requirement, metric, print_swaps, next_best_percent)
-    print(player.stats)
+    # 
+    # player, output = build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name, spell_name, action_type, min_tp, check_gear, starting_gearset, pdt_requirement, mdt_requirement, metric, print_swaps, next_best_percent)
+    # print(player.stats)
 
 
     # TODO: If hit rate is < 20% in initial set, then begin by finding and equipping the max accuracy piece in each slot before finding the best set.

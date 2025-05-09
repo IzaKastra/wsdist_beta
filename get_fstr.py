@@ -9,6 +9,8 @@ def get_fstr(dmg, player_str, enemy_vit):
     # Calculate fSTR for melee attacks using the equation from BG wiki
     # https://www.bg-wiki.com/ffxi/FSTR
     #
+    if not dmg:
+        dmg = 0
     dstr = player_str - enemy_vit
     if dstr <= -22:
         fstr = (dstr+13)/4
@@ -41,6 +43,8 @@ def get_fstr2(rng_dmg, player_str, enemy_vit):
     # Calculate fSTR for ranged attacks using the equation from BG wiki
     # https://www.bg-wiki.com/ffxi/FSTR
     #
+    if not rng_dmg:
+        rng_dmg = 0
     wpn_rank = rng_dmg/9.
 
     dstr = player_str - enemy_vit

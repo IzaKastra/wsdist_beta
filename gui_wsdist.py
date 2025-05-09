@@ -9,12 +9,157 @@ import numpy as np
 
 # Use an external gear.py file
 # https://stackoverflow.com/questions/47350078/importing-external-module-in-single-file-exe-created-with-pyinstaller
+import sqlite3
 import sys
 import os
+import re
 sys.path.append(os.path.dirname(sys.executable))
-from gear import *
+geardb = 'gear.db'
+mains = [] 
+subs = []
+grips = []
+ranged = []
+ammos = []
+heads = []
+necks = []
+ears = []
+ears2 = []
+bodies = []
+hands = []
+rings = []
+rings2 = []
+capes = []
+waists = []
+legs = []
+feet = []
+all_gear = []
+enemies = []
+preset_enemies = []
+optDefaults = {}
+cbox_lists = {}
+useDB = False
+from gear import all_jobs, slots, all_food
+gearfood = all_food
+slotMap = ["main", "sub", "grip", "ranged", "ammo", "head", "neck", "ear1", "ear2", "body", "hands", "ring1", "ring2", "back", "waist", "legs", "feet", "Food"]
+intFields = [ 'DMG', 'STR', 'VIT' ]
+s2us = re.compile(r' ')
+us2s = re.compile(r'_')
+fh = None
 
-from enemies import *
+def dbsetup():
+    '''returns basic structure to define schema query used for read/write query setup'''
+    allkeys = { 'Optimize' : 'INT DEFAULT 0', 'Slot' : 'TEXT DEFAULT ""'}
+    jobs = {}
+    for j in all_jobs:
+        allkeys[j] = 'INT DEFAULT 0'
+        jobs[j] = 0
+    for s in slots:
+        for d in s:
+            for k in d:
+                k = s2us.sub('_', k)
+                t = 'REAL DEFAULT 0'
+                if 'Name' in k or "Type" in k or k in ("Jobs"):
+                    t = 'TEXT DEFAULT ""'
+                elif k in intFields:
+                    t = 'INT DEFAULT 0'
+                if k == 'WSC':
+                    k = f'WSC {d[k][0]}'
+                allkeys[k] = t
+    keylist = [] #preserve order
+    for k in sorted(allkeys):
+        keylist.append(k)
+    ekeys = {}
+    from enemies import enemies
+    for d in enemies:
+        for k in d:
+            k = s2us.sub('_', k)
+            t = 'REAL DEFAULT 0'
+            if k in ("Name", "Location"):
+                t = 'TEXT DEFAULT ""'
+            elif k in intFields:
+                t = 'INT DEFAULT 0'
+            ekeys[k] = t
+    elist = [] #preserve order
+    for k in ekeys:
+        elist.append(k)        
+    return (keylist, allkeys, jobs, elist, ekeys) 
+    
+def readdb():
+    global slots
+    global mains
+    global subs
+    global grips
+    global ranged
+    global ammos
+    global heads
+    global necks
+    global ears
+    global ears2
+    global bodies
+    global hands
+    global rings
+    global rings2
+    global capes
+    global waists
+    global legs
+    global feet
+    global gearfood
+    global all_gear
+    global preset_enemies
+    global optDefaults
+    global useDB
+    global enemies
+    useDB = True
+    print(f"reading gear from {geardb}")
+    (keylist, allkeys, jobs, elist, ekeys) = dbsetup()        
+    conn = sqlite3.connect(geardb)
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    gearsel = '''SELECT * FROM Gear'''
+    cur = cur.execute(gearsel)
+    gearfood = []
+    slots = [mains, subs, grips, ranged, ammos, heads, necks, ears, ears2, bodies, hands, rings, rings2, capes, waists, legs, feet, gearfood]
+    for row in cur:
+        itemdict = {}
+        slot = row['Slot']
+        si = slotMap.index(slot)
+        for k in keylist:
+            if k in jobs or k in ['Slots', 'Optimize']:
+                if k == 'Optimize':
+                    optDefaults[row['Name2']] = int(row[k])
+                continue
+            nk = us2s.sub(' ', k)
+            itemdict[nk] = row[k]
+            if k == 'Jobs' and slot != "Food":
+                itemdict[nk] = row[k].split(',')
+            if k.startswith('WSC '):
+                (wsc, stat) = k.split()
+                if row[k]:
+                    itemdict[wsc] = [stat, row[k]]
+        slots[si].append(itemdict)
+    all_gear = mains+subs+grips+ranged+ammos+heads+necks+ears+ears2+bodies+hands+rings+rings2+capes+waists+legs+feet
+    esel = '''SELECT * FROM Enemies'''
+    cur = cur.execute(esel)
+    enemies = []
+    for row in cur:
+        itemdict = {}
+        for k in elist:
+            nk = us2s.sub(' ', k)
+            itemdict[nk] = row[k]
+        enemies.append(itemdict)
+    preset_enemies = {k["Name"]:k for k in sorted(enemies, key=lambda x:x["Level"])}
+    conn.close()
+    
+try:
+    fh = open(geardb, 'r')
+except:    
+    print(f'{geardb} not found!')
+    from gear import *
+    from enemies import *
+if fh:
+    fh.close()
+    readdb()
+
 from fancy_plot import *
 
 from idlelib.tooltip import Hovertip # https://stackoverflow.com/questions/3221956/how-do-i-display-tooltips-in-tkinter
@@ -36,8 +181,6 @@ def load_defaults(app,defaults):
     app.ws_name.set(defaults.get("ws","None"))
     app.am_level.set(int(defaults.get("aftermath",0)))
     app.tp1.set(int(defaults.get("mintp",1000)))
-    app.tp2.set(int(defaults.get("maxtp",1000)))
-    app.tp0.set(int(defaults.get("initialtp",0)))
 
     app.pdt_req.set(int(defaults.get("pdtreq",100)))
     app.mdt_req.set(int(defaults.get("mdtreq",100)))
@@ -171,6 +314,112 @@ def load_defaults(app,defaults):
     # Finally, update the window size based on the input file.
     app.geometry(defaults.get("dimensions","700x885"))
 
+def writedb():
+    global cbox_lists
+    global optDefaults
+    global gearfood
+    conn = sqlite3.connect(geardb)
+    cur = conn.cursor()
+    for slot in cbox_lists:
+        for i,item in enumerate(cbox_lists[slot][2]):
+            label = cbox_lists[slot][1][i].cget("text")
+            if item.get():
+                optDefaults[label] = True
+            else:    
+                optDefaults[label] = False
+    geartable = '''
+        DROP TABLE IF EXISTS Gear;
+        CREATE TABLE Gear (
+    '''
+    etable = '''
+        DROP TABLE IF EXISTS Enemies;
+        CREATE TABLE Enemies (
+    '''
+    gearinsert = '''INSERT OR REPLACE INTO Gear ('''
+    einsert = '''INSERT OR REPLACE INTO Enemies ('''
+    qMarks = '('
+    eqMarks = '('
+    (keylist, allkeys, jobs, elist, ekeys) = dbsetup()
+    for k in keylist:
+        geartable = f'{geartable} "{k}" {allkeys[k]},\n'
+        gearinsert = f'{gearinsert}"{k}",'
+        qMarks = f'{qMarks}?,'
+    for k in elist:
+        etable = f'{etable} "{k}" {ekeys[k]},\n'
+        einsert = f'{einsert}"{k}",'
+        eqMarks = f'{eqMarks}?,'
+    geartable = f'{geartable[:-2]});'
+    qMarks = f'{qMarks[:-1]})'
+    gearinsert = f'{gearinsert[:-1]}) VALUES {qMarks}'
+    etable = f'{etable[:-2]});'
+    eqMarks = f'{eqMarks[:-1]})'
+    einsert = f'{einsert[:-1]}) VALUES {eqMarks}'
+    conn.executescript(geartable+etable)
+    slotsf = slots
+    if not useDB:
+        from gear import all_food
+        gearfood = all_food
+        slotsf = slots + [gearfood]
+    iList = []
+    for i, s in enumerate(slotsf):
+        for d in s:
+            
+            iRow = []
+            try:
+                n2 = d["Name2"]
+            except KeyError:
+                d["Name2"] = d["Name"]
+            d["Optimize"] = 0
+            try:
+                if optDefaults[d["Name2"]]:
+                    d["Optimize"] = 1
+            except KeyError:
+                optDefaults[d["Name2"]] = False
+            d["Slot"] = slotMap[i]
+            for k in keylist:
+                k = us2s.sub(' ', k)
+                if k.startswith('WSC'):
+                    try:
+                        d[k] = d['WSC']
+                    except KeyError:
+                        pass
+                try:
+                    v = d[k]
+                except KeyError:
+                    v = None
+                    try:
+                        j = jobs[k]
+                        v = 0
+                        if d["Jobs"]:
+                            if k in d["Jobs"]:
+                                v = 1
+                    except KeyError:
+                        pass
+                if isinstance(v, list):
+                    if k == 'Jobs':  
+                        v = ','.join(v)
+                    elif k.startswith(f'WSC {d["WSC"][0]}'):
+                        v = d['WSC'][1]
+                    else:
+                        v = None
+                iRow.append(v)    
+            iList.append(tuple(iRow))  
+    eList = []
+    for d in enemies:   
+        iRow = []
+        for k in elist:
+            k = us2s.sub(' ', k)
+            try:
+                v = d[k]
+            except KeyError:
+                v = None
+            iRow.append(v)    
+        eList.append(tuple(iRow))          
+    conn.executemany(gearinsert, iList)     
+    conn.executemany(einsert, eList)     
+    conn.commit()
+    conn.close()
+    
 def save_job():
     suf = f'_{app.mainjob.get()}'
     save_defaults(suf)
@@ -186,10 +435,8 @@ def save_defaults(suf=''):
         ofile.write(f"subjob={app.subjob.get()}\n")
         ofile.write(f"aftermath={app.am_level.get()}\n")
         ofile.write(f"mintp={app.tp1.get()}\n")
-        ofile.write(f"maxtp={app.tp2.get()}\n")
         ofile.write(f"spell={app.spell_name.get()}\n")
         ofile.write(f"ws={app.ws_name.get()}\n")
-        ofile.write(f"initialtp={app.tp0.get()}\n")
         ofile.write(f"nyame<30={app.nyame_override_toggle.get()}\n")
         ofile.write(f"odyrank={app.odyrank.get()}\n")
         ofile.write(f"tvrring={app.tvr_ring.get()}\n")
@@ -332,14 +579,9 @@ def name2dictionary(name):
     return(Empty)
 
 
-
 class App(tk.Tk):
-
-
-
     def __init__(self): # Run on creation of a new "App" instance to define the defaults of the "App"
         super().__init__() # Used to inherit methods of tk.Tk
-
         mystyle = ttk.Style()
         mystyle.theme_use('vista')   # choose other theme
         mystyle.configure('MyStyle.TLabelframe', borderwidth=3, relief='solid', labelmargins=5)
@@ -352,7 +594,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 February 22a)") # pyinstaller --exclude-module gear --clean --onefile .\gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 April 05a (Brimstone mods)") # pyinstaller --exclude-module gear --clean --onefile .\gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -379,6 +621,8 @@ class App(tk.Tk):
         self.file_menu.add_command(label="Load Defaults", command=open_file)
         self.file_menu.add_command(label="Save Defaults", command=save_defaults)
         self.file_menu.add_command(label="Save Job", command=save_job)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="Write DB", command=writedb)
         self.file_menu.add_separator()
         self.file_menu.add_command(label="Close GUI", command=self.destroy)
         self.menu_bar.add_cascade(label="File", menu=self.file_menu)
@@ -517,7 +761,7 @@ class App(tk.Tk):
                         "Great Sword":["Hard Slash", "Freezebite", "Shockwave", "Sickle Moon", "Spinning Slash", "Ground Strike", "Herculean Slash", "Resolution", "Scourge", "Dimidiation", "Torcleaver", "Fimbulvetr", ], 
                         "Club":["Shining Strike", "Seraph Strike", "Skullbreaker", "True Strike", "Judgment", "Hexa Strike", "Black Halo", "Randgrith", "Exudation", "Mystic Boon", "Realmrazer", "Dagda"], 
                         "Polearm":["Double Thrust", "Thunder Thrust", "Raiden Thrust", "Penta Thrust", "Wheeling Thrust", "Impulse Drive", "Sonic Thrust", "Geirskogul", "Drakesbane", "Camlann's Torment", "Stardiver", "Diarmuid", ], 
-                        "Staff":["Heavy Swing", "Rock Crusher", "Earth Crusher", "Starburst", "Sunburst", "Shell Crusher", "Full Swing", "Cataclysm", "Retribution", "Gate of Tartarus", "Omniscience", "Vidohunir", "Shattersoul", "Oshala"], 
+                        "Staff":["Heavy Swing", "Rock Crusher", "Earth Crusher", "Starburst", "Sunburst", "Shell Crusher", "Full Swing", "Cataclysm", "Retribution", "Gate of Tartarus", "Omniscience", "Vidohunir", "Garland of Bliss", "Shattersoul", "Oshala"],
                         "Great Axe":["Iron Tempest", "Shield Break", "Armor Break", "Weapon Break", "Raging Rush", "Full Break", "Steel Cyclone", "Fell Cleave", "Metatron Torment", "King's Justice", "Ukko's Fury", "Upheaval", "Disaster"], 
                         "Axe":["Raging Axe", "Spinning Axe", "Rampage", "Calamity", "Mistral Axe", "Decimation", "Bora Axe", "Onslaught", "Primal Rend", "Cloudsplitter", "Ruinator", "Blitz", ], 
                         "Archery":["Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow", "Empyreal Arrow", "Refulgent Arrow", "Namas Arrow", "Jishnu's Radiance", "Apex Arrow", "Sarv"], 
@@ -528,6 +772,7 @@ class App(tk.Tk):
             self.ranged_ws = self.ws_dict["Archery"] + self.ws_dict["Marksmanship"]
 
             # Currently equipped gear. Used to display the 4x4 grid of equipment and update the weapon skill drop down list.
+            from gear import Heishi, Crepuscular_Knife, Empty, Seki, Malignance_Chapeau, Tatenashi_Haramaki, Malignance_Gloves, Samnuha_Tights, Malignance_Boots, Ninja_Nodowa, Sailfi_Belt, Dedition_Earring, Telos_Earring, Gere_Ring, Epona_Ring 
             self.equipped_gear = {
                 'main' : Heishi,
                 'sub' : Crepuscular_Knife,
@@ -577,26 +822,26 @@ class App(tk.Tk):
 
 
             # Add labels and text entries (https://github.com/TomSchimansky/ctk/wiki/Entry)
-            self.min_tp_label = ttk.Label(self.player_inputs_frame,text="Min. TP:")
+            self.min_tp_label = ttk.Label(self.player_inputs_frame,text="TP Value")
             self.min_tp_label.grid(row=6, column=0, sticky="w", padx=0, pady=1)
             self.tp1 = tk.IntVar(value=1000)
             self.min_tp = ttk.Entry(self.player_inputs_frame,textvariable=self.tp1,justify="right")
             self.min_tp.configure(width=6)
             self.min_tp.grid(row=6,column=1,padx=0,pady=1,sticky='w')
 
-            self.max_tp_label = ttk.Label(self.player_inputs_frame,text="Max. TP:")
-            self.max_tp_label.grid(row=7, column=0, sticky="w", padx=0, pady=1)
-            self.tp2 = tk.IntVar(value=1300)
-            self.max_tp = ttk.Entry(self.player_inputs_frame,textvariable=self.tp2,justify="right",)
-            self.max_tp.configure(width=6)
-            self.max_tp.grid(row=7,column=1,padx=0,pady=1,sticky='w')
+            # self.max_tp_label = ttk.Label(self.player_inputs_frame,text="Max. TP:")
+            # self.max_tp_label.grid(row=7, column=0, sticky="w", padx=0, pady=1)
+            # self.tp2 = tk.IntVar(value=1300)
+            # self.max_tp = ttk.Entry(self.player_inputs_frame,textvariable=self.tp2,justify="right",)
+            # self.max_tp.configure(width=6)
+            # self.max_tp.grid(row=7,column=1,padx=0,pady=1,sticky='w')
 
-            self.start_tp_label = ttk.Label(self.player_inputs_frame,text="Initial TP:")
-            self.start_tp_label.grid(row=8, column=0, sticky="w", padx=0, pady=1)
-            self.tp0 = tk.IntVar(value=0)
-            self.start_tp = ttk.Entry(self.player_inputs_frame,textvariable=self.tp0,justify="right")
-            self.start_tp.configure(width=6)
-            self.start_tp.grid(row=8, column=1,padx=0,pady=1,sticky='w')
+            # self.start_tp_label = ttk.Label(self.player_inputs_frame,text="Initial TP:")
+            # self.start_tp_label.grid(row=8, column=0, sticky="w", padx=0, pady=1)
+            # self.tp0 = tk.IntVar(value=0)
+            # self.start_tp = ttk.Entry(self.player_inputs_frame,textvariable=self.tp0,justify="right")
+            # self.start_tp.configure(width=6)
+            # self.start_tp.grid(row=8, column=1,padx=0,pady=1,sticky='w')
 
         # ===========================================================================
         # ===========================================================================
@@ -1142,7 +1387,7 @@ class App(tk.Tk):
             self.food_frame = ttk.LabelFrame(self.whm_frame, text="  Active Food  ")
             self.food_frame.grid(row=7,column=0,sticky="nw",padx=0,pady=5)
             self.active_food = tk.StringVar(value="Grape Daifuku")
-            self.food_combo = ttk.Combobox(self.food_frame, values=["None"] + [k["Name"] for k in all_food], textvariable=self.active_food,state="readonly")
+            self.food_combo = ttk.Combobox(self.food_frame, values=["None"] + [k["Name"] for k in gearfood], textvariable=self.active_food,state="readonly")
             self.food_combo.grid(row=0,column=0,sticky="nw",padx=0,pady=2)
             
 
@@ -2223,8 +2468,8 @@ class App(tk.Tk):
         self.x_sub2 = [] # List to contain all of the individual checkbox button widgets for the sub slot
         self.x_sub2_var = [] # List to contain all of the individual checkbox button widgets for the sub slot
         for n,k in enumerate(sorted(subs+grips, key=lambda d: d["Name2"])):
-            self.x_sub2_var.append(tk.BooleanVar(value=False))
-            self.x_sub2.append(ttk.Checkbutton(self.cbox_sub, text=k["Name2"], variable=self.x_sub2_var[n],)) 
+            self.x_sub2_var.append(tk.BooleanVar(value=True))
+            self.x_sub2.append(ttk.Checkbutton(self.cbox_sub, text=k["Name2"], variable=self.x_sub2_var[n]) )
             self.x_sub2[n].state(['!alternate'])
             if self.mainjob.get().lower() in k["Jobs"]:
                 self.x_sub2[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
@@ -4396,11 +4641,14 @@ class App(tk.Tk):
 
         self.sim_button = tk.Button(self.sim_frame, text="Run DPS simulations",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("damage simulation"))
         self.sim_button_tip = Hovertip(self.sim_button,f"Simulate attack rounds and weapon skills using the above TP and WS sets.\nWeapon skills are used after reaching Minimum TP value provided in the Inputs tab.")
-        self.sim_button.grid(row=1,column=0,columnspan=2,padx=5,pady=5)
+        self.sim_button.grid(row=1,column=0,columnspan=1,padx=5,pady=2)
+        self.sim1_button = tk.Button(self.sim_frame, text="Simulate One WS",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("run one ws"))
+        self.sim1_button_tip = Hovertip(self.sim1_button,f"Perform a single weapon skill at the Min. TP value set in the inputs tab.")
+        self.sim1_button.grid(row=2,column=0,columnspan=1,padx=5,pady=2)
 
         self.build_dist = tk.Button(self.sim_frame, text="Create weapon skill\ndistribution plot",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("build distribution"))
         self.build_dist_tip = Hovertip(self.build_dist,f"Simulate 50,000 weapon skills using the current buffs and the equipped WS set and plot the resulting damage distribution.")
-        self.build_dist.grid(row=2,column=0,columnspan=2,padx=5,pady=5)
+        self.build_dist.grid(row=3,column=0,columnspan=2,padx=5,pady=2)
 
         self.plot_dps = tk.BooleanVar(value=False)
         self.plot_dps_cbox = ttk.Checkbutton(self.sim_frame,variable=self.plot_dps,text="Plot DPS")
@@ -4507,10 +4755,16 @@ class App(tk.Tk):
         #
         # TODO: Dictionary these buttons/checkboxes/radio
         #
+        global cbox_lists
         tvr_rings = ["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's"]
         soa_rings = ["Weatherspoon", "Karieyh", "Vocane"]
         jse_ear_names = {"nin":"Hattori","drk":"Heathen","blm":"Wicce","rdm":"Lethargy","drg":"Peltast","whm":"Ebers","sam":"Kasuga","sch":"Arbatel","war":"Boii","cor":"Chasseur","brd":"Fili","thf":"Skulker","mnk":"Bhikku","dnc":"Maculele","bst":"Nukumi","geo":"Azimuth","pld":"Chevalier","rng":"Amini","blu":"Hashishin","run":"Erilaz","pup":"Karagoz","smn":"Beckoner"}
-
+        rema_weapons = ["Amanomurakumo", "Annihilator", "Apocalypse", "Bravura", "Excalibur", "Gungnir", "Guttler", "Kikoku", "Mandau", "Mjollnir", "Ragnarok", "Spharai", "Yoichinoyumi",
+                        "Almace", "Armageddon", "Caladbolg", "Farsha", "Gandiva", "Kannagi", "Masamune", "Redemption", "Rhongomiant", "Twashtar", "Ukonvasara", "Verethragna",
+                        "Aymur", "Burtgang", "Carnwenhan", "Conqueror", "Death Penalty", "Gastraphetes", "Glanzfaust", "Kenkonken", "Kogarasumaru", "Laevateinn", "Liberator", "Murgleis", "Nagi", "Ryunohige", "Terpsichore", "Tizona", "Tupsimati", "Nirvana", "Vajra", "Yagrush", 
+                        "Epeolatry", "Idris",
+                        "Aeneas", "Anguta", "Chango", "Dojikiri Yasutsuna", "Fail-not", "Fomalhaut", "Godhands", "Heishi Shorinken", "Khatvanga", "Lionheart", "Sequence", "Tishtrya", "Tri-edge", "Trishula",
+                        ]
         cbox_lists = {"main":[self.main_cbox_frame,self.x_main2,self.x_main2_var],
                         "sub":[self.sub_cbox_frame,self.x_sub2,self.x_sub2_var],
                         "ranged":[self.ranged_cbox_frame,self.x_ranged2,self.x_ranged2_var],
@@ -4564,7 +4818,6 @@ class App(tk.Tk):
 
                         label = cbox_lists[slot][1][i].cget("text") # The text displayed for each checkbox is the "Name2" key
                         d = name2dictionary(label) # Item dictionary, containing all stats. We just need the "Rank", "Name", and "Jobs" values.
-
                         # First Select/Unselect everything in the list.
                         item.set(False if "un" in trigger else (True if self.mainjob.get().lower() in d["Jobs"] else False))
 
@@ -4579,6 +4832,9 @@ class App(tk.Tk):
                         if slot in ["ring1","ring2"] and " ".join(label.split()[0:-2]) in soa_rings and " ".join(label.split()[0:-2])!=self.soa_ring.get():
                             item.set(False)
 
+                        # Only select R15 REMA by default
+                        if slot in ["main", "sub", "ranged"] and "R15" not in label and label in rema_weapons:
+                            item.set(False)
                         # Odyssey Rank check
                         if d.get("Rank",self.odyrank.get())!=self.odyrank.get():
                             item.set(False)
@@ -4614,7 +4870,11 @@ class App(tk.Tk):
                         # Unselect final stage Prime weapons for now.
                         if slot in ["main","sub"] and "III" in label: 
                             item.set(False)
-
+                        try:    
+                            if optDefaults[label]:    
+                                item.set(True)    
+                        except KeyError:
+                            optDefaults[label] = False
 
     def name2dictionary(self, name):
         #
@@ -4866,10 +5126,7 @@ class App(tk.Tk):
                             "Dia III": 208./1024+(28./1024*self.lightshot_on.get()),
         }
         dia_potency = dia_dictionary[self.whm_spell1.get()] if whm_on else 0.0
-
-
-
-        for food in all_food:
+        for food in gearfood:
             if food["Name"] == self.active_food.get():
                 buffs["food"]["Food Attack"] = food.get("Attack",0)
                 buffs["food"]["Food Ranged Attack"] = food.get("Ranged Attack",0)
@@ -5049,10 +5306,7 @@ class App(tk.Tk):
         player_tpset = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset_tp, buffs, abilities)
         player_wsset = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset_ws, buffs, abilities)
 
-        if self.tp2.get() < self.tp1.get():
-            self.tp2.set(self.tp1.get())
-
-        effective_tp = (self.tp2.get() + self.tp1.get()) / 2 + player.stats.get("TP Bonus",0)
+        effective_tp = self.tp1.get() + player.stats.get("TP Bonus",0)
         effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
 
         spell_name = self.spell_name.get()
@@ -5070,7 +5324,7 @@ class App(tk.Tk):
 
         ws_name = self.ws_name.get()
 
-        if trigger in ["quicklook ws", "quicklook spell", "build_distribution"]:
+        if trigger in ["quicklook ws", "quicklook spell"]:
             if trigger=="quicklook ws":
                 if ws_name=="None":
                     print("No weapon skill selected.")
@@ -5091,7 +5345,7 @@ class App(tk.Tk):
             self.quicktp.configure(text=f"{'Average TP = ':>17s}{avg_tp:>9.1f}")
 
         elif trigger=="quicklook tp":
-            outputs = average_attack_round(player, enemy, self.tp0.get(), self.tp1.get(),"Time to WS")
+            outputs = average_attack_round(player, enemy, 0, self.tp1.get(),"Time to WS")
             avg_time = outputs[0]
             avg_tp = outputs[1][1]
             self.quickdamage.configure(text=f"{'Time per WS = ':>17}{avg_time:>7.3f} s")
@@ -5104,14 +5358,24 @@ class App(tk.Tk):
             for k in range(50000):
 
                 # Randomly sample TP between the upper and lower limits.
-                effective_tp = np.random.uniform(self.tp1.get(), self.tp2.get()) + player_wsset.stats.get("TP Bonus",0)
+                effective_tp = self.tp1.get() + player_wsset.stats.get("TP Bonus",0)
                 effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
 
                 outputs = average_ws(player_wsset, enemy, ws_name, effective_tp, ws_type, "Damage dealt", simulation=True)
                 damage_list.append(outputs[0])
                 tp_list.append(outputs[1])
-            plot_final(damage_list, player_wsset, self.tp1.get(), self.tp2.get(), ws_name)
+            plot_final(damage_list, player_wsset, self.tp1.get(), ws_name)
 
+        elif trigger=="run one ws":
+            ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
+            effective_tp = self.tp1.get() + player_wsset.stats.get("TP Bonus",0)
+            effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
+            print()
+            print()
+            average_ws(player_wsset, enemy, ws_name, effective_tp, ws_type, "Damage dealt", simulation=True, single=True)
+            print()
+            print()
+            return
         elif trigger=="damage simulation":
             ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
             run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, self.plot_dps.get())
@@ -5262,14 +5526,14 @@ class App(tk.Tk):
                         print("No weapon skill selected.")
                         return
 
-                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "weapon skill", self.tp0.get(), self.tp1.get(), self.tp2.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.wsmetric.get(), print_swaps, next_best_percent, )
+                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "weapon skill", self.tp1.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.wsmetric.get(), print_swaps, next_best_percent, )
                 elif trigger=="run magic":
                     if spell_name=="None":
                         print("No spell selected.")
                         return
-                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "spell cast", self.tp0.get(), self.tp1.get(), self.tp2.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.spellmetric.get(), print_swaps, next_best_percent, )
+                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "spell cast", self.tp1.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.spellmetric.get(), print_swaps, next_best_percent, )
                 elif trigger=="run tp":
-                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "attack round", self.tp0.get(), self.tp1.get(), self.tp2.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.tpmetric.get(), print_swaps, next_best_percent, )
+                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "attack round", self.tp1.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.tpmetric.get(), print_swaps, next_best_percent, )
 
                 # print(self.best_player.stats)
                 # print(self.best_output)
@@ -5994,37 +6258,42 @@ class App(tk.Tk):
         nl = False # nl = NL = New Line: insert a new line to force a line break
         for k in wpn_stats:
             if item.get(k,False):
-                tooltip += f"{k}:{item[k]},"
-                nl = True
+                if item[k]:
+                    tooltip += f"{k}:{item[k]},"
+                    nl = True
             if k=="Delay" and nl:
                 tooltip += "\n"
 
         nl = False
         for k in base_stats:
             if item.get(k,False):
-                tooltip += f"{k}:{item[k]},"
-                nl = True
+                if item[k]:
+                    tooltip += f"{k}:{item[k]},"
+                    nl = True
             if nl and k=="CHR":
                 tooltip += "\n"
 
         nl = False
         for k in main_stats:
             if item.get(k,False):
-                tooltip += f"{k}:{item[k]},"
-                nl = True
+                if item[k]:
+                    tooltip += f"{k}:{item[k]},"
+                    nl = True
             if "Attack" in k and nl:
                 tooltip += "\n"
                 nl = False
         for k in item:
             if k in base_stats or k in ignore_stats or k in main_stats or k in wpn_stats or k in def_stats:
                 continue
-            tooltip += f"{k}:{item[k]}\n"
+            if item[k]:    
+                tooltip += f"{k}:{item[k]}\n"
 
         nl = False
         for k in def_stats:
             if item.get(k,False):
-                tooltip += f"{k}:{item[k]},"
-                nl = True
+                if item[k]:
+                    tooltip += f"{k}:{item[k]},"
+                    nl = True
             if "Def" in k and nl:
                 tooltip += "\n"
                 nl = False
@@ -6372,9 +6641,7 @@ if __name__ == "__main__":
     from actions import *
     from buffs import *
     from wsdist import *
-
     app = App()
-
     # Sleep for 5 ms to prevent the lag that occurs when dragging/resizing a window with many widgets (https://stackoverflow.com/questions/71884285/tkinter-root-window-mouse-drag-motion-becomes-slower)
     from time import sleep 
     def on_configure(e):

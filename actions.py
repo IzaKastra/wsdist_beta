@@ -91,7 +91,6 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
     regain_ws = player_ws.stats.get("Dual Wield",0)*(player_ws.gearset["main"]["Name"]=="Gokotai") + player_ws.stats.get("Regain",0) # Total regain in WS set
 
     time = 0 # Time since simulation start in seconds
-    n_ws = 10000 # Number of weapon skills to simulate
     tp = 0
 
     damage = 0  # Total damage dealt
@@ -216,23 +215,26 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
             simMetrics[metric] = [player_tp.abilities[abil]]
         for stat in player_tp.stats:
             if stat != 'WSC':
-                metric = f'TP {stat}'
-                metrics.append(metric)
-                simMetrics[metric] = [int(player_tp.stats[stat])]
+                if player_tp.stats[stat]:
+                    metric = f'TP {stat}'
+                    metrics.append(metric)
+                    simMetrics[metric] = [int(player_tp.stats[stat])]
         for gear in player_tp.gearset:
             metric = f'TP Gear {gear}'
             metrics.append(metric)
             simMetrics[metric] = [player_tp.gearset[gear]['Name']]
         for stat in player_ws.stats:
             if stat != 'WSC':
-                metric = f'WS {stat}'
-                metrics.append(metric)
-                simMetrics[metric] = [int(player_ws.stats[stat])]
+                if player_ws.stats[stat]:
+                    metric = f'WS {stat}'
+                    metrics.append(metric)
+                    simMetrics[metric] = [int(player_ws.stats[stat])]
             else:
                 for (s, v) in player_ws.stats[stat]:
-                    metric = f'WS {stat} {s}'
-                    metrics.append(metric)
-                    simMetrics[metric] = [int(v)]
+                    if v:
+                        metric = f'WS {stat} {s}'
+                        metrics.append(metric)
+                        simMetrics[metric] = [int(v)]
         for gear in player_ws.gearset:
             metric = f'WS Gear {gear}'
             metrics.append(metric)
@@ -331,33 +333,36 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         for stat in player_tp.stats:
             metric = f'TP {stat}'
             if stat != 'WSC':
-                try:
-                    simMetrics[metric].append(int(player_tp.stats[stat]))
-                except:
-                    zeros = [0]*(simNumber-1)
-                    simMetrics[metric] = zeros
-                    simMetrics[metric].append(int(player_tp.stats[stat]))
+                if player_tp.stats[stat]:
+                    try:
+                        simMetrics[metric].append(int(player_tp.stats[stat]))
+                    except:
+                        zeros = [0]*(simNumber-1)
+                        simMetrics[metric] = zeros
+                        simMetrics[metric].append(int(player_tp.stats[stat]))
         for gear in player_tp.gearset:
             metric = f'TP Gear {gear}'
             simMetrics[metric].append(player_tp.gearset[gear]['Name'])
         for stat in player_ws.stats:
             if stat != 'WSC':
-                try:
-                    metric = f'WS {stat}'
-                    simMetrics[metric].append(int(player_ws.stats[stat]))
-                except:
-                    zeros = [0]*(simNumber-1)
-                    simMetrics[metric] = zeros
-                    simMetrics[metric].append(int(player_ws.stats[stat]))
-            else:
-                for (s, v) in player_ws.stats[stat]:
+                if player_ws.stats[stat]:
                     try:
-                        metric = f'WS {stat} {s}'
-                        simMetrics[metric].append(int(v))
+                        metric = f'WS {stat}'
+                        simMetrics[metric].append(int(player_ws.stats[stat]))
                     except:
                         zeros = [0]*(simNumber-1)
                         simMetrics[metric] = zeros
-                        simMetrics[metric].append(int(v))
+                        simMetrics[metric].append(int(player_ws.stats[stat]))
+            else:
+                for (s, v) in player_ws.stats[stat]:
+                    if v:
+                        try:
+                            metric = f'WS {stat} {s}'
+                            simMetrics[metric].append(int(v))
+                        except:
+                            zeros = [0]*(simNumber-1)
+                            simMetrics[metric] = zeros
+                            simMetrics[metric].append(int(v))
         for gear in player_ws.gearset:
             metric = f'WS Gear {gear}'
             simMetrics[metric].append(player_ws.gearset[gear]['Name'])
@@ -429,7 +434,7 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         better = "#12FF12"
         worse = "#FF1212"
         txt = "#000000"
-        lowerBetter = ['Time/Attack (s)', 'TP DT', 'WS DT']
+        lowerBetter = ['Time/Attack (s)', 'TP DT', 'WS DT', 'TP MDT', 'WS MDT', 'TP PDT', 'WS PDT', 'TP PDT2', 'WS PDT2']
         canvas = Canvas(simwin)
         canvas.grid(row=0, column=0, sticky="nsew")
         yscrollbar = Scrollbar(simwin, orient="vertical", command=canvas.yview)
@@ -438,7 +443,7 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         xscrollbar.grid(row=1, column=0, sticky="ew")
         canvas.configure(xscrollcommand=xscrollbar.set, yscrollcommand=yscrollbar.set)
         rfont=("Arial", 10)
-        bfont=("Arial", 10, "bold")
+        bfont=("Arial", 10, "bold", "italic")
         frame = Frame(canvas)
         canvas.create_window((0, 0), window=frame, anchor="nw")
         with open(f'sim_diff_summary.txt', 'w') as simd:            
@@ -1849,8 +1854,7 @@ def real_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     #
     pass
 
-
-def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulation=False):
+def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulation=False, single=False):
     #
     # Calculate average weapon skill damage.
     #
@@ -1869,8 +1873,8 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
     # ===========================================================================
     # Read in the weapon skill information, including the updated player stats (such as Accuracy, Attack, and Crit Rate) from TP scaling.
 
-    verbose_dps = player.abilities.get("Verbose DPS", False)
-    very_verbose_dps = player.abilities.get("Very Verbose DPS", False)
+    verbose_dps = player.abilities.get("Verbose DPS", False) or single
+    very_verbose_dps = player.abilities.get("Very Verbose DPS", False) or single
     tp_bonus = player.stats.get("TP Bonus",0)
     base_tp = input_tp - tp_bonus
 
@@ -1941,7 +1945,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
 
     wsd = player.stats.get("Weapon Skill Damage",0)/100 # Applies only to the first WS hit.
     ws_trait = player.stats.get("Weapon Skill Damage Trait",0)/100 # WS damage trait from DRG. Applies to all WS hits.
-    ws_bonus = get_weapon_bonus(player.gearset["main"]["Name"], player.gearset["ranged"]["Name"], ws_name) # WS damage from Ambuscade weapons and augmented REMA. Applies to all WS hits.
+    ws_bonus = get_weapon_bonus(player.gearset["main"]["Name2"], player.gearset["ranged"]["Name2"], ws_name) # WS damage from Ambuscade weapons and augmented REMA. Applies to all WS hits.
 
     crit_dmg = player.stats.get("Crit Damage",0)/100 # Crit rate was read in earlier directly from the WS attributes.
     stp = player.stats.get("Store TP",0)/100
@@ -2687,7 +2691,6 @@ if __name__ == "__main__":
     enemy = create_enemy(apex_toad)
     tp1 = 1000
     tp2 = 1500
-    tp0 = 0
 
     ws_name = "Blade: Chi"
     player = create_player(main_job, sub_job, master_level, gearset, buffs, abilities)
