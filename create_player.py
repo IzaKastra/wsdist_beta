@@ -462,6 +462,22 @@ class create_player:
         # ===========================================================================
 
 
+
+
+
+
+        # ===========================================================================
+        # ===========================================================================
+        # Puppetmaster exclusive gear bonus
+        if self.main_job=="pup":
+            if self.gearset["main"]["Name"] == "Dragon Fangs":
+                self.stats["Kick Attacks"] = self.stats.get("Kick Attacks",0) + 14
+        # ===========================================================================
+        # ===========================================================================
+
+
+
+
         # Add Smite.
         if self.gearset["main"]["Skill Type"] in (two_handed+["Hand-to-Hand"]):
             smite_level = self.stats.get("Smite",0)
