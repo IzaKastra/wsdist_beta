@@ -9,3 +9,4 @@ defaults.txt
 *.jpg
 *.jpeg
 *.spec
+venv10/*
