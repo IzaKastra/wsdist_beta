@@ -361,7 +361,14 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
         prime_hidden_damage_bonus += 2*0.3
     elif player.gearset["main"]["Name2"] in prime_weapons2:
         prime_hidden_damage_bonus += 1*0.3
-    
+
+    # Dragon Fangs H2H weapon occasionally double kick attack damage. I'm guessing the proc rate is 50% here.
+    dragon_fangs_kick_damage_bonus = 1.0
+    dragon_fangs_kick_damage_bonus_proc_rate = 0.5 # Complete guess based on nothing.
+    if player.gearset["main"]["Name2"] == "Dragon Fangs": # Occasionally double damage of kick attacks. Assuming that this does NOT apply to Kick Attack WSs with MNK's Footwork active.
+        dragon_fangs_kick_damage_bonus += 1.0 * dragon_fangs_kick_damage_bonus_proc_rate
+
+
     physical_damage = 0 
     magical_damage = 0 # EnSpells for auto-attack rounds
     main_hit_damage = 0 # "DA DMG" and "TA DMG" apply to all hits. We need to record the damage for each hit before rolling QA > TA > DA so we can increase it later
@@ -903,7 +910,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                 if np.random.uniform() < hit_rate11:
                     kickattacks_pdif, crit = get_pdif_melee(attack1 + player.stats.get("Kick Attacks Attack",0), main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
                     phys_dmg_ph = get_phys_damage(kick_dmg, fstr_kick, 0, kickattacks_pdif, 1.0, crit, crit_dmg, 0, 0, 0, 0)
-                    kickattacks_damage = phys_dmg_ph
+                    kickattacks_damage = phys_dmg_ph * (1 + (np.random.uniform() < dragon_fangs_kick_damage_bonus_proc_rate))
                     tp_ph = get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
                     tp_return += tp_ph
 
@@ -911,9 +918,9 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
                     if enspell_active:
                         magic_dmg_ph += main_enspell_damage
                         magical_damage += magic_dmg_ph
-                        verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "kick") if very_verbose_dps else None
-                    else:
-                        print(f"     {'Kick:':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
+                    verbose_output(phys_dmg_ph, magic_dmg_ph, tp_ph, crit, "kick") if very_verbose_dps else None
+                else:
+                    print(f"     {'Kick:':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
 
                     # Kick attacks are probably not affected by Verethragna aftermath
         physical_damage += kickattacks_damage
@@ -1032,8 +1039,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
         # Now add Kick Attacks damage. Again, nothing fancy here except we use the MNK-specific "Kick Attacks Attack" stat.
         kickattacks_pdif = get_avg_pdif_melee(attack1 + player.stats.get("Kick Attacks Attack",0), main_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
         kickattacks_damage = get_avg_phys_damage(kick_dmg, fstr_kick, 0, kickattacks_pdif, 1.0, crit_rate, crit_dmg, 0, 0, 0)
+        kickattacks_damage *= dragon_fangs_kick_damage_bonus # Kick attacks probably aren't affected by Verethragna aftermath, but they do get Dragon Fangs "occasionally doubles kick attacks damage"
         physical_damage += kickattacks_damage*kickattack_hits
-        # Kick attacks probably aren't affected by Verethragna aftermath
 
         # Now Daken shuriken throws.
         daken_pdif = get_avg_pdif_ranged(ranged_attack, ammo_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
