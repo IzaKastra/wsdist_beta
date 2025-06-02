@@ -14,7 +14,7 @@ The executable was compiled using the following command within the Windows10 pow
     pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile .\gui_wsdist.py
 
 
-If you choose to use the executable version of this application, then I recommend downloading the application from the actions page for this repository (https://github.com/IzaKastra/wsdist_beta/actions), which contains the executable and necessary files for running it in one simple download. The executable provided on the actions page was created on GitHub servers using the commands found in the "workflow file" and can therefore be verified as "probably safe to run." This is safer than trusting the executable I've uploaded myself.
+If you choose to use the executable version of this application, then I recommend downloading the application from the actions page for this repository (https://github.com/IzaKastra/wsdist_beta/actions), which contains the executable and necessary files for running it in one simple download ("wsdist-full" contains all necessary files; "wsdist-executable-only" contains only the executable). The executable provided on the actions page was created on GitHub servers using the commands found in the "workflow file" and can therefore be verified as "probably safe to run." This is safer than trusting the executable I've uploaded myself.
 
 Note that the application will not notice any changes made to the version .py files (except gear.py) when using the executable version of the code. If you wish to make changes to any other file, then you will need to run the gui_wsdist.py version of the code.
 
