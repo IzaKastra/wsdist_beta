@@ -594,7 +594,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 April 05a (Brimstone mods)") # pyinstaller --exclude-module gear --clean --onefile .\gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 May 17b (Brimstone mods)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -766,7 +766,7 @@ class App(tk.Tk):
                         "Axe":["Raging Axe", "Spinning Axe", "Rampage", "Calamity", "Mistral Axe", "Decimation", "Bora Axe", "Onslaught", "Primal Rend", "Cloudsplitter", "Ruinator", "Blitz", ], 
                         "Archery":["Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow", "Empyreal Arrow", "Refulgent Arrow", "Namas Arrow", "Jishnu's Radiance", "Apex Arrow", "Sarv"], 
                         "Marksmanship":["Hot Shot", "Split Shot", "Sniper Shot", "Slug Shot", "Blast Shot", "Detonator", "Coronach", "Leaden Salute", "Trueflight", "Wildfire", "Last Stand", "Terminus", ], 
-                        "Hand-to-Hand":["Combo","One Inch Punch","Raging Fists","Spinning Attack","Howling Fist","Dragon Kick","Asuran Fists","Tornado Kick","Ascetic's Fury","Stringing Pummel","Final Heaven","Victory Smite","Shijin Spiral","Maru Kala",],
+                        "Hand-to-Hand":["Combo","One Inch Punch","Raging Fists","Spinning Attack","Howling Fist","Dragon Kick","Asuran Fists","Tornado Kick","Ascetic's Fury","Stringing Pummel","Final Heaven","Victory Smite","Shijin Spiral","Maru Kala","Dragon Blow",],
                         }
 
             self.ranged_ws = self.ws_dict["Archery"] + self.ws_dict["Marksmanship"]
@@ -4642,6 +4642,7 @@ class App(tk.Tk):
         self.sim_button = tk.Button(self.sim_frame, text="Run DPS simulations",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("damage simulation"))
         self.sim_button_tip = Hovertip(self.sim_button,f"Simulate attack rounds and weapon skills using the above TP and WS sets.\nWeapon skills are used after reaching Minimum TP value provided in the Inputs tab.")
         self.sim_button.grid(row=1,column=0,columnspan=1,padx=5,pady=2)
+
         self.sim1_button = tk.Button(self.sim_frame, text="Simulate One WS",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("run one ws"))
         self.sim1_button_tip = Hovertip(self.sim1_button,f"Perform a single weapon skill at the Min. TP value set in the inputs tab.")
         self.sim1_button.grid(row=2,column=0,columnspan=1,padx=5,pady=2)
@@ -4835,6 +4836,7 @@ class App(tk.Tk):
                         # Only select R15 REMA by default
                         if slot in ["main", "sub", "ranged"] and "R15" not in label and label in rema_weapons:
                             item.set(False)
+                            
                         # Odyssey Rank check
                         if d.get("Rank",self.odyrank.get())!=self.odyrank.get():
                             item.set(False)
@@ -5376,11 +5378,15 @@ class App(tk.Tk):
             print()
             print()
             return
+            
         elif trigger=="damage simulation":
             ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
             run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, self.plot_dps.get())
 
-
+        elif trigger=="run one ws":
+            ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
+            run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, False, True)
+            
         elif trigger=="all stats":
             player = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset, buffs, abilities)
             for stat_name in sorted(player.stats.keys()):
@@ -5526,7 +5532,7 @@ class App(tk.Tk):
                         print("No weapon skill selected.")
                         return
 
-                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "weapon skill", self.tp1.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.wsmetric.get(), print_swaps, next_best_percent, )
+                     self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "weapon skill", self.tp1.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.wsmetric.get(), print_swaps, next_best_percent, )
                 elif trigger=="run magic":
                     if spell_name=="None":
                         print("No spell selected.")

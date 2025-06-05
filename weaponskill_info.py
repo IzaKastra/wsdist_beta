@@ -1590,7 +1590,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         magical = True
         element = "Light"
         dSTAT = (player_mnd - enemy_mnd)*2 # No known cap
-        sc = ["Fusion", "Reverberation"]    
+        sc = ["Fusion", "Reverberation"]
     elif ws_name == "Gate of Tartarus":
         ftp = 3.0
         ftp_rep = False
@@ -1773,12 +1773,27 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 6-1
         sc = ["Gravitation","Liquefaction"]
     elif ws_name == "Maru Kala":
-        base_ftp = [1, 2, 3] 
+        base_ftp =  [3.0, 7.5, 12.0] # https://www.ffxiah.com/forum/topic/55614/mnk-h2h-choices/6/#3697176
         ftp = np.interp(tp, base_tp, base_ftp)
-        ftp_rep = True 
-        wsc = 0.0*player_dex 
+        ftp_rep = False 
+        wsc = 0.6*(player_str + player_dex)
         nhits = 2
         sc = ["Detonation","Compression","Distortion"]
+    elif ws_name == "Dragon Blow": 
+        base_ftp = [3.675, 7.0, 10.4375] # Probably needs more data. https://www.bg-wiki.com/ffxi/Dragon_Blow
+        ftp = np.interp(tp, base_tp, base_ftp)
+        ftp_rep = False
+        ws_atk_modifier = 1.5 # Needs verification
+        player_attack1 -= player.stats.get("Food Attack",0)
+        player_attack1 *= (1+player.stats.get("Attack%",0) + ws_atk_modifier) / (1+player.stats.get("Attack%",0))
+        player_attack1 += player.stats.get("Food Attack",0)
+        player_attack2 -= player.stats.get("Food Attack",0)
+        player_attack2 *= (1+player.stats.get("Attack%",0) + ws_atk_modifier) / (1+player.stats.get("Attack%",0))
+        player_attack2 += player.stats.get("Food Attack",0)
+        wsc = 0.85*player_dex
+        nhits = 2
+        sc = ["Distortion"]
+
 
     if player.gearset["main"]["Name"] == "Shining One" and not (ws_name in ["Flaming Arrow", "Namas Arrow", "Apex Arrow", "Refulgent Arrow","Empyreal Arrow", "Sidewinder", "Piercing Arrow", "Jishnu's Radiance", "Blast Arrow", "Hot Shot", "Coronach","Last Stand","Detonator", "Blast Shot", "Slug Shot", "Split Shot", ]):
     
@@ -1797,7 +1812,9 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
 
     crit_rate = 1.0 if player.abilities.get("Mighty Strikes", False) else crit_rate
     enemy_def = 1 if enemy_def < 1 else enemy_def
+
     wsc += sum([ player.stats[k[0]] * k[1]/100 for k in wsc_bonus]) # Add WSC bonuses from things like Utu Grip and Crepuscular Knife, which use the "WSC" stat in their gear entry.
+
     scaling = {"hybrid":hybrid,
                "magical":magical,
                "dSTAT":dSTAT,

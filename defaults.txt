@@ -1,13 +1,11 @@
 # Basic inputs
-ml=35
+ml=37
 mainjob=NIN
 subjob=WAR
 aftermath=0
 mintp=1900
-maxtp=2100
 spell=Doton: Ichi
 ws=Blade: Ten
-initialtp=0
 nyame<30=True
 odyrank=30
 tvrring=Lehko Habhoka's
@@ -73,7 +71,7 @@ emnd=284
 # Equipment and food inputs
 food=Grape Daifuku
 main=Heishi Shorinken R15
-sub=Crepuscular Knife
+sub=Kunimitsu R30
 ranged=Empty
 ammo=Seki Shuriken
 head=Malignance Chapeau
@@ -91,7 +89,7 @@ feet=Malignance Boots
 
 # Simulation inputs
 tp_main=Heishi Shorinken R15
-tp_sub=Crepuscular Knife
+tp_sub=Kunimitsu R30
 tp_ranged=Empty
 tp_ammo=Seki Shuriken
 tp_head=Malignance Chapeau
@@ -108,7 +106,7 @@ tp_legs=Samnuha Tights
 tp_feet=Malignance Boots
 
 ws_main=Heishi Shorinken R15
-ws_sub=Crepuscular Knife
+ws_sub=Kunimitsu R30
 ws_ranged=Empty
 ws_ammo=Seeth. Bomblet +1 R15
 ws_head=Mpaca's Cap R25
@@ -125,8 +123,8 @@ ws_legs=Nyame Flanchard R25B
 ws_feet=Hattori Kyahan +3
 
 DamageLimit=True
-VerboseDPS=True
-very_verboseDPS=True
+VerboseDPS=False
+very_verboseDPS=False
 VerboseSwaps=False
 
 # Window size:  widthxheight
