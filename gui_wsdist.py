@@ -5532,7 +5532,7 @@ class App(tk.Tk):
                         print("No weapon skill selected.")
                         return
 
-                     self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "weapon skill", self.tp1.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.wsmetric.get(), print_swaps, next_best_percent, )
+                    self.best_player, self.best_output = build_set(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), buffs, abilities, enemy, ws_name, spell_name, "weapon skill", self.tp1.get(), check_gear, gearset, conditions.get("PDT",100), conditions.get("MDT",100), self.wsmetric.get(), print_swaps, next_best_percent, )
                 elif trigger=="run magic":
                     if spell_name=="None":
                         print("No spell selected.")
