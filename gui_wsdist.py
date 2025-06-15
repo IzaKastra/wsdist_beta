@@ -343,7 +343,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 May 17b)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 June 15a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -4584,7 +4584,6 @@ class App(tk.Tk):
                         if slot in ["main", "sub", "ranged"] and "R15" not in label and label in rema_weapons:
                             item.set(False)
 
-
                         # Odyssey Rank check
                         if d.get("Rank",self.odyrank.get())!=self.odyrank.get():
                             item.set(False)
@@ -4593,6 +4592,7 @@ class App(tk.Tk):
                         if "Nyame" in label and "A"==label[-1]:
                             item.set(False)
 
+                        # Unselect Stage5 primes
                         if label.split()[-1] == "V":
                             item.set(False)
 
@@ -4602,8 +4602,6 @@ class App(tk.Tk):
                                 item.set(False)
                                 if self.odyrank.get()==30 and "R25B" in label:
                                     item.set(True)
-
-
 
                         # Unselect JSE +2 Earrings
                         if jse_ear_names[self.mainjob.get().lower()] in label and "+2" in label:
@@ -4617,10 +4615,11 @@ class App(tk.Tk):
                         if slot in ["ear1","ear2"] and "(night)" in label: 
                             item.set(False)
 
-                        # Unselect final stage Prime weapons for now.
-                        if slot in ["main","sub"] and "III" in label: 
+                        # Unselect +3 and +2 version of AF and Relic gear.
+                        relic_names = ["Pedagogy","Hesychast","Vitiation","Mochizuki","Fallen","Horos","Pitre","Luhlaza","Plunderer","Bagua","Archmage","Piety","Agoge","Caballarius","Wakido","Ankusa","Bihu","Glyphic","Lanun","Arcadian","Pteroslaver","Futhark"]
+                        af_names = ["Academic","Anchorite","Atrophy","Hachiya","Ignominy","Maxixi","Foire","Assimilator","Pillager","Geomancy","Spaekona","Theophany","Pummeler","Reverence","Sakonji","Totemic","Brioso","Convoker","Laksamana","Orion","Vishap","Runeist"]
+                        if slot in ["head", "body", "hands", "legs", "feet"] and "+4" not in label and any([k.lower() in label.lower() for k in af_names + relic_names]):
                             item.set(False)
-
 
     def name2dictionary(self, name):
         #
