@@ -419,7 +419,7 @@ class create_player:
             if self.abilities.get("Saber Dance",False):
                 self.stats["DA"] = self.stats.get("DA",0) + 25 # Assume minimum potency Saber Dance since it decays quickly.
             if self.abilities.get("closed_position", False):
-                self.stats["Store TP"] = self.stats.get("Store TP",0) + (3*5)*("Horos Toe Shoes +3"==self.gearset["feet"]["Name"]) # DNC Relic+3 feet provide +3 Store TP for each merit into Closed Position
+                self.stats["Store TP"] = self.stats.get("Store TP",0) + (3*5)*("Horos Toe Shoes +3"==self.gearset["feet"]["Name"] or "Horos Toe Shoes +4"==self.gearset["feet"]["Name"]) # DNC Relic+3 feet provide +3 Store TP for each merit into Closed Position
 
         # ===========================================================================
         # ===========================================================================
