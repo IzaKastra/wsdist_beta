@@ -695,7 +695,7 @@ Loricate_Torque = {"Name":"Loricate Torque +1", "Name2":"Loricate Torque +1 R15"
 Moonlight_Nodowa = {"Name":"Moonlight Nodowa", "Accuracy":25, "Zanshin":10, "Store TP":10, "Jobs":["mnk", "sam", "nin"]}
 Moepapa_Medal = {"Name":"Moepapa Medal", "DEX":6, "AGI":6, "Jobs":all_jobs}
 Null_Loop = {"Name":"Null Loop", "Accuracy":50, "Magic Accuracy":50, "Ranged Accuracy":50, "DT":-5, "Jobs":all_jobs}
-Shulmanu_Collar = {"Name":"Shulmanu Collar", "Accuracy":20, "Attack":20, "DA":3, "Pet:Accuracy":20, "Pet:Attack":20, "Pet:DA":5, "Jobs":["pup"]}
+Shulmanu_Collar = {"Name":"Shulmanu Collar", "Accuracy":20, "Attack":20, "DA":3, "Pet:Accuracy":20, "Pet:Attack":20, "Pet:DA":5, "Jobs":["bst","drg","smn","pup"]}
 necks = [Shulmanu_Collar,Null_Loop, Moepapa_Medal,Moonlight_Nodowa,Loricate_Torque,Canto_Necklace,Vim_Torque,Anu_Torque,Combatants_Torque,Clotharius_Torque,Lissome_Necklace,Saevus_Pendant,Futhark_Torque1,Bagua_Charm1,Commodore_Charm1,Etoile_Gorget1,Argute_Stole1,Puppetmaster_Collar1,Mirage_Stole1,Dragoon_Collar1,Ninja_Nodowa1,Samurai_Nodowa1,Scout_Gorget1,Bards_Charm1,Beastmaster_collar1,Knight_bead_necklace1,Assassins_Gorget1,Duelist_Torque1,Sorcerers_Stole1,Clerics_Torque1,Clerics_Torque,Monk_Nodowa1,Warrior_Beads1,Abyssal_Beads1,Futhark_Torque,Puppetmaster_Collar,Mirage_Stole,Scout_Gorget,Knight_bead_necklace,Bagua_Charm,Beastmaster_collar,Etoile_Gorget,Monk_Nodowa,Assassins_Gorget,Bards_Charm,Commodore_Charm,Iskur_Gorget,Marked_Gorget,Warrior_Beads,Argute_Stole,Dragoon_Collar,Duelist_Torque,Abyssal_Beads,Baetyl_Pendant,Caro_Necklace,Fotia_Gorget,Ninja_Nodowa,Rep_Plat_Medal,Samurai_Nodowa,Sanctity_Necklace,Sibyl_Scarf,Warders_Charm,Sorcerers_Stole,Quanpur_Necklace,Mizukage_no_Kubikazari]
 
 
