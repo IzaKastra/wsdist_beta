@@ -2217,7 +2217,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
         # https://www.ffxiah.com/forum/topic/51313/tachi-jinpu-set/
 
         true_shot = player.stats.get("True Shot",0)/100
-        
+
         # Read in the relevant magic stats
         magic_damage_stat = player.stats.get("Magic Damage",0) # Some jobs have special/specific magic damage, such as NIN, which has +40 Magic Damage from Job Points which only apply to Ninjutsu spells.
         magic_attack = player.stats.get("Magic Attack",0) # Some equipment has special magic attack, which applies in separate multiplicative terms on a per-element basis. Normally we see (1+matk)/(1+mdef), but Archon Ring uses something like (1+matk)/(1+mdef) * (1+dark_matk)/(1+dark_mdef)
@@ -2269,7 +2269,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
 
         # Now multiply the magical portion by weapon skill damage as well.
-        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather*klimaform_bonus*enemy_mdt*affinity*(1 + 0.25*magic_crit2) 
+        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather*klimaform_bonus*enemy_mdt*affinity*(1 + 0.25*(magic_crit2 if simulation else magic_crit_rate2)) 
 
         # Multiply base damage by the multiplier
         magical_damage = base_magical_damage * magic_multiplier
