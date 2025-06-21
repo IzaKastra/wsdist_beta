@@ -138,6 +138,8 @@ def load_defaults(app,defaults):
     # Update enemy input defaults
     app.enemy_magic_defense.set(defaults.get("emagicdefense","0"))
     app.enemy_magic_evasion.set(defaults.get("emagicevasion","0"))
+    app.enemy_mdt.set(defaults.get("emdt","0"))
+    app.enemy_resist_rank_value.set(defaults.get("eresist","100%"))
     app.enemy_defense.set(defaults.get("edefense","1338"))
     app.enemy_evasion.set(defaults.get("eevasion","1225"))
     app.enemy_level.set(defaults.get("elevel","135"))
@@ -241,6 +243,8 @@ def save_defaults():
         ofile.write(f"edefense={app.enemy_defense.get()}\n")
         ofile.write(f"emagicevasion={app.enemy_magic_evasion.get()}\n")
         ofile.write(f"emagicdefense={app.enemy_magic_defense.get()}\n")
+        ofile.write(f"emdt={app.enemy_mdt.get()}\n")
+        ofile.write(f"eresist={app.enemy_resist_rank_value.get()}\n")
         ofile.write(f"eagi={app.enemy_agi.get()}\n")
         ofile.write(f"evit={app.enemy_vit.get()}\n")
         ofile.write(f"eint={app.enemy_int.get()}\n")
@@ -343,7 +347,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 June 15a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 June 21a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -1040,11 +1044,26 @@ class App(tk.Tk):
             self.enemy_magic_defense_entry = ttk.Entry(self.enemy_stats_frame,textvariable=self.enemy_magic_defense,width=8)
             self.enemy_magic_defense_entry.grid(row=3,column=1,sticky="nw",padx=0,pady=2)
 
+            self.enemy_mdt = tk.IntVar(value=preset_enemies[self.selected_enemy.get()]["Magic Damage Taken"])
+            self.enemy_mdt_label = ttk.Label(self.enemy_stats_frame,text="Magic DT: ")
+            self.enemy_mdt_label.grid(row=4,column=0, sticky="nw",padx=0,pady=2)
+            self.enemy_mdt_entry = ttk.Entry(self.enemy_stats_frame,textvariable=self.enemy_mdt,width=8)
+            self.enemy_mdt_entry.grid(row=4,column=1,sticky="nw",padx=0,pady=2)
+
             self.enemy_magic_evasion = tk.IntVar(value=preset_enemies[self.selected_enemy.get()]["Magic Evasion"])
             self.enemy_magic_evasion_label = ttk.Label(self.enemy_stats_frame,text="Magic Evasion: ")
-            self.enemy_magic_evasion_label.grid(row=4,column=0, sticky="nw",padx=0,pady=2)
+            self.enemy_magic_evasion_label.grid(row=5,column=0, sticky="nw",padx=0,pady=2)
             self.enemy_magic_evasion_entry = ttk.Entry(self.enemy_stats_frame,textvariable=self.enemy_magic_evasion,width=8)
-            self.enemy_magic_evasion_entry.grid(row=4,column=1,sticky="nw",padx=0,pady=2)
+            self.enemy_magic_evasion_entry.grid(row=5,column=1,sticky="nw",padx=0,pady=2)
+
+            self.enemy_label_label = ttk.Label(self.enemy_stats_frame,text="Resist Rank: ")
+            self.enemy_label_label.grid(row=6,column=0, sticky="nw",padx=0,pady=2)
+
+            self.enemy_resist_rank_options = ["150%", "130%", "115%", "100%", "85%", "70%", "60%", "50%", "40%", "30%", "25%", "20%", "15%", "10%", "5%"]
+            self.enemy_resist_rank_value = tk.StringVar(value="100%")
+            self.enemy_resist_rank_box = ttk.Combobox(self.enemy_stats_frame, textvariable=self.enemy_resist_rank_value, values=self.enemy_resist_rank_options, state="readonly",)
+            self.enemy_resist_rank_box.config(width=5,)
+            self.enemy_resist_rank_box.grid(row=6, column=1, sticky="nw", padx=0, pady=2)
 
         self.enemy_stats_frame2 = ttk.Frame(self.enemy_inputs_frame,)
         self.enemy_stats_frame2.grid(row=1,column=1,padx=10)
@@ -4588,8 +4607,8 @@ class App(tk.Tk):
                         if d.get("Rank",self.odyrank.get())!=self.odyrank.get():
                             item.set(False)
 
-                        # Unselect Path A Nyame
-                        if "Nyame" in label and "A"==label[-1]:
+                        # Unselect paths A and C Nyame
+                        if "Nyame" in label and ("A"==label[-1] or "C"==label[-1]):
                             item.set(False)
 
                         # Unselect Stage5 primes
@@ -4905,6 +4924,7 @@ class App(tk.Tk):
             "Base Defense":self.enemy_defense.get(),
             "Defense":self.enemy_defense.get(),
             "Magic Defense":self.enemy_magic_defense.get(),
+            "Magic Damage Taken":self.enemy_mdt.get(),
             "Evasion":self.enemy_evasion.get(),
             "Magic Evasion":self.enemy_magic_evasion.get(),
             })
@@ -4989,7 +5009,8 @@ class App(tk.Tk):
                      "Temper":self.temper1_value.get(),
                      "Temper II":self.temper2_value.get(),
                      "Enh. Skill":self.enh_skill.get() if self.enh_skill.get() > 0 else 0,
-                     "99999":self.damage_limit99999.get()}
+                     "99999":self.damage_limit99999.get(),
+                     "enemy_resist_rank":self.enemy_resist_rank_value.get()}
 
 
         gearset = {
@@ -5312,6 +5333,7 @@ class App(tk.Tk):
         self.enemy_defense_entry.delete(0,tk.END)
         self.enemy_magic_evasion_entry.delete(0,tk.END)
         self.enemy_magic_defense_entry.delete(0,tk.END)
+        self.enemy_mdt_entry.delete(0,tk.END)
 
         # Insert the new entries
         self.enemy_agi_entry.insert(0,new_enemy["AGI"])
@@ -5323,6 +5345,7 @@ class App(tk.Tk):
         self.enemy_defense_entry.insert(0,new_enemy["Defense"])
         self.enemy_magic_evasion_entry.insert(0,new_enemy["Magic Evasion"])
         self.enemy_magic_defense_entry.insert(0,new_enemy["Magic Defense"])
+        self.enemy_mdt_entry.insert(0,new_enemy["Magic Damage Taken"])
 
         self.enemy_location_var.set(new_enemy["Location"])
 
