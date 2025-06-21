@@ -14861,7 +14861,7 @@
 23953;vishap mail +4;Vishap Mail +4
 23954;convoker's doublet +4;Con. Doublet +4
 23955;assimilator's jubbah +4;Assim. Jubbah +4
-23956;laksamana frac +4;Laksa. Frac +4
+23956;laksamana's frac +4;Laksa. Frac +4
 23957;foire tobe +4;Foire Tobe +4
 23958;maxixi casaque +4;Maxixi Casaque +4
 23959;maxixi casaque +4;Maxixi Casaque +4
