@@ -19,7 +19,7 @@ def format_bgwiki(ws_name, tp, player, best_metric):
     #
     # Prints to the terminal the player gearset in BG Wiki format, ignoring augments.
     #
-    buffs = "Mid"
+    buffs = "High"
 
 
     # Certain items have shortened names on BG Wiki. Use the item_list.txt file to find and replace these names for BG Wiki.
@@ -96,8 +96,8 @@ def format_bgwiki(ws_name, tp, player, best_metric):
         |Equipment Set=
         {'{'}{'{'}
             Equipment Set
-            |CaptionTop = 25% DT
-            |CaptionBottom = {best_metric**-1:.3f} s
+            |CaptionTop = {buffs} buff
+            |CaptionBottom = {best_metric:.0f} damage
             |Main = {hardcode_gearset["main"]} (Level 119 III)
             |Sub = {hardcode_gearset["sub"]}
             |Range = {hardcode_gearset["ranged"]}
