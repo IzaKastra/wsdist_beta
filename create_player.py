@@ -378,12 +378,11 @@ class create_player:
                 self.stats["Ranged Accuracy"] = self.stats.get("Ranged Accuracy",0) + 100 # Assume 5/5 Sange Merits
                 self.stats["Daken"] = 100
             if self.abilities.get("Innin",False):
-                innin_potency = 0.7
+                innin_potency = 0.7 # Innin ninjutsu damage bonus is handled in the actions.py code when calculating ninjutsu damage dealt
                 self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 20 
                 self.stats["Skillchain Bonus"] = self.stats.get("Skillchain Bonus",0) + 5
                 self.stats["Magic Burst Damage Trait"] = self.stats.get("Magic Burst Damage Trait",0) + 5
                 self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + (innin_potency*(30-10) + 10)
-                self.stats["Ninjutsu Damage%"] = self.stats.get("Ninjutsu Damage%",0) + (innin_potency*(30-10) + 10)
                 self.stats["Evasion"] = self.stats.get("Evasion",0) + (innin_potency*(-30 - -10) + -10)
                 self.stats["DA"] = self.stats.get("DA",0) + self.stats.get("Innin DA%",0)
             if self.abilities.get("Futae",False):
