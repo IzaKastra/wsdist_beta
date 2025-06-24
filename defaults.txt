@@ -56,13 +56,15 @@ blaze=False
 bolster=False
 
 # Enemy inputs
-ename=Lugcrawler Hunter
+ename=Apex Lugcrawler Hunter
 elocation=Crawler's Nest [S]
 elevel=138
 eevasion=1314
 edefense=1446
 emagicevasion=0
 emagicdefense=0
+emdt=0
+eresist=100%
 eagi=346
 evit=325
 eint=284

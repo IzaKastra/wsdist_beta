@@ -689,7 +689,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
     
     # Dragon Fangs H2H weapon occasionally double kick attack damage. I'm guessing the proc rate is 50% here.
     dragon_fangs_kick_damage_bonus = 1.0
-    dragon_fangs_kick_damage_bonus_proc_rate = 0.5 # Complete guess based on nothing.
+    dragon_fangs_kick_damage_bonus_proc_rate = 0.2 # Appears to be around 20%? TODO: find the source again
     if player.gearset["main"]["Name2"] == "Dragon Fangs": # Occasionally double damage of kick attacks. Assuming that this does NOT apply to Kick Attack WSs with MNK's Footwork active.
         dragon_fangs_kick_damage_bonus += 1.0 * dragon_fangs_kick_damage_bonus_proc_rate
         
@@ -1412,7 +1412,29 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
     # A lot of the magic damage code is repeated and I'd like to reduce this later.
     #
 
+
+    # Magic burst damage may be increased based on the enemy's resist rank to the bursted element. https://www.bg-wiki.com/ffxi/Magic_Burst
+    enemy_resist_rank_burst_bonus = {"150%":1.5, "130%":1.15, "115%":0.85, "100%":0.60, "85%":0.50, "70%":0.40, "60%":0.15, "50%":0.05, "40%":0, "30%":0, "25%":0, "20%":0, "15%":0, "10%":0, "5%":0}
+    enemy_resist_rank_burst_bonus_list = ["150%", "130%", "115%", "100%", "85%", "70%", "60%", "50%", "40%", "30%", "25%", "20%", "15%", "10%", "5%"]
+    resist_rank_index = enemy_resist_rank_burst_bonus_list.index(player.abilities.get("enemy_resist_rank", "100%")) # Get the player's input resist rank value and find the list position of that entry.
+    resist_rank_index -= 1*player.abilities.get("Magic Burst",False) # Magic Bursting decreases the enemy's resist rank by 1. TODO: Rayke
+    resist_rank_index = 0 if resist_rank_index < 0 else resist_rank_index # Do not go higher than 150%
+    enemy_resist_rank = enemy_resist_rank_burst_bonus_list[resist_rank_index] # Update enemy resist rank
+    resist_rank_resist_state = 0.5 if enemy_resist_rank in ["50%", "40%", "30%", "25%", "20%", "15%", "10%",] else 1.0
+
+
+    active_storm = player.abilities.get("Storm spell", False)
+    storm_elements = {"Sandstorm II":"earth","Rainstorm II":"water","Windstorm II":"wind","Firestorm II":"fire","Hailstorm II":"ice","Thunderstorm II":"thunder","Aurorastorm II":"light","Voidstorm II":"dark",
+                      "Sandstorm":"earth","Rainstorm":"water","Windstorm":"wind","Firestorm":"fire","Hailstorm":"ice","Thunderstorm":"thunder","Aurorastorm":"light","Voidstorm":"dark"}
+
+    dayweather_bonus = 1.0
+
+
     if spell_name == "EnSpell":
+
+        if (player.gearset["waist"]["Name"]=="Hachirin-no-Obi") and active_storm: # Assume enspell always matches storm spell. Users can disable Hachirin otherwise.
+            dayweather_bonus += 0.25 if "II" in active_storm else 0.1
+
 
         main_skill_type = player.gearset["main"]["Skill Type"]
         # two_handed_skills = ["Great Sword", "Great Katana", "Great Axe", "Polearm", "Scythe", "Staff",]
@@ -1432,15 +1454,9 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         enspell_damage_main = player.stats.get("EnSpell Damage main",0) + player.stats.get("EnSpell Damage",0)
         magic_crit_rate2 = player.stats.get("Magic Crit Rate II",0)/100
 
-        active_storm = player.abilities.get("Storm spell", False)
-        if active_storm!="None" and player.gearset["waist"]["Name"]=="Hachirin-no-Obi":
-            dayweather = 0.25 if "II" in active_storm else 0.10 # Assume the EnSpell element matches the storm spell selected.
-        else:
-            dayweather = 0
-
         # Assume the EnSpell element matches the element corresponding to the gear with the highest elemental damage bonus, ignoring light/dark. Orpheus sash is applies separately.
         elemental_magic_attack_bonus = (max([player.stats.get(f"{element.capitalize()} Elemental Bonus", 0) for element in ["Earth", "Water", "Wind", "Fire", "Ice", "Thunder"]])/100 + player.stats.get("Elemental Bonus",0)/100)
-        magical_damage = get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * (1 + dayweather) * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*magic_crit_rate2)
+        magical_damage = get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main) * dayweather_bonus * (1 + elemental_magic_attack_bonus) * (1.0 + 0.25*magic_crit_rate2)
 
         # magical_damage *= hit_rate11
         # tp_return *= hit_rate11
@@ -1463,19 +1479,16 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
 
     enemy_magic_defense = enemy.stats.get("Magic Defense",0)
     enemy_magic_evasion = enemy.stats.get("Magic Evasion",0)
-    enemy_mdt = enemy.stats.get("MDT",1.0) # Enemy MDT is usually 1.0 (-0%) unless the enemy casts shell or a similar spell/ability.
+    enemy_mdt = enemy.stats.get("Magic Damage Taken", 0) # Enemy MDT is usually 1.0 (-0%) unless the enemy casts shell or a similar spell/ability.
 
-    dayweather = 1.0 # We increase this later
-    storm_elements = {"Sandstorm II":"earth","Rainstorm II":"water","Windstorm II":"wind","Firestorm II":"fire","Hailstorm II":"ice","Thunderstorm II":"thunder","Aurorastorm II":"light","Voidstorm II":"dark",
-                      "Sandstorm":"earth","Rainstorm":"water","Windstorm":"wind","Firestorm":"fire","Hailstorm":"ice","Thunderstorm":"thunder","Aurorastorm":"light","Voidstorm":"dark"}
-    active_storm =  player.abilities.get("Storm spell",False)
-
-    skillchain_step = 2
-    magic_burst_multiplier = 1.0 # Standard +35% damage for magic bursting
-    burst_bonus_multiplier = 1.0 # Magic Burst damage bonus from gear. BG lists this as separate from the standard MB multiplier
+    magic_burst_multiplier = 1.0 # Standard +35% damage for magic bursting. 
+    burst_bonus_multiplier = 1.0 # Magic Burst damage bonus from gear. BG lists this as separate from the standard MB multiplier    
     if player.abilities.get("Magic Burst",False):
         magic_accuracy += 100 + player.stats.get("Magic Burst Accuracy",0)
         magic_burst_multiplier += 0.35
+        magic_burst_multiplier += enemy_resist_rank_burst_bonus[enemy_resist_rank]
+
+        skillchain_step = 2
         skillchain_steps_bonus = (skillchain_step-2)*0.10 # +10% magic damage for each step in the skillchain after the 2nd (for each extra skillchain formed)
         magic_burst_multiplier += skillchain_steps_bonus
 
@@ -1490,6 +1503,10 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
     if spell_type=="Quick Draw":
         element = spell_name.split()[0]
 
+        if (player.gearset["waist"]["Name"]=="Hachirin-no-Obi") and active_storm:
+            if element.lower() == storm_elements.get(active_storm,False):
+                dayweather_bonus += 0.25 if "II" in active_storm else 0.1
+
         magic_accuracy += player.stats.get("Quick Draw Magic Accuracy",0)
         magic_accuracy += player.stats["AGI"]/2 # Quick Draw magic accuracy benefits from AGI.
         quick_draw_damage = player.stats.get("Quick Draw Damage",0) # +40 from JP, +20 from AF+3 head, +20 from AF+3 feet
@@ -1503,14 +1520,10 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         resist_state = get_resist_state_average(magic_hit_rate) # TODO: When creating a distribution, use a proper sampling of resist states, rather than the average.
         magic_attack_ratio = (100 + magic_attack) / (100 + enemy_magic_defense)
 
-        if player.gearset["waist"]["Name"]=="Hachirin-no-Obi" and active_storm:
-            if element.lower() == storm_elements.get(active_storm,False):
-                dayweather = 1.25 if "II" in active_storm else 1.1
-
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
         element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
 
-        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather*enemy_mdt*affinity*magic_crit_rate2
+        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather_bonus*enemy_mdt*affinity*magic_crit_rate2
 
         base_damage = int(((ranged_dmg+ammo_dmg)*2 + quick_draw_damage) * (1 + player.stats.get("Quick Draw Damage%",0)/100) + magic_damage_stat)
         damage = base_damage * magic_multiplier
@@ -1544,26 +1557,32 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         element = spells[spell_name.split(":")[0]].lower()
         tier = spell_name.split()[-1]
 
+        if (player.gearset["waist"]["Name"]=="Hachirin-no-Obi") and active_storm:
+            if element.lower() == storm_elements.get(active_storm,False):
+                dayweather_bonus += 0.25 if "II" in active_storm else 0.1
+
+
         magic_attack += player.stats.get("Ninjutsu Magic Attack",0)
         magic_damage_stat += player.stats.get("Ninjutsu Magic Damage",0)
         magic_accuracy += player.stats.get("Ninjutsu Magic Accuracy",0) + player.stats.get("Ninjutsu Skill",0)
 
         magic_hit_rate = get_magic_hit_rate(magic_accuracy, enemy_magic_evasion) if enemy_magic_evasion > 0 else 1.0
-        resist_state = get_resist_state_average(magic_hit_rate) # TODO: When creating a distribution, use a proper sampling of resist states, rather than the average.
+        magic_resist_state = get_resist_state_average(magic_hit_rate)
+
+
         magic_attack_ratio = (100 + magic_attack) / (100 + enemy_magic_defense)
 
-        if player.gearset["waist"]["Name"]=="Hachirin-no-Obi" and active_storm:
-            if element.lower() == storm_elements.get(active_storm,False):
-                dayweather = 1.25 if "II" in active_storm else 1.1
-
-        affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
         element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
-
         ninjutsu_damage_multiplier = 1 + player.stats.get("Ninjutsu Damage%",0)/100
         
         futae_multiplier = 1.0
         if player.abilities.get("Futae",False):
             futae_multiplier += 0.5 + player.stats.get("Futae Bonus",0)/100
+
+        innin_multiplier = 1.0
+        if player.abilities.get("Innin",False):
+            innin_potency = 0.7
+            innin_multiplier += (innin_potency*(30-10) + 10)/100
 
         # Now get the Ninjutsu Skill potency multiplier.
         ninjutsu_skill = player.stats.get("Ninjutsu Skill",0)
@@ -1576,20 +1595,41 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         else:
             ninjutsu_skill_potency = 0 # If something breaks and tier wasn't given, then just give 0 potency (results in zero damage always).
 
-        # Each elemental damage spell has an M and V associated with it to determine its base damage, based on dINT or dMND. TODO: Integerize at each step of magic_multiplier
+        # Each elemental damage spell has an M and V associated with it to determine its base damage, based on dINT or dMND.
+        # For all tested cases, this order of these operations recovered exactly the same damage as seen in game for Ichi, Ni, and San nukes of multiple elements.
         m,v = get_mv_ninjutsu(tier, dINT)
         base_damage = int(v+magic_damage_stat+dINT*m)
-        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather*enemy_mdt*affinity*magic_crit_rate2*ninjutsu_damage_multiplier*futae_multiplier*ninjutsu_skill_potency*magic_burst_multiplier*burst_bonus_multiplier
-        damage = base_damage * magic_multiplier
+        damage = base_damage
+        # print("base",damage)
+        damage = int(damage * ninjutsu_skill_potency)       # Bonus damage multiplier from Ninjutsu Skill
+        # print("skill",damage)
+        damage = int(damage * futae_multiplier)             # Futae damage bonus.
+        # print("futae",damage)
+        damage = int(damage * element_magic_attack_bonus)   # Orpheus's Sash and Donar Gun, for example.
+        # print("orph",damage)
+        damage = int(damage * magic_resist_state)           # Resists due to lack of magic accuracy
+        # print("res1",damage)
+        damage = int(damage * resist_rank_resist_state)     # Forced resists due to enemy resist rank.
+        # print("res2",damage)
+        damage = int(damage * magic_burst_multiplier)       # Burst multiplier from native skillchain plus resist rank bonuses
+        # print("burst1",damage)
+        damage = int(damage * burst_bonus_multiplier)       # Burst multiplier from gear and traits.
+        # print("burst2",damage)
+        damage = int(damage * dayweather_bonus)             # Day/Weather bonus
+        # print("day",damage)
+        damage = int(damage * ninjutsu_damage_multiplier)   # NIN Relic feet provide between 0% and +25% bonus damage.
+        # print("feet",damage)
+        damage = int(damage * magic_attack_ratio)           # Ratio of player magic attack to enemy magic defense
+        # print("matk",damage)
+        damage = int(damage * innin_multiplier)             # Bonus damage from standing behind enemy with Innin
+        # print("innin",damage)
+        damage = int(damage * (1 + enemy_mdt/100))          # Enemy native magic damage taken.
+        # print("mdt",damage)
+        # print()
 
-        tp_return = 0 # Note that Ninjutsu never returns TP since Occult Acumen is based on MP consumed.
-
-        if input_metric=="Damage dealt": 
-            metric = damage
-            invert = 1
-        else:
-            metric = damage
-            invert = 1
+        metric = damage
+        invert = 1
+        tp_return = 0
 
         return(metric, [damage, tp_return, invert]) 
 
@@ -1643,6 +1683,12 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
                 tier = "I"
                 mp_cost = spells[spell_name][0]
 
+
+        if (player.gearset["waist"]["Name"]=="Hachirin-no-Obi" or tier=="helix") and active_storm:
+            if element.lower() == storm_elements.get(active_storm,False):
+                dayweather_bonus += 0.25 if "II" in active_storm else 0.1
+
+
         ebullience_multiplier = 1.0
         ebullience = player.abilities.get("Ebullience",False)
         if ebullience:
@@ -1671,18 +1717,40 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         resist_state = get_resist_state_average(magic_hit_rate) # TODO: When creating a distribution, use a proper sampling of resist states, rather than the average.
         magic_attack_ratio = (100 + magic_attack) / (100 + enemy_magic_defense)
 
-        if (player.gearset["waist"]["Name"]=="Hachirin-no-Obi" or tier=="helix") and active_storm:
-            if element.lower() == storm_elements.get(active_storm,False):
-                dayweather = 1.25 if "II" in active_storm else 1.1
-
 
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
         element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
 
 
-        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather*enemy_mdt*affinity*magic_crit_rate2*ebullience_multiplier*klimaform_multiplier*magic_burst_multiplier*burst_bonus_multiplier
 
-        damage = base_damage * magic_multiplier
+        # print("m,v",m,v)
+        damage = base_damage
+        # print("base",damage)
+        damage = int(damage * element_magic_attack_bonus)
+        # print("orph",damage)
+        damage = int(damage * affinity)
+        # print("affinity",damage)
+        damage = int(damage * resist_state)
+        # print("res1",damage)
+        damage = int(damage * resist_rank_resist_state)
+        # print("res2",damage)
+        damage = int(damage * magic_burst_multiplier)
+        # print("burst1",damage)
+        damage = int(damage * burst_bonus_multiplier)
+        # print("burst2",damage)
+        damage = int(damage * dayweather_bonus)
+        # print("day",damage)
+        damage = int(damage * magic_attack_ratio)
+        # print("matk",damage)
+        damage = int(damage * klimaform_multiplier)
+        # print("klima",damage)
+        damage = int(damage * ebullience_multiplier)
+        # print("ebul",damage)
+        damage = int(damage * magic_crit_rate2)
+        # print("crit",damage)
+        damage = int(damage * (1+enemy_mdt/100))
+        # print("mdt",damage)
+
 
         # Occult Acumen allows spellcasting to return TP based on the amount of MP the spell costs before reductions.
         stp = player.stats.get("Store TP",0)/100
@@ -1859,6 +1927,7 @@ def real_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     #
     #
     pass
+
 
 def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulation=False, single=False):
     #
@@ -2578,13 +2647,13 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
          # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
         element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100)
 
-        dayweather = 1.0
+        dayweather_bonus = 1.0
         storm_elements = {"Sandstorm II":"earth","Rainstorm II":"water","Windstorm II":"wind","Firestorm II":"fire","Hailstorm II":"ice","Thunderstorm II":"thunder","Aurorastorm II":"light","Voidstorm II":"dark",
                           "Sandstorm":"earth","Rainstorm":"water","Windstorm":"wind","Firestorm":"fire","Hailstorm":"ice","Thunderstorm":"thunder","Aurorastorm":"light","Voidstorm":"dark"}
         active_storm =  player.abilities.get("Storm spell",False)
         if player.gearset["waist"]["Name"]=="Hachirin-no-Obi" and active_storm:
             if element.lower() == storm_elements.get(active_storm,False):
-                dayweather = 1.25 if "II" in active_storm else 1.1
+                dayweather_bonus = 1.25 if "II" in active_storm else 1.1
 
         klimaform_bonus = 1.0 + player.abilities.get("Klimaform",False)*player.stats.get("Klimaform Damage%",0)/100 # Klimaform with Empy+3 feet boosts magical WS damage by 25%
 
@@ -2593,7 +2662,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
 
         # Now multiply the magical portion by weapon skill damage as well.
-        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather*klimaform_bonus*enemy_mdt*affinity*(1 + 0.25*magic_crit2) 
+        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather_bonus*klimaform_bonus*enemy_mdt*affinity*(1 + 0.25*(magic_crit2 if simulation else magic_crit_rate2)) 
 
         # Multiply base damage by the multiplier
         magical_damage = base_magical_damage * magic_multiplier

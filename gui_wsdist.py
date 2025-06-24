@@ -284,6 +284,8 @@ def load_defaults(app,defaults):
     # Update enemy input defaults
     app.enemy_magic_defense.set(defaults.get("emagicdefense","0"))
     app.enemy_magic_evasion.set(defaults.get("emagicevasion","0"))
+    app.enemy_mdt.set(defaults.get("emdt","0"))
+    app.enemy_resist_rank_value.set(defaults.get("eresist","100%"))
     app.enemy_defense.set(defaults.get("edefense","1338"))
     app.enemy_evasion.set(defaults.get("eevasion","1225"))
     app.enemy_level.set(defaults.get("elevel","135"))
@@ -497,6 +499,8 @@ def save_defaults(suf=''):
         ofile.write(f"edefense={app.enemy_defense.get()}\n")
         ofile.write(f"emagicevasion={app.enemy_magic_evasion.get()}\n")
         ofile.write(f"emagicdefense={app.enemy_magic_defense.get()}\n")
+        ofile.write(f"emdt={app.enemy_mdt.get()}\n")
+        ofile.write(f"eresist={app.enemy_resist_rank_value.get()}\n")
         ofile.write(f"eagi={app.enemy_agi.get()}\n")
         ofile.write(f"evit={app.enemy_vit.get()}\n")
         ofile.write(f"eint={app.enemy_int.get()}\n")
@@ -579,9 +583,14 @@ def name2dictionary(name):
     return(Empty)
 
 
+
 class App(tk.Tk):
+
+
+
     def __init__(self): # Run on creation of a new "App" instance to define the defaults of the "App"
         super().__init__() # Used to inherit methods of tk.Tk
+
         mystyle = ttk.Style()
         mystyle.theme_use('vista')   # choose other theme
         mystyle.configure('MyStyle.TLabelframe', borderwidth=3, relief='solid', labelmargins=5)
@@ -594,7 +603,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 May 17b (Brimstone mods)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 June 21a (Brimstone mods)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -761,7 +770,7 @@ class App(tk.Tk):
                         "Great Sword":["Hard Slash", "Freezebite", "Shockwave", "Sickle Moon", "Spinning Slash", "Ground Strike", "Herculean Slash", "Resolution", "Scourge", "Dimidiation", "Torcleaver", "Fimbulvetr", ], 
                         "Club":["Shining Strike", "Seraph Strike", "Skullbreaker", "True Strike", "Judgment", "Hexa Strike", "Black Halo", "Randgrith", "Exudation", "Mystic Boon", "Realmrazer", "Dagda"], 
                         "Polearm":["Double Thrust", "Thunder Thrust", "Raiden Thrust", "Penta Thrust", "Wheeling Thrust", "Impulse Drive", "Sonic Thrust", "Geirskogul", "Drakesbane", "Camlann's Torment", "Stardiver", "Diarmuid", ], 
-                        "Staff":["Heavy Swing", "Rock Crusher", "Earth Crusher", "Starburst", "Sunburst", "Shell Crusher", "Full Swing", "Cataclysm", "Retribution", "Gate of Tartarus", "Omniscience", "Vidohunir", "Garland of Bliss", "Shattersoul", "Oshala"],
+                        "Staff":["Heavy Swing", "Rock Crusher", "Earth Crusher", "Starburst", "Sunburst", "Shell Crusher", "Full Swing", "Cataclysm", "Retribution", "Gate of Tartarus", "Omniscience", "Vidohunir", "Garland of Bliss", "Shattersoul", "Oshala"], 
                         "Great Axe":["Iron Tempest", "Shield Break", "Armor Break", "Weapon Break", "Raging Rush", "Full Break", "Steel Cyclone", "Fell Cleave", "Metatron Torment", "King's Justice", "Ukko's Fury", "Upheaval", "Disaster"], 
                         "Axe":["Raging Axe", "Spinning Axe", "Rampage", "Calamity", "Mistral Axe", "Decimation", "Bora Axe", "Onslaught", "Primal Rend", "Cloudsplitter", "Ruinator", "Blitz", ], 
                         "Archery":["Flaming Arrow", "Piercing Arrow", "Dulling Arrow", "Sidewinder", "Blast Arrow", "Empyreal Arrow", "Refulgent Arrow", "Namas Arrow", "Jishnu's Radiance", "Apex Arrow", "Sarv"], 
@@ -1296,12 +1305,26 @@ class App(tk.Tk):
             self.enemy_magic_defense_entry = ttk.Entry(self.enemy_stats_frame,textvariable=self.enemy_magic_defense,width=8)
             self.enemy_magic_defense_entry.grid(row=3,column=1,sticky="nw",padx=0,pady=2)
 
+            self.enemy_mdt = tk.IntVar(value=preset_enemies[self.selected_enemy.get()]["Magic Damage Taken"])
+            self.enemy_mdt_label = ttk.Label(self.enemy_stats_frame,text="Magic DT: ")
+            self.enemy_mdt_label.grid(row=4,column=0, sticky="nw",padx=0,pady=2)
+            self.enemy_mdt_entry = ttk.Entry(self.enemy_stats_frame,textvariable=self.enemy_mdt,width=8)
+            self.enemy_mdt_entry.grid(row=4,column=1,sticky="nw",padx=0,pady=2)
+
             self.enemy_magic_evasion = tk.IntVar(value=preset_enemies[self.selected_enemy.get()]["Magic Evasion"])
             self.enemy_magic_evasion_label = ttk.Label(self.enemy_stats_frame,text="Magic Evasion: ")
-            self.enemy_magic_evasion_label.grid(row=4,column=0, sticky="nw",padx=0,pady=2)
+            self.enemy_magic_evasion_label.grid(row=5,column=0, sticky="nw",padx=0,pady=2)
             self.enemy_magic_evasion_entry = ttk.Entry(self.enemy_stats_frame,textvariable=self.enemy_magic_evasion,width=8)
-            self.enemy_magic_evasion_entry.grid(row=4,column=1,sticky="nw",padx=0,pady=2)
+            self.enemy_magic_evasion_entry.grid(row=5,column=1,sticky="nw",padx=0,pady=2)
 
+            self.enemy_label_label = ttk.Label(self.enemy_stats_frame,text="Resist Rank: ")
+            self.enemy_label_label.grid(row=6,column=0, sticky="nw",padx=0,pady=2)
+
+            self.enemy_resist_rank_options = ["150%", "130%", "115%", "100%", "85%", "70%", "60%", "50%", "40%", "30%", "25%", "20%", "15%", "10%", "5%"]
+            self.enemy_resist_rank_value = tk.StringVar(value="100%")
+            self.enemy_resist_rank_box = ttk.Combobox(self.enemy_stats_frame, textvariable=self.enemy_resist_rank_value, values=self.enemy_resist_rank_options, state="readonly",)
+            self.enemy_resist_rank_box.config(width=5,)
+            self.enemy_resist_rank_box.grid(row=6, column=1, sticky="nw", padx=0, pady=2)
         self.enemy_stats_frame2 = ttk.Frame(self.enemy_inputs_frame,)
         self.enemy_stats_frame2.grid(row=1,column=1,padx=10)
         if True:
@@ -2468,8 +2491,8 @@ class App(tk.Tk):
         self.x_sub2 = [] # List to contain all of the individual checkbox button widgets for the sub slot
         self.x_sub2_var = [] # List to contain all of the individual checkbox button widgets for the sub slot
         for n,k in enumerate(sorted(subs+grips, key=lambda d: d["Name2"])):
-            self.x_sub2_var.append(tk.BooleanVar(value=True))
-            self.x_sub2.append(ttk.Checkbutton(self.cbox_sub, text=k["Name2"], variable=self.x_sub2_var[n]) )
+            self.x_sub2_var.append(tk.BooleanVar(value=False))
+            self.x_sub2.append(ttk.Checkbutton(self.cbox_sub, text=k["Name2"], variable=self.x_sub2_var[n],)) 
             self.x_sub2[n].state(['!alternate'])
             if self.mainjob.get().lower() in k["Jobs"]:
                 self.x_sub2[n].grid(row=n,column=0,padx=0,pady=0,sticky='w')
@@ -4647,6 +4670,7 @@ class App(tk.Tk):
         self.sim1_button_tip = Hovertip(self.sim1_button,f"Perform a single weapon skill at the Min. TP value set in the inputs tab.")
         self.sim1_button.grid(row=2,column=0,columnspan=1,padx=5,pady=2)
 
+
         self.build_dist = tk.Button(self.sim_frame, text="Create weapon skill\ndistribution plot",image=self.dim_image,compound=tk.CENTER,width=200,height=30,command=lambda: self.run_optimize("build distribution"))
         self.build_dist_tip = Hovertip(self.build_dist,f"Simulate 50,000 weapon skills using the current buffs and the equipped WS set and plot the resulting damage distribution.")
         self.build_dist.grid(row=3,column=0,columnspan=2,padx=5,pady=2)
@@ -4760,12 +4784,14 @@ class App(tk.Tk):
         tvr_rings = ["Cornelia's","Ephramad's","Fickblix's","Gurebu-Ogurebu's","Lehko Habhoka's","Medada's","Ragelise's"]
         soa_rings = ["Weatherspoon", "Karieyh", "Vocane"]
         jse_ear_names = {"nin":"Hattori","drk":"Heathen","blm":"Wicce","rdm":"Lethargy","drg":"Peltast","whm":"Ebers","sam":"Kasuga","sch":"Arbatel","war":"Boii","cor":"Chasseur","brd":"Fili","thf":"Skulker","mnk":"Bhikku","dnc":"Maculele","bst":"Nukumi","geo":"Azimuth","pld":"Chevalier","rng":"Amini","blu":"Hashishin","run":"Erilaz","pup":"Karagoz","smn":"Beckoner"}
+
         rema_weapons = ["Amanomurakumo", "Annihilator", "Apocalypse", "Bravura", "Excalibur", "Gungnir", "Guttler", "Kikoku", "Mandau", "Mjollnir", "Ragnarok", "Spharai", "Yoichinoyumi",
                         "Almace", "Armageddon", "Caladbolg", "Farsha", "Gandiva", "Kannagi", "Masamune", "Redemption", "Rhongomiant", "Twashtar", "Ukonvasara", "Verethragna",
                         "Aymur", "Burtgang", "Carnwenhan", "Conqueror", "Death Penalty", "Gastraphetes", "Glanzfaust", "Kenkonken", "Kogarasumaru", "Laevateinn", "Liberator", "Murgleis", "Nagi", "Ryunohige", "Terpsichore", "Tizona", "Tupsimati", "Nirvana", "Vajra", "Yagrush", 
                         "Epeolatry", "Idris",
                         "Aeneas", "Anguta", "Chango", "Dojikiri Yasutsuna", "Fail-not", "Fomalhaut", "Godhands", "Heishi Shorinken", "Khatvanga", "Lionheart", "Sequence", "Tishtrya", "Tri-edge", "Trishula",
                         ]
+
         cbox_lists = {"main":[self.main_cbox_frame,self.x_main2,self.x_main2_var],
                         "sub":[self.sub_cbox_frame,self.x_sub2,self.x_sub2_var],
                         "ranged":[self.ranged_cbox_frame,self.x_ranged2,self.x_ranged2_var],
@@ -4819,6 +4845,7 @@ class App(tk.Tk):
 
                         label = cbox_lists[slot][1][i].cget("text") # The text displayed for each checkbox is the "Name2" key
                         d = name2dictionary(label) # Item dictionary, containing all stats. We just need the "Rank", "Name", and "Jobs" values.
+
                         # First Select/Unselect everything in the list.
                         item.set(False if "un" in trigger else (True if self.mainjob.get().lower() in d["Jobs"] else False))
 
@@ -4836,15 +4863,15 @@ class App(tk.Tk):
                         # Only select R15 REMA by default
                         if slot in ["main", "sub", "ranged"] and "R15" not in label and label in rema_weapons:
                             item.set(False)
-                            
                         # Odyssey Rank check
                         if d.get("Rank",self.odyrank.get())!=self.odyrank.get():
                             item.set(False)
 
-                        # Unselect Path A Nyame
-                        if "Nyame" in label and "A"==label[-1]:
+                        # Unselect paths A and C Nyame
+                        if "Nyame" in label and ("A"==label[-1] or "C"==label[-1]):
                             item.set(False)
 
+                        # Unselect Stage5 primes                        
                         if label.split()[-1] == "V":
                             item.set(False)
 
@@ -4854,8 +4881,6 @@ class App(tk.Tk):
                                 item.set(False)
                                 if self.odyrank.get()==30 and "R25B" in label:
                                     item.set(True)
-
-
 
                         # Unselect JSE +2 Earrings
                         if jse_ear_names[self.mainjob.get().lower()] in label and "+2" in label:
@@ -4869,8 +4894,10 @@ class App(tk.Tk):
                         if slot in ["ear1","ear2"] and "(night)" in label: 
                             item.set(False)
 
-                        # Unselect final stage Prime weapons for now.
-                        if slot in ["main","sub"] and "III" in label: 
+                        ## Unselect +3 and +2 version of AF and Relic gear.
+                        relic_names = ["Pedagogy","Hesychast","Vitiation","Mochizuki","Fallen","Horos","Pitre","Luhlaza","Plunderer","Bagua","Archmage","Piety","Agoge","Caballarius","Wakido","Ankusa","Bihu","Glyphic","Lanun","Arcadian","Pteroslaver","Futhark"]
+                        af_names = ["Academic","Anchorite","Atrophy","Hachiya","Ignominy","Maxixi","Foire","Assimilator","Pillager","Geomancy","Spaekona","Theophany","Pummeler","Reverence","Sakonji","Totemic","Brioso","Convoker","Laksamana","Orion","Vishap","Runeist"]
+                        if slot in ["head", "body", "hands", "legs", "feet"] and "+4" not in label and any([k.lower() in label.lower() for k in af_names + relic_names]):
                             item.set(False)
                         try:    
                             if optDefaults[label]:    
@@ -5159,6 +5186,7 @@ class App(tk.Tk):
             "Base Defense":self.enemy_defense.get(),
             "Defense":self.enemy_defense.get(),
             "Magic Defense":self.enemy_magic_defense.get(),
+            "Magic Damage Taken":self.enemy_mdt.get(),                                     
             "Evasion":self.enemy_evasion.get(),
             "Magic Evasion":self.enemy_magic_evasion.get(),
             })
@@ -5243,7 +5271,8 @@ class App(tk.Tk):
                      "Temper":self.temper1_value.get(),
                      "Temper II":self.temper2_value.get(),
                      "Enh. Skill":self.enh_skill.get() if self.enh_skill.get() > 0 else 0,
-                     "99999":self.damage_limit99999.get()}
+                     "99999":self.damage_limit99999.get(),
+                     "enemy_resist_rank":self.enemy_resist_rank_value.get()}
 
 
         gearset = {
@@ -5366,10 +5395,12 @@ class App(tk.Tk):
                 outputs = average_ws(player_wsset, enemy, ws_name, effective_tp, ws_type, "Damage dealt", simulation=True)
                 damage_list.append(outputs[0])
                 tp_list.append(outputs[1])
+
             plot_final(damage_list, player_wsset, self.tp1.get(), ws_name)
 
         elif trigger=="run one ws":
             ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
+
             effective_tp = self.tp1.get() + player_wsset.stats.get("TP Bonus",0)
             effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
             print()
@@ -5378,7 +5409,6 @@ class App(tk.Tk):
             print()
             print()
             return
-            
         elif trigger=="damage simulation":
             ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
             run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, self.plot_dps.get())
@@ -5386,7 +5416,6 @@ class App(tk.Tk):
         elif trigger=="run one ws":
             ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
             run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, False, True)
-            
         elif trigger=="all stats":
             player = create_player(self.mainjob.get().lower(), self.subjob.get().lower(), self.masterlevel.get(), gearset, buffs, abilities)
             for stat_name in sorted(player.stats.keys()):

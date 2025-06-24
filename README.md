@@ -11,7 +11,7 @@ or you may simple double-click the gui_wsdist.exe executable.
 
 The executable was compiled using the following command within the Windows10 powershell:
 
-pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile .\gui_wsdist.py
+    pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile .\gui_wsdist.py
 
 
 If you choose to use the executable version of this application, then I recommend downloading the application from the actions page for this repository (https://github.com/IzaKastra/wsdist_beta/actions), which contains the executable and necessary files for running it in one simple download ("wsdist-full" contains all necessary files; "wsdist-executable-only" contains only the executable). The executable provided on the actions page was created on GitHub servers using the commands found in the "workflow file" and can therefore be verified as "probably safe to run." This is safer than trusting the executable I've uploaded myself.
