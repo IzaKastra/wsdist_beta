@@ -14980,7 +14980,7 @@
 24072;pedagogy pants +4;Peda. Pants +4
 24073;bagua pants +4;Bagua Pants +4
 24074;futhark trousers +4;Futh. Trousers +4
-24075;pummeler's calligae;Pumm. Calligae +4
+24075;pummeler's calligae +4;Pumm. Calligae +4
 24076;anchorite's gaiters +4;Anch. Gaiters +4
 24077;theophany duckbills +4;Theo. Duckbills +4
 24078;spaekona's sabots +4;Spae. Sabots +4
