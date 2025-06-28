@@ -1508,7 +1508,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         fstr_rng = get_fstr2(ranged_dmg, player.stats["STR"], enemy.stats["VIT"])
 
         player_rangedattack = player.stats.get("Ranged Attack",0)
-        player_rangedaccuracy = player.stats.get("Ranged Accuracy",0) + 100*hover_shot
+        player_rangedaccuracy = player.stats.get("Ranged Accuracy",0)
 
         barrage_hits = 0
         if player.abilities.get("Barrage",False) and player.gearset["ammo"].get("Type","None") in ["Bolt","Bullet","Arrow"]:
@@ -1539,6 +1539,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
             # Add the average number of barrage hits gained.
             # Note that if one hit fails, then the remaining hits are skipped.
             main_hits += 1*(hit_rate_ranged**(i+1))
+
 
         tp_return += get_tp(main_hits, ranged_delay+ammo_delay, stp)
         avg_pdif_rng = get_avg_pdif_ranged(player_rangedattack, ranged_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
@@ -2223,11 +2224,11 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
         ranged_skill_type = player.gearset["ranged"].get("Skill Type",None)
 
         # Calculate ranged hit rates.
-        ranged_accuracy = player_rangedaccuracy + player.stats.get("Weapon Skill Accuracy",0) + 100*hover_shot
+        ranged_accuracy = player_rangedaccuracy + player.stats.get("Weapon Skill Accuracy",0)
         hit_rate_cap_ranged = 0.99 if sharpshot else 0.95
 
-        hit_rate_ranged1 = get_hit_rate(ranged_accuracy + 100*hover_shot +100, enemy_evasion, hit_rate_cap_ranged) # Assume first ranged hit gets +100 accuracy.
-        hit_rate_ranged2 = get_hit_rate(ranged_accuracy + 100*hover_shot, enemy_evasion, hit_rate_cap_ranged) 
+        hit_rate_ranged1 = get_hit_rate(ranged_accuracy + 100, enemy_evasion, hit_rate_cap_ranged) # Assume first ranged hit gets +100 accuracy.
+        hit_rate_ranged2 = get_hit_rate(ranged_accuracy, enemy_evasion, hit_rate_cap_ranged) 
 
         if not simulation:
 
