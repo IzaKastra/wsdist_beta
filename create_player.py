@@ -355,7 +355,7 @@ class create_player:
                     self.stats["Triple Shot"] = 0
                 if self.abilities.get("Hover Shot",False): # We double damage dealt with Hover Shot enabled in the main code.
                     self.stats["Ranged Accuracy"] = self.stats.get("Ranged Accuracy",0) + 100
-                    self.stats["Magic Accuracy"] = self.stats.get("Magic Accuracy",0) + 100
+                    # self.stats["Magic Accuracy"] = self.stats.get("Magic Accuracy",0) + 100 # Hover Shot Magic accuracy applies only to magic WS. We add +100 Macc in the actions.py file only if using a ranged attack
         # ===========================================================================
         # ===========================================================================
         # Samurai abilities
