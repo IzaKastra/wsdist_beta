@@ -1199,7 +1199,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
         element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
 
-        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather_bonus*enemy_mdt*affinity*magic_crit_rate2
+        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather_bonus*(1-enemy_mdt/100)*affinity*magic_crit_rate2
 
         base_damage = int(((ranged_dmg+ammo_dmg)*2 + quick_draw_damage) * (1 + player.stats.get("Quick Draw Damage%",0)/100) + magic_damage_stat)
         damage = base_damage * magic_multiplier
@@ -2333,12 +2333,12 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
 
         klimaform_bonus = 1.0 + player.abilities.get("Klimaform",False)*player.stats.get("Klimaform Damage%",0)/100 # Klimaform with Empy+3 feet boosts magical WS damage by 25%
 
-        enemy_mdt = 1.0 # Enemy MDT is usually 1.0 (-0%) unless the enemy casts shell or a similar spell/ability.
+        enemy_mdt = enemy.stats.get("Magic Damage Taken", 0)
 
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
 
         # Now multiply the magical portion by weapon skill damage as well.
-        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather_bonus*klimaform_bonus*enemy_mdt*affinity*(1 + 0.25*(magic_crit2 if simulation else magic_crit_rate2)) 
+        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather_bonus*klimaform_bonus*(1-enemy_mdt/100)*affinity*(1 + 0.25*(magic_crit2 if simulation else magic_crit_rate2)) 
 
         # Multiply base damage by the multiplier
         magical_damage = base_magical_damage * magic_multiplier
