@@ -14971,7 +14971,7 @@
 24063;arcadian braccae +4;Arc. Bracca +4
 24064;sakonji haidate +4;Sakonji Haidate +4
 24065;mochizuki hakama +4;Mochi. Hakama +4
-24066;pteroslaver's brais +4;Ptero. Brais +4
+24066;pteroslaver brais +4;Ptero. Brais +4
 24067;glyphic spats +4;Glyph. Spats +4
 24068;luhlaza shalwar +4;Luh. Shalwar +4
 24069;lanun trews +4;Lanun Trews +4
