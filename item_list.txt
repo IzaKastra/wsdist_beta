@@ -14893,7 +14893,7 @@
 23985;pummeler's mufflers +4;Pumm. Mufflers +4
 23986;anchorite's gloves +4;Anch. Gloves +4
 23987;theophany mitts +4;Theo. Mitts +4
-23988;spaekona's gloves;Spae. Gloves +4
+23988;spaekona's gloves +4;Spae. Gloves +4
 23989;atrophy gloves +4;Atro. Gloves +4
 23990;pillager's armlets +4;Pill. Armlets +4
 23991;ravager's gauntlets +4;Rav. Gauntlets +4
