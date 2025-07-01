@@ -1523,7 +1523,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
         element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
 
-        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather_bonus*enemy_mdt*affinity*magic_crit_rate2
+        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather_bonus*(1-enemy_mdt/100)*affinity*magic_crit_rate2
 
         base_damage = int(((ranged_dmg+ammo_dmg)*2 + quick_draw_damage) * (1 + player.stats.get("Quick Draw Damage%",0)/100) + magic_damage_stat)
         damage = base_damage * magic_multiplier
@@ -1832,7 +1832,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         fstr_rng = get_fstr2(ranged_dmg, player.stats["STR"], enemy.stats["VIT"])
 
         player_rangedattack = player.stats.get("Ranged Attack",0)
-        player_rangedaccuracy = player.stats.get("Ranged Accuracy",0) + 100*hover_shot
+        player_rangedaccuracy = player.stats.get("Ranged Accuracy",0)
 
         barrage_hits = 0
         if player.abilities.get("Barrage",False) and player.gearset["ammo"].get("Type","None") in ["Bolt","Bullet","Arrow"]:
@@ -1863,6 +1863,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
             # Add the average number of barrage hits gained.
             # Note that if one hit fails, then the remaining hits are skipped.
             main_hits += 1*(hit_rate_ranged**(i+1))
+
 
         tp_return += get_tp(main_hits, ranged_delay+ammo_delay, stp)
         avg_pdif_rng = get_avg_pdif_ranged(player_rangedattack, ranged_skill_type, pdl_trait, pdl_gear, enemy_defense, crit_rate)
@@ -2120,7 +2121,6 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
             physical_damage += main_hits*main_hit_damage
 
             # Calculate the correction to the first hit based on the full set of buffs and bonuses.
-
             first_main_hit_pdif = get_avg_pdif_melee(player_attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, first_main_hit_crit_rate)
             first_main_hit_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, first_main_hit_pdif, ftp, first_main_hit_crit_rate, adjusted_crit_dmg, wsd, ws_bonus, ws_trait, sneak_attack_bonus, trick_attack_bonus, climactic_flourish_bonus, striking_flourish_bonus, ternary_flourish_bonus)
 
@@ -2548,11 +2548,11 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
         ranged_skill_type = player.gearset["ranged"].get("Skill Type",None)
 
         # Calculate ranged hit rates.
-        ranged_accuracy = player_rangedaccuracy + player.stats.get("Weapon Skill Accuracy",0) + 100*hover_shot
+        ranged_accuracy = player_rangedaccuracy + player.stats.get("Weapon Skill Accuracy",0)
         hit_rate_cap_ranged = 0.99 if sharpshot else 0.95
 
-        hit_rate_ranged1 = get_hit_rate(ranged_accuracy + 100*hover_shot +100, enemy_evasion, hit_rate_cap_ranged) # Assume first ranged hit gets +100 accuracy.
-        hit_rate_ranged2 = get_hit_rate(ranged_accuracy + 100*hover_shot, enemy_evasion, hit_rate_cap_ranged) 
+        hit_rate_ranged1 = get_hit_rate(ranged_accuracy + 100, enemy_evasion, hit_rate_cap_ranged) # Assume first ranged hit gets +100 accuracy.
+        hit_rate_ranged2 = get_hit_rate(ranged_accuracy, enemy_evasion, hit_rate_cap_ranged) 
 
         if not simulation:
 
@@ -2610,7 +2610,6 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
         # https://www.ffxiah.com/forum/topic/51313/tachi-jinpu-set/
 
         true_shot = player.stats.get("True Shot",0)/100
-        
         # Read in the relevant magic stats
         magic_damage_stat = player.stats.get("Magic Damage",0) # Some jobs have special/specific magic damage, such as NIN, which has +40 Magic Damage from Job Points which only apply to Ninjutsu spells.
         magic_attack = player.stats.get("Magic Attack",0) # Some equipment has special magic attack, which applies in separate multiplicative terms on a per-element basis. Normally we see (1+matk)/(1+mdef), but Archon Ring uses something like (1+matk)/(1+mdef) * (1+dark_matk)/(1+dark_mdef)
@@ -2657,12 +2656,12 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
 
         klimaform_bonus = 1.0 + player.abilities.get("Klimaform",False)*player.stats.get("Klimaform Damage%",0)/100 # Klimaform with Empy+3 feet boosts magical WS damage by 25%
 
-        enemy_mdt = 1.0 # Enemy MDT is usually 1.0 (-0%) unless the enemy casts shell or a similar spell/ability.
+        enemy_mdt = enemy.stats.get("Magic Damage Taken", 0)
 
         affinity = 1 + 0.05*player.stats.get(f"{element} Affinity",0) + 0.05*(player.stats.get(f"{element} Affinity",0)>0) # Elemental Affinity Bonus. Only really applies to Magian Trial staves. Archon Ring is different.
 
         # Now multiply the magical portion by weapon skill damage as well.
-        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather_bonus*klimaform_bonus*enemy_mdt*affinity*(1 + 0.25*(magic_crit2 if simulation else magic_crit_rate2)) 
+        magic_multiplier = resist_state*magic_attack_ratio*element_magic_attack_bonus*dayweather_bonus*klimaform_bonus*(1-enemy_mdt/100)*affinity*(1 + 0.25*(magic_crit2 if simulation else magic_crit_rate2)) 
 
         # Multiply base damage by the multiplier
         magical_damage = base_magical_damage * magic_multiplier

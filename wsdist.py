@@ -19,7 +19,7 @@ def format_bgwiki(ws_name, tp, player, best_metric):
     #
     # Prints to the terminal the player gearset in BG Wiki format, ignoring augments.
     #
-    buffs = "High"
+    buffs = "Mid"
 
 
     # Certain items have shortened names on BG Wiki. Use the item_list.txt file to find and replace these names for BG Wiki.
@@ -30,7 +30,11 @@ def format_bgwiki(ws_name, tp, player, best_metric):
     for stat in player.gearset["back"]:
         if stat.lower() in ["str","dex","vit","agi","int","mnd","chr","da","store tp","dual wield","crit rate","weapon skill damage", "magic attack"]:
             backaugs.append(stat)
-    
+
+    linosaugs = []
+    for stat in player.gearset["ranged"]:
+        if stat.lower() in ["str","dex","vit","agi","int","mnd","chr","da","store tp","dual wield","crit rate","weapon skill damage", "magic attack","qa","da","ta"]:
+            linosaugs.append(stat)
 
     # Moonshade natually looks best in the left ear slot.
     if "moonshade" in player.gearset["ear2"]["Name"].lower():
@@ -85,6 +89,8 @@ def format_bgwiki(ws_name, tp, player, best_metric):
     for slot in hardcode_gearset:
         hardcode_gearset[slot] = "" if hardcode_gearset[slot].lower()=="empty" else hardcode_gearset[slot]
 
+
+            # |RangeAug = {", ".join(linosaugs)}
     bgwiki_text = f"""
     {'{'}{'{'}
         Guide Equipment Set
@@ -177,7 +183,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                     "Geirskogul":"Gungnir",
                     "Tachi: Kaiten":"Amanomurakumo",
                     "Randgrith":"Mjollnir",
-                    "Gates of Tartarus":"Claustrum",
+                    "Gate of Tartarus":"Claustrum",
                     "Namas Arrow":"Yoichinoyumi",
                     "Coronach":"Annihilator",
                     "Fast Blade II":"Onion Sword III",

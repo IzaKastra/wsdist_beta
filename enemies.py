@@ -15,6 +15,7 @@ enemies = [
     {"Name":"Apex Archaic Cogs", "Level":147, "Defense":1791, "Evasion":1628, "VIT":399, "AGI":443, "MND":377, "INT":390, "CHR":377, "Magic Evasion":0, "Magic Defense":0, "Magic Damage Taken":0, "Location":"Alzadaal Undersea Ruins"},  # CHR unknown. Copied MND
     {"Name":"Ozma", "Level":999, "Defense":9999, "Evasion":9999, "VIT":999, "AGI":999, "MND":999, "INT":999, "CHR":999, "Magic Evasion":0, "Magic Defense":0, "Magic Damage Taken":0, "Location":"Chocobo's Air Garden"},
     {"Name":"Octorok", "Level":1, "Defense":1, "Evasion":1, "VIT":1, "AGI":1, "MND":1, "INT":1, "CHR":1, "Magic Evasion":0, "Magic Defense":0, "Magic Damage Taken":0, "Location":"Hyrule"},
+    {"Name":"BG Wiki sets", "Level":0, "Defense":1500, "Evasion":1350, "VIT":340, "AGI":340, "MND":280, "INT":280, "CHR":280, "Magic Evasion":0, "Magic Defense":0, "Magic Damage Taken":0, "Location":""},
     ]
 
 

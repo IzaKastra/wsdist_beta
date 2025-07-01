@@ -582,7 +582,35 @@ def name2dictionary(name):
             return(all_gear[i])
     return(Empty)
 
+class ScrollableTab(ttk.Frame):
+    def __init__(self, parent, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
 
+        self.canvas = tk.Canvas(self)
+        self.scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.scrollable_frame = ttk.Frame(self.canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
+            )
+        )
+
+        self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=self.scrollbar.set)
+
+        self.canvas.pack(side="left", fill="both", expand=True)
+        self.scrollbar.pack(side="right", fill="y")
+
+        # Optional: Mouse wheel scrolling
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+
+    def _on_mousewheel(self, event):
+        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def get_content_frame(self):
+        return self.scrollable_frame
 
 class App(tk.Tk):
 
@@ -603,7 +631,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 June 21a (Brimstone mods)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 June 29a (Brimstone mods)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -611,10 +639,12 @@ class App(tk.Tk):
             self.resizable(True,True)
         else:
             self.resizable(True, True)
-
         self.notebook = ttk.Notebook(self, )
         self.notebook.pack(fill="both",expand=1)
-        self.inputs_tab = ttk.Frame(self.notebook)
+        
+        # self.inputs_tab = ttk.Frame(self.notebook)
+        self.inputs_tab = ScrollableTab(self.notebook)
+        self.content_frame = self.inputs_tab.get_content_frame()
         self.select_gear_tab = ttk.Frame(self.notebook)
         self.stats_tab = ttk.Frame(self.notebook)
         self.sim_tab = ttk.Frame(self.notebook)
@@ -623,7 +653,6 @@ class App(tk.Tk):
         self.notebook.add(self.select_gear_tab, text="Optimize")
         self.notebook.add(self.stats_tab, text="Player Stats")
         self.notebook.add(self.sim_tab, text="Simulations")
-
         # tkinter Menu  https://blog.teclado.com/how-to-add-menu-to-tkinter-app/
         self.menu_bar = tk.Menu(self)
         self.file_menu = tk.Menu(self.menu_bar, tearoff=False)
@@ -665,12 +694,16 @@ class App(tk.Tk):
 
 
         # self.inputs_frame = ttk.LabelFrame(self,borderwidth=3,width=676,height=250,text="Main Frame1")
-        self.inputs_frame = ttk.Frame(self.inputs_tab,borderwidth=3,width=676,height=250)
+        self.inputs_frame = ttk.Frame(self.content_frame,borderwidth=3,width=676,height=250)
         self.inputs_frame.grid(row=0, column=0, padx=2, pady=0, sticky="nw")
         # self.frame1.grid_columnconfigure((0,1),weight=1)
         # self.frame1.grid_propagate(0)
+        self.topframe = ttk.LabelFrame(self.inputs_frame,borderwidth=3,width=676,height=275)
+        self.topframe.grid(row=0, column=0, padx=0, pady=0, sticky="w")
+        self.topframe.grid_propagate(0)
+        self.topframe.grid_columnconfigure((0),weight=1) # Column 0 expands in the horizontal direction to fill blank space, effectively centering column1 in the frame. Weight=1 is how fast it expands; 2 is twice as fast, but it's all relative so no reason to change it with only one column
 
-        self.player_inputs_frame = ttk.LabelFrame(self.inputs_frame,borderwidth=3,width=250,height=250,text="  Basic Inputs  ")
+        self.player_inputs_frame = ttk.LabelFrame(self.topframe,borderwidth=3,width=250,height=250,text="  Basic Inputs  ")
         self.player_inputs_frame.grid(row=0, column=0, padx=0, pady=0, sticky="nw")
         self.player_inputs_frame.grid_propagate(0)
         if True:
@@ -857,7 +890,7 @@ class App(tk.Tk):
         # Define a new scrollable frame which holds the full list of checkbox abilities. We'll hide abilities not useable by the selected main/subjob combo
 
 
-        self.ja_toggles_frame = ttk.LabelFrame(self.inputs_frame, borderwidth=3,text="  Special Toggles  ")
+        self.ja_toggles_frame = ttk.LabelFrame(self.topframe, borderwidth=3,text="  Special Toggles  ")
         self.ja_toggles_frame.grid(row=0,column=1,padx=0,pady=0,sticky="nw")
 
         self.ja_scrollframe = ttk.Frame(self.ja_toggles_frame)
@@ -1262,7 +1295,7 @@ class App(tk.Tk):
         # ===========================================================================
         # ===========================================================================
 
-        self.enemy_inputs_frame = ttk.LabelFrame(self.inputs_frame,borderwidth=3,width=676/2-1,height=250,text="  Enemy Inputs  ")
+        self.enemy_inputs_frame = ttk.LabelFrame(self.topframe,borderwidth=3,width=676/2-1,height=250,text="  Enemy Inputs  ")
         self.enemy_inputs_frame.grid(row=0, column=2, padx=0, pady=0, sticky="ne")
 
         self.enemy_location_frame = ttk.Frame(self.enemy_inputs_frame)
@@ -1357,8 +1390,7 @@ class App(tk.Tk):
 #  Frame 2: Contains buffs from WHM/Food/BRD/COR/GEO
 # =============================================================================================================================
 # =============================================================================================================================
-
-        self.buffs_frame = ttk.LabelFrame(self.inputs_tab,borderwidth=3,width=676,height=250,text="  Active Buffs  ")
+        self.buffs_frame = ttk.LabelFrame(self.inputs_frame,borderwidth=3,width=676,height=250,text="  Active Buffs  ")
         # self.buffs_frame = ttk.Frame(self,width=676,height=250,)
         self.buffs_frame.grid(row=1, column=0, padx=2, pady=0, sticky="w")
         self.buffs_frame.grid_propagate(0)
@@ -1581,7 +1613,7 @@ class App(tk.Tk):
         if not self.horizontal:
 
             # self.equipment_frame = ttk.LabelFrame(self,borderwidth=3,width=676,height=350,text="Main Frame3")
-            self.equipment_frame = ttk.Frame(self.inputs_tab,width=676,height=350)
+            self.equipment_frame = ttk.Frame(self.inputs_frame,width=676,height=350)
             self.equipment_frame.grid_propagate(0)
             self.equipment_frame.grid(row=2, column=0, padx=2, pady=0, sticky="w")
         else:
@@ -4894,7 +4926,7 @@ class App(tk.Tk):
                         if slot in ["ear1","ear2"] and "(night)" in label: 
                             item.set(False)
 
-                        ## Unselect +3 and +2 version of AF and Relic gear.
+                        # Unselect +3 and +2 version of AF and Relic gear.
                         relic_names = ["Pedagogy","Hesychast","Vitiation","Mochizuki","Fallen","Horos","Pitre","Luhlaza","Plunderer","Bagua","Archmage","Piety","Agoge","Caballarius","Wakido","Ankusa","Bihu","Glyphic","Lanun","Arcadian","Pteroslaver","Futhark"]
                         af_names = ["Academic","Anchorite","Atrophy","Hachiya","Ignominy","Maxixi","Foire","Assimilator","Pillager","Geomancy","Spaekona","Theophany","Pummeler","Reverence","Sakonji","Totemic","Brioso","Convoker","Laksamana","Orion","Vishap","Runeist"]
                         if slot in ["head", "body", "hands", "legs", "feet"] and "+4" not in label and any([k.lower() in label.lower() for k in af_names + relic_names]):
@@ -5186,7 +5218,7 @@ class App(tk.Tk):
             "Base Defense":self.enemy_defense.get(),
             "Defense":self.enemy_defense.get(),
             "Magic Defense":self.enemy_magic_defense.get(),
-            "Magic Damage Taken":self.enemy_mdt.get(),                                     
+            "Magic Damage Taken":self.enemy_mdt.get(),
             "Evasion":self.enemy_evasion.get(),
             "Magic Evasion":self.enemy_magic_evasion.get(),
             })
@@ -5592,6 +5624,7 @@ class App(tk.Tk):
         self.enemy_defense_entry.delete(0,tk.END)
         self.enemy_magic_evasion_entry.delete(0,tk.END)
         self.enemy_magic_defense_entry.delete(0,tk.END)
+        self.enemy_mdt_entry.delete(0,tk.END)
 
         # Insert the new entries
         self.enemy_agi_entry.insert(0,new_enemy["AGI"])
@@ -5603,6 +5636,7 @@ class App(tk.Tk):
         self.enemy_defense_entry.insert(0,new_enemy["Defense"])
         self.enemy_magic_evasion_entry.insert(0,new_enemy["Magic Evasion"])
         self.enemy_magic_defense_entry.insert(0,new_enemy["Magic Defense"])
+        self.enemy_mdt_entry.insert(0,new_enemy["Magic Damage Taken"])
 
         self.enemy_location_var.set(new_enemy["Location"])
 
