@@ -11,7 +11,7 @@ from get_tp import get_tp
 from nuking import *
 from get_dint_m_v import *
 from get_delay_timing import *
-from tkinter import Entry, StringVar, Tk, Label, LEFT, RIGHT, CENTER, W, E, Canvas, NW, Scrollbar, VERTICAL, NE, Frame
+from tkinter import Entry, StringVar, Tk, Label, LEFT, RIGHT, CENTER, W, E, Canvas, NW, Scrollbar, VERTICAL, NE, Frame, Toplevel, BOTH, LabelFrame
 
 terminal = False
 fh = open('actions.txt', 'w')
@@ -29,6 +29,7 @@ metrics = []
 diffMetrics = {}
 maxdamage = 0
 maxdmgSim = 0
+simwin = None
 
 def printme(*args, **kwargs):
     if terminal:
@@ -73,14 +74,18 @@ def verbose_output(phys_dmg, magic_dmg, tp_return, crit, special="other"):
     else:
         printme(f"                {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
         
-
-def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, plot_dps=False, verbose=False):
+def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, plot_dps=False, verbose=False, self=None):
     global diffMetrics
     global maxdamage
     global maxdmgSim
     global metrics
     global simNumber
     global simMetrics
+    global simwin
+    if simwin:
+        if simwin.winfo_exists():
+            simwin.destroy()
+
     verbose_dps = player_tp.abilities.get("Verbose DPS", False)
     very_verbose_dps = player_tp.abilities.get("Very Verbose DPS", False)
     dual_wield = ((player_tp.gearset["sub"].get("Type",None) == "Weapon") or (player_tp.gearset["main"]["Skill Type"] == "Hand-to-Hand")) and ((player_ws.gearset["sub"].get("Type",None) == "Weapon") or (player_ws.gearset["main"]["Skill Type"] == "Hand-to-Hand"))
@@ -425,17 +430,23 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
                 diffMetrics[metric] = 1
                 if len(metric) > maxw:
                     maxw = len(metric)
+                if len(str(simMetrics[metric][simNumber])) > maxw:
+                    maxw = len(simMetrics[metric][simNumber])
     if simNumber:
-        simwin = Tk()
+        simwin = Toplevel(self)
         simwin.title("Simulation Summary Differences")
+        start_x = 0
+        start_y = 0
         width = maxw
         oddColor = "#FFFFFF"
         evenColor = "#FFFFCC"
         better = "#12FF12"
         worse = "#FF1212"
         txt = "#000000"
+        cell_height = 18
+        cell_width = maxw*7
         lowerBetter = ['Time/Attack (s)', 'TP DT', 'WS DT', 'TP MDT', 'WS MDT', 'TP PDT', 'WS PDT', 'TP PDT2', 'WS PDT2']
-        canvas = Canvas(simwin)
+        canvas = Canvas(simwin, width=cell_width*(simNumber+2), height=cell_height*len(diffMetrics))
         canvas.grid(row=0, column=0, sticky="nsew")
         yscrollbar = Scrollbar(simwin, orient="vertical", command=canvas.yview)
         yscrollbar.grid(row=0, column=1, sticky="ns")
@@ -445,7 +456,7 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
         rfont=("Arial", 10)
         bfont=("Arial", 10, "bold", "italic")
         frame = Frame(canvas)
-        canvas.create_window((0, 0), window=frame, anchor="nw")
+        canvas_frame_id = canvas.create_window((0, 0), window=frame, anchor="nw")
         with open(f'sim_diff_summary.txt', 'w') as simd:            
             row = 0
             color = evenColor
@@ -453,9 +464,14 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
                 if metric in diffMetrics:
                     simd.write(f"{metric}:\t")
                     usefont = rfont
-                    l = Label(frame, text=metric, background=color, width=width, foreground=txt)
-                    l.configure(font=usefont)
-                    l.grid(row=row, column=0, sticky=W)
+                    x1 = 0 * cell_width
+                    y1 = row * cell_height
+                    x2 = x1 + cell_width
+                    y2 = y1 + cell_height
+                    x_center = start_x + 0 * cell_width + cell_width / 2
+                    y_center = start_y + row * cell_height + cell_height / 2
+                    canvas.create_rectangle(x1, y1, x2, y2, outline="", fill=color)
+                    canvas.create_text(x_center, y_center, text=metric, anchor=CENTER, font=usefont, fill=txt)
                     for i in range(0, simNumber+1):
                         col = i + 1
                         simd.write(f"{simMetrics[metric][i]}\t")
@@ -473,30 +489,34 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
                                         fg = better
                             except:
                                 pass
-                        l = Label(frame, text=simMetrics[metric][i], background=color, width=width, foreground=fg)
                         usefont = rfont
                         if i == maxdmgSim:
                             if metric in ('Total DPS', 'Total Damage (M)'):
                                 usefont = bfont
-                        l.configure(font=usefont)
-                        l.grid(row=row, column=col, sticky=E)
+                        x1 = col * cell_width
+                        y1 = row * cell_height
+                        x2 = x1 + cell_width
+                        y2 = y1 + cell_height
+                        x_center = start_x + col * cell_width + cell_width / 2
+                        y_center = start_y + row * cell_height + cell_height / 2
+                        canvas.create_rectangle(x1, y1, x2, y2, outline="", fill=color)
+                        canvas.create_text(x_center, y_center, text=simMetrics[metric][i], anchor=CENTER, font=usefont, fill=fg)
                     simd.write(f'\n') 
                     row += 1
                     if color == evenColor:
                         color = oddColor
                     else:    
                         color = evenColor
-        # Update the Canvas scroll region after the labels are created
-        frame.update_idletasks()
+        canvas.update_idletasks()
         canvas.config(scrollregion=canvas.bbox("all"))
-
-        # Configure row and column weights to make the grid expandable
+        frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+        # Bind mouse wheel to the canvas
+        def on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        canvas.bind("<MouseWheel>", on_mousewheel)
         simwin.grid_rowconfigure(0, weight=1)
         simwin.grid_columnconfigure(0, weight=1)
     simNumber += 1
-    
-
-
             
 def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric, simulation=False, verbose=False):
     #

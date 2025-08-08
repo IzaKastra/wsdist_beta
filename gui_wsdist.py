@@ -13,6 +13,7 @@ import sqlite3
 import sys
 import os
 import re
+app = None
 sys.path.append(os.path.dirname(sys.executable))
 geardb = 'gear.db'
 mains = [] 
@@ -633,8 +634,10 @@ class App(tk.Tk):
         # Build the basic app.
         self.title("Kastra FFXI Damage Simulator (Beta: 2025 June 29a (Brimstone mods)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
         self.horizontal = False
+        self.frame_height = 885
+        self.frame_width = 700
         if not self.horizontal:
-            self.geometry("700x885")
+            self.geometry(f"{self.frame_width}x{self.frame_height}")
             # self.minsize(width=700,height=950)
             self.resizable(True,True)
         else:
@@ -4689,7 +4692,6 @@ class App(tk.Tk):
 # ====================================================================================================================================================================================
 
 
-
         self.sim_frame = ttk.LabelFrame(self.sim_tab, text="Damage Simulation", width=676, height=250)
         self.sim_frame.grid_propagate(0)
         self.sim_frame.grid(row=2, column=0, padx=2, pady=10, sticky="w")
@@ -5443,7 +5445,7 @@ class App(tk.Tk):
             return
         elif trigger=="damage simulation":
             ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
-            run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, self.plot_dps.get())
+            run_simulation(player_tpset, player_wsset, enemy, self.tp1.get(), ws_name, ws_type, self.plot_dps.get(), self=self)
 
         elif trigger=="run one ws":
             ws_type = "ranged" if ws_name in self.ranged_ws else "melee"
@@ -5649,6 +5651,7 @@ class App(tk.Tk):
         return(short_name)
 
     def export2gearswap(self,settype="default"):
+        global app
         #
         # Print the equipped gear in a copy/pastable lua format.
         #
@@ -6693,6 +6696,7 @@ def load_file(f = "defaults.txt"):
     return defaults
 
 def reload(f = "defaults.txt"):
+    global app
     defaults = load_file(f)
 
     load_defaults(app,defaults) # If the input file fails to load, then it'll load a set of default defaults.
