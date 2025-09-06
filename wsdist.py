@@ -207,22 +207,23 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
 
     best_set =  starting_gearset.copy()
 
-    tcount = 0 # Total number of valid sets checked.
     for slot in starting_gearset:
-        # print(starting_gearset[k])
         
         # Unequip gear you can't wear if it's already equipped.
         if main_job.lower() not in starting_gearset[slot]["Jobs"]:
             best_set[slot] = Empty
 
-        # Unequip gear that is not selected to be tested, unless the player locked the slot by selecting nothing.
-        # if (starting_gearset[slot] not in check_gear[slot]) and len(check_gear[slot])>0:
-        #     best_set[slot] = Empty
+        # If only one item is selected through the checkbox for a slot, then equip that item (so you do not start with an empty slot)
+        if len(check_gear[slot])==1:
+            best_set[slot] = check_gear[slot][0]
 
         # Unequip all gear in slots to be tested.
-        if len(check_gear[slot])>1:
-            best_set[slot] = Empty
-            
+        elif len(check_gear[slot])>1:
+            if slot in ["main", "sub"]: # Do not unequip weapons when initializing sets.
+                best_set[slot] = np.random.choice(check_gear[slot]) # Randomly select one of the weapons to start with, rather than unequipping them and losing Dual Wield status.
+            else:
+                best_set[slot] = Empty
+
         # If testing a melee WS, do not find the best ranged weapon unless it is an instrument. This does not apply to RNG or COR who might want savage blade sets to test gun/bow options
         if ws_type=="melee" and main_job not in ["rng","cor"]:
             check_gear["ranged"] = [k for k in check_gear["ranged"] if k["Type"]=="Instrument"]

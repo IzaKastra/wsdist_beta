@@ -347,7 +347,7 @@ class App(tk.Tk):
         # ('winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative')
 
         # Build the basic app.
-        self.title("Kastra FFXI Damage Simulator (Beta: 2025 September 06)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator (Beta: 2025 September 06a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
         self.horizontal = False
         if not self.horizontal:
             self.geometry("700x885")
@@ -5290,6 +5290,8 @@ class App(tk.Tk):
                     remove_slots.append(slot)
             for slot in remove_slots:
                 check_slots.remove(slot)
+
+            assert any([len(check_gear[k])>1 for k in check_gear]), "At least two items must be selected in at least one slot to find the best set."
 
             print_swaps = self.next_best_toggle.get()
             next_best_percent = self.next_best_value.get()
