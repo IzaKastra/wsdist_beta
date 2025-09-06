@@ -221,6 +221,12 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
             player.stats.get("OA2 sub",0),
             ])/100
 
+    # Follow-up attack handled here.
+    fua_main = player.stats.get("FUA main",0)/100
+    fua_sub = player.stats.get("FUA sub", 0)/100
+
+    fua_list = [fua_main, fua_sub]
+
     ta_dmg = player.stats.get("TA Damage%",0)/100
     da_dmg = player.stats.get("DA Damage%",0)/100
 
@@ -406,7 +412,6 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
         ta_proc_sub = (np.random.uniform() < ta) * (not qa_proc_sub)
         da_proc_sub = (np.random.uniform() < da) * (not qa_proc_sub) * (not ta_proc_sub)
 
-        
 
 
         attempted_hits = 0
@@ -951,7 +956,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
         return(physical_damage, tp_return, magical_damage)
 
 
-    else: # Not running simulations, just checking averages
+    else: # Not running simulations, just checking averages for TP rounds
 
         striking_flourish = player.abilities.get("Striking Flourish",False)
         ternary_flourish = player.abilities.get("Ternary Flourish",False)
@@ -964,7 +969,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
             hit_rate21 = 1.0
 
         # Use multi-attack values to estimate the number of hits per weapon. This must include Flourishes, which can force multi-attacks.
-        main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits = get_ma_rate3(player.main_job, nhits, qa, ta, da, oa_list, dual_wield, hit_rate_matrix, hit_rate_ranged, daken, kickattacks, zanshin, zanhasso, zanshin_hit_rate, zanshin_oa2, striking_flourish, ternary_flourish, True)
+        main_hits, sub_hits, daken_hits, kickattack_hits, zanshin_hits = get_ma_rate3(player.main_job, nhits, qa, ta, da, oa_list, fua_list, dual_wield, hit_rate_matrix, hit_rate_ranged, daken, kickattacks, zanshin, zanhasso, zanshin_hit_rate, zanshin_oa2, striking_flourish, ternary_flourish, True)
 
         if player.abilities.get("EnSpell",False):
             magical_damage += main_hits * get_enspell_damage(enhancing_magic_skill, enspell_damage_percent_main, enspell_damage_main)
@@ -1681,7 +1686,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
     oa3_sub = player.stats.get("OA3 sub",0)/100
     oa2_sub = player.stats.get("OA2 sub",0)/100
 
-    oa_list = np.array([player.stats.get("OA3 main",0), # Notice that there is no support for main-hand Kclub. Only the off-hand values support OA4+
+    oa_list = np.array([player.stats.get("OA3 main",0),
             player.stats.get("OA2 main",0),
             player.stats.get("OA8 sub",0),
             player.stats.get("OA7 sub",0),
@@ -1691,6 +1696,11 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
             player.stats.get("OA3 sub",0),
             player.stats.get("OA2 sub",0),
             ])/100
+
+    # Follow-up attack does not apply to weapon skills, so we hard-code zero here. The TP function uses actual values
+    fua_main = 0
+    fua_sub = 0
+    fua_list = np.array([fua_main, fua_sub])
 
     pdl_gear = player.stats.get("PDL",0)/100
     pdl_trait = player.stats.get("PDL Trait",0)/100
@@ -1785,7 +1795,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
 
 
             # Use multi-attack values to estimate the number of hits per weapon. This must include Flourishes, which can force multi-attacks.
-            main_hits, sub_hits, _, _, _ = get_ma_rate3(player.main_job, nhits, qa, ta, da, oa_list, dual_wield, hit_rate_matrix, 0, 0, 0, 0, 0, 0, 0, striking_flourish, ternary_flourish, False) # Zero for ranged hit rate, daken, and kick attacks since this is the melee WS check
+            main_hits, sub_hits, _, _, _ = get_ma_rate3(player.main_job, nhits, qa, ta, da, oa_list, fua_list, dual_wield, hit_rate_matrix, 0, 0, 0, 0, 0, 0, 0, striking_flourish, ternary_flourish, False) # Zero for ranged hit rate, daken, and kick attacks since this is the melee WS check
 
             # Now calculate damage dealt for these hits.
             # I calculate Hand-to-Hand off-hand attack using STR/2 instead of STR in the player class code, which lowers damage by a few % when compared to attack2 = attack1. I keep attack2 = attack1 in this main code for now.

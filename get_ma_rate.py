@@ -1,6 +1,5 @@
 #
 # Author: Kastra (Asura)
-# Version date: 2023 July 3
 #
 from numba import njit
 import numpy as np
@@ -173,7 +172,7 @@ import random
 #     return(main_hits, sub_hits)
 
 @njit
-def get_ma_rate3(main_job, nhits, qa, ta, da, oa_list, dual_wield, hitrate_matrix, ranged_hitrate2, daken, kickattacks, zanshin, zanhasso, zanshin_hitrate, zanshin_oa2, striking_flourish=False, ternary_flourish=False, tp_round=False,):
+def get_ma_rate3(main_job, nhits, qa, ta, da, oa_list, fua_list, dual_wield, hitrate_matrix, ranged_hitrate2, daken, kickattacks, zanshin, zanhasso, zanshin_hitrate, zanshin_oa2, striking_flourish=False, ternary_flourish=False, tp_round=False,):
     #
     # Calculate the expected number of attacks on a given attack round (nhits=1) or weapon skill (nhits=nhits).
     # Break up the results into main_hits, sub_hits, daken_hits, kickattack_hits, and zanshin_hits. The sum must be no larger than 8.
