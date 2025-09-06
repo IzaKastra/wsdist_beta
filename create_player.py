@@ -674,7 +674,7 @@ class create_player:
                     # A list of combat skills to ignore when seen in the main or sub slots. These skills apply only to their respective slots on weapons so we create a new stat for them.
                     ignore_main_sub_skills = ["Hand-to-Hand Skill","Dagger Skill","Sword Skill","Great Sword Skill","Axe Skill","Great Axe Skill","Scythe Skill","Polearm Skill","Katana Skill","Great Katana Skill","Club Skill","Staff Skill","Evasion Skill","Divine Magic Skill","Elemental Magic Skill","Dark Magic Skill","Ninjutsu Skill","Summoning Magic Skill","Blue Magic Skill","Magic Accuracy Skill"]
                     if not (slot in ["main","sub"] and stat in ignore_main_sub_skills):
-                        if stat in ["OA8","OA7","OA6","OA5","OA4","OA3","OA2","EnSpell Damage","EnSpell Damage%"] and slot in ["main", "sub"]: # OAX stats apply only to the weapon they are attached to.
+                        if stat in ["FUA","OA8","OA7","OA6","OA5","OA4","OA3","OA2","EnSpell Damage","EnSpell Damage%"] and slot in ["main", "sub"]: # OAX stats apply only to the weapon they are attached to.
                             self.stats[f"{stat} {slot}"] = self.stats.get(f"{stat} {slot}",0) + self.gearset[slot][stat]
                         elif stat=="WSC":
                             self.stats[stat] = self.stats.get(stat,[]) + [self.gearset[slot][stat]]
@@ -708,7 +708,7 @@ class create_player:
             if "Regal Ring" in [self.gearset["ring1"]["Name"], self.gearset["ring2"]["Name"]] and slot in ["head","body","hands","legs","feet"]:
                 if af_armor[self.main_job] in self.gearset[slot]["Name"].lower():
                     regal_ring_count += 1
-            if "regal earring" in [self.gearset["ear1"]["Name"], self.gearset["ear2"]["Name"]] and slot in ["head","body","hands","legs","feet"]:
+            if "Regal Earring" in [self.gearset["ear1"]["Name"], self.gearset["ear2"]["Name"]] and slot in ["head","body","hands","legs","feet"]:
                 if af_armor[self.main_job] in self.gearset[slot]["Name"].lower():
                     regal_earring_count += 1
 
