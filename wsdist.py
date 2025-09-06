@@ -220,7 +220,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
         #     best_set[slot] = Empty
 
         # Unequip all gear in slots to be tested.
-        if len(check_gear[slot])>0:
+        if len(check_gear[slot])>1:
             best_set[slot] = Empty
             
         # If testing a melee WS, do not find the best ranged weapon unless it is an instrument. This does not apply to RNG or COR who might want savage blade sets to test gun/bow options
