@@ -12,6 +12,7 @@ on:
       - 'defaults.txt'
       - 'item_list.txt'
       - 'requirements.txt'
+      - 'icons32/*'
 
   # On a pull request to a branch.
   pull_request:
@@ -23,6 +24,7 @@ on:
       - 'README.md'
       - 'item_list.txt'
       - 'requirements.txt'
+      - 'icons32/*'
 
 env:
   # System
