@@ -5,9 +5,24 @@ on:
   push:
     branches: [ 'main' ]
 
+  paths-ignore:
+      - 'enemies.py'
+      - 'gear.py'
+      - 'README.md'
+      - 'defaults.txt'
+      - 'item_list.txt'
+      - 'requirements.txt'
+
   # On a pull request to a branch.
   pull_request:
     branches: [ 'main' ]
+    
+    paths-ignore:
+      - 'enemies.py'
+      - 'gear.py'
+      - 'README.md'
+      - 'item_list.txt'
+      - 'requirements.txt'
 
 env:
   # System
