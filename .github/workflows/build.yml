@@ -6,25 +6,26 @@ on:
     branches: [ 'main' ]
 
     paths-ignore:
-      - 'enemies.py'
-      - 'gear.py'
       - 'README.md'
-      - 'defaults.txt'
-      - 'item_list.txt'
       - 'requirements.txt'
-      - 'icons32/*'
+      # - 'defaults.txt'
+      # - 'icons32/*'
+      # - 'item_list.txt'
+      # - 'enemies.py'
+      # - 'gear.py'
 
   # On a pull request to a branch.
   pull_request:
     branches: [ 'main' ]
     
     paths-ignore:
-      - 'enemies.py'
-      - 'gear.py'
       - 'README.md'
-      - 'item_list.txt'
       - 'requirements.txt'
-      - 'icons32/*'
+      # - 'defaults.txt'
+      # - 'icons32/*'
+      # - 'item_list.txt'
+      # - 'enemies.py'
+      # - 'gear.py'
 
 env:
   # System
