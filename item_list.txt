@@ -15025,3 +15025,9 @@
 24117;pedagogy loafers +4;Peda. Loafers +4
 24118;bagua sandals +4;Bagua Sandals +4
 24119;futhark boots +4;Futh. Boots +4
+26234;murky ring;Murky Ring
+26119;alabaster earring;Alabaster Earring
+26275;alabaster mantle;Alabaster Mantle
+26276;murky mantle;Murky Mantle
+26417;archduke's shield;Archduke's Shield
+20655;archduke's sword;Archduke's Sword
