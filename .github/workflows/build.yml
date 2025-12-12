@@ -75,7 +75,7 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
       with:
-        name: kastra_ffxi_sim_full-executable-only
+        name: kastra_ffxi_sim-executable-only
         path: ./  
 
     - name: Zip Artifacts
