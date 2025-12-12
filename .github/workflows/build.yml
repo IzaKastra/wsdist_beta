@@ -55,13 +55,13 @@ jobs:
         pip install colorama
 
     - name: Create Installer
-      run: pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
+      run: pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_main.py
 
     - name: Upload Installer
       uses: actions/upload-artifact@v4
       with: 
-        name: wsdist-executable-only
-        path: ./dist/gui_wsdist.exe
+        name: kastra_ffxi_sim-executable-only
+        path: ./dist/gui_main.exe
 
   publish-artifacts:
     name: Publish Artifacts
@@ -75,19 +75,19 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
       with:
-        name: wsdist-executable-only
+        name: kastra_ffxi_sim_full-executable-only
         path: ./  
 
     - name: Zip Artifacts
       run: |
-        zip -r ./wsdist.zip ./gui_wsdist.exe
-        zip -r ./wsdist.zip ./gear.py
-        zip -r ./wsdist.zip ./enemies.py
-        zip -r ./wsdist.zip ./item_list.txt
-        zip -r ./wsdist.zip ./icons32
+        zip -r ./kastra_ffxi_sim-full.zip ./gui_main.exe
+        zip -r ./kastra_ffxi_sim-full.zip ./gear.py
+        zip -r ./kastra_ffxi_sim-full.zip ./enemies.py
+        zip -r ./kastra_ffxi_sim-full.zip ./item_list.csv
+        zip -r ./kastra_ffxi_sim-full.zip ./icons32
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with: 
-        name: wsdist-full
-        path: ./wsdist.zip
+        name: kastra_ffxi_sim-full
+        path: ./kastra_ffxi_sim-full.zip
