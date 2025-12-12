@@ -1,7 +1,8 @@
-#
-# Author: Kastra (Asura)
-# Version date: 2022 January 22
-#
+'''
+File containing calculations for PDIF values used in physical damage dealt.
+    
+Author: Kastra (Asura server)
+'''
 import random
 from numba import njit
 

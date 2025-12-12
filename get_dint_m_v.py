@@ -1,13 +1,12 @@
-#
-# Created by Kastra on Asura.
-# Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
-#
-# Version date: 2023 May 28
-#
-# This code contains the function used to calculate the M and V coefficients for spell base damage.
-#
+'''
+File containing coefficients M and V for magic damage dealt.
 
+Ninjutsu values match in-game observations exactly without any difference.
 
+Black Magic has not been tested properly yet, but is likely correct.
+    
+Author: Kastra (Asura server)
+'''
 from numba import njit
 
 @njit

@@ -1,7 +1,8 @@
-#
-# Author: Kastra (Asura)
-# Version date: 2023 February 12
-#
+'''
+File containing code to calculate TP returned from an attack round or weapon skill.
+
+Author: Kastra (Asura)
+'''
 def get_tp(swings, mdelay, stp, zanshin=False):
     #
     # Calculate the TP return from an attack round based on the number of swings that landed, the modified weapon delay, and store TP.

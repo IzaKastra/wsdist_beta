@@ -1,7 +1,8 @@
-#
-# Author: Kastra (Asura)
-# Version date: 2023 March 01
-#
+'''
+File containing calculations for physical hit rate from the accuracy stat.
+    
+Author: Kastra (Asura server)
+'''
 from numba import njit
 
 @njit

@@ -1,6 +1,8 @@
-#
-# Version date: 2023 February 11
-#
+'''
+File containing calculations for fSTR calculation.
+    
+Author: Kastra (Asura server)
+'''
 from numba import njit
 
 @njit

@@ -1,6 +1,8 @@
-#
-# Version date: 2024 June 29
-#
+'''
+File containing calculations for real-world time (seconds) between attack rounds, given weapon delay.
+    
+Author: Kastra (Asura server)
+'''
 from numba import njit
 
 @njit

@@ -1,6 +1,13 @@
-#
-# Author: Kastra (Asura)
-#
+'''
+File containing calculations for number of attacks in an attack round or weapon skill.
+
+Includes DA, TA, QA, and OAX, but not follow-up attacks.
+
+The "average calculation" result is approximate, but pretty accurate.
+A proper calculation would be needed (with hundreds of terms added) after we determine how follow-up attacks work.
+    
+Author: Kastra (Asura server)
+'''
 from numba import njit
 import numpy as np
 import random

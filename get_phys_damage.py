@@ -1,7 +1,8 @@
-#
-# Author: Kastra (Asura)
-# Version date: 2023 March 02
-#
+'''
+File containing calculations for physical damage dealt.
+    
+Author: Kastra (Asura server)
+'''
 from numba import njit
 
 @njit

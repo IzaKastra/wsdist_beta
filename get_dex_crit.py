@@ -1,6 +1,8 @@
-#
-# Version date: 2022 January 22
-#
+'''
+File containing calculations for determining critical hit rate bonus from player DEX.
+    
+Author: Kastra (Asura server)
+'''
 from numba import njit
 
 @njit
