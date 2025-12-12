@@ -1,7 +1,8 @@
-#
-# Author: Kastra (Asura)
-# Version date: 2024 July 07
-#
+'''
+File containing weapon skill bonuses from specific weapons.
+    
+Author: Kastra (Asura server)
+'''
 from get_dex_crit import *
 import numpy as np
 
