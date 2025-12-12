@@ -43,7 +43,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.8.x' 
+        python-version: '3.10.6' 
 
     - name: Setup PIP
       run: | 
@@ -75,7 +75,7 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
       with:
-        name: kastra_ffxi_sim_full-executable-only
+        name: kastra_ffxi_sim-executable-only
         path: ./  
 
     - name: Zip Artifacts
@@ -84,6 +84,7 @@ jobs:
         zip -r ./kastra_ffxi_sim-full.zip ./gear.py
         zip -r ./kastra_ffxi_sim-full.zip ./enemies.py
         zip -r ./kastra_ffxi_sim-full.zip ./item_list.csv
+        zip -r ./kastra_ffxi_sim-full.zip ./defaults.pkl
         zip -r ./kastra_ffxi_sim-full.zip ./icons32
 
     - name: Upload Artifacts
