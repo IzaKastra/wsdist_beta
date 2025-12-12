@@ -1108,7 +1108,7 @@ class application(tk.Tk):
                     tp_stat = f"{tp_stat*100:.1f}%"
                     ws_stat = f"{ws_stat*100:.1f}%"
                 
-                elif "elemental bonus" in stat.lower() or "crit" in stat.lower() or stat.lower() in ["zanshin", "zanshin oa2", "daken", "kick attacks", "pdt", "mdt", "dt", "da", "ta", "qa", "double shot", "triple shot", "quad shot", *[f"oa{k} {j}" for j in ["main", "sub"] for k in range(2,9)]] or "pdl" in stat.lower() or "magic burst" in stat.lower() or "%" in stat.lower() or "weapon skill damage" in stat.lower():
+                elif "elemental bonus" in stat.lower() or "crit" in stat.lower() or stat.lower() in ["zanshin", "zanshin oa2", "daken", "kick attacks", "pdt", "mdt", "dt", "da", "ta", "qa", "double shot", "triple shot", "quad shot", *[f"oa{k} {j}" for j in ["main", "sub"] for k in range(2,9)]] or "pdl" in stat.lower() or "magic burst" in stat.lower() or "%" in stat.lower() or "weapon skill damage" in stat.lower() or "skillchain" in stat.lower():
                     tp_stat = f"{tp_stat:.0f}%"
                     ws_stat = f"{ws_stat:.0f}%"
                 
