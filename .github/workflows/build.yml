@@ -47,15 +47,17 @@ jobs:
 
     - name: Setup PIP
       run: | 
-        pip install numpy
-        pip install matplotlib
-        pip install numba
-        pip install pillow
-        pip install pyinstaller
-        pip install colorama
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        # pip install numpy
+        # pip install matplotlib
+        # pip install numba
+        # pip install pillow
+        # pip install pyinstaller
+        # pip install colorama
 
     - name: Create Installer
-      run: pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_main.py
+      run: pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
 
     - name: Upload Installer
       uses: actions/upload-artifact@v4
