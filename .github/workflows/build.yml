@@ -55,7 +55,7 @@ jobs:
         pip install colorama
 
     - name: Create Installer
-      run: pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_main.py
+      run: pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
 
     - name: Upload Installer
       uses: actions/upload-artifact@v4
