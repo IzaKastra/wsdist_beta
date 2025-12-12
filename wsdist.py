@@ -1,3 +1,15 @@
+'''
+File containing algorithm to automatically build and test gear sets for set finding.
+
+Uses a partially-exhaustive search of all possible combinations of gear involving at most 2 swaps at a time.
+
+Each WS set typically has one deep global minima that this algorithm finds relatively well.
+
+Critical hit weapon skills (and those with Shining One equipped) can have two minima (one Crit build, one WS damage build). 
+This algorithm may get caught in a crit build if starting from a crit build, but this only affects crit WSs.
+    
+Author: Kastra (Asura server)
+'''
 from create_player import *
 import numpy as np
 import numpy as np
@@ -23,7 +35,7 @@ def format_bgwiki(ws_name, tp, player, best_metric):
 
 
     # Certain items have shortened names on BG Wiki. Use the item_list.txt file to find and replace these names for BG Wiki.
-    item_list = np.loadtxt("item_list.txt", unpack=False, dtype=str, delimiter=';', usecols=(1,2))
+    item_list = np.loadtxt("item_list.csv", unpack=False, dtype=str, delimiter=';', usecols=(1,2), skiprows=1)
     name_map = {k[0].lower():k[1] for k in item_list}
 
     backaugs = []
@@ -138,7 +150,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
     #
     n_iter = 10
     fitn = 2
-    
+
     verbose_swaps = abilities.get("Verbose Swaps", False)
 
     ws_dict = {"Katana": ["Blade: Retsu", "Blade: Teki", "Blade: To", "Blade: Chi", "Blade: Ei", "Blade: Jin", "Blade: Ten", "Blade: Ku", "Blade: Yu", "Blade: Metsu", "Blade: Kamu", "Blade: Hi", "Blade: Shun", "Zesho Meppo",],
@@ -417,6 +429,7 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                             # Sets thats survive this long are valid and satisfy the temporary PDT/MDT requirements. We can now test the set.
                             player = create_player(main_job, sub_job, master_level, test_set, buffs, abilities)
 
+
                             # Don't even test the set if the DT requirement is not met in both PDT and MDT
                             pdt = player.stats.get("PDT",0) + player.stats.get("DT",0)
                             mdt = player.stats.get("MDT",0) + player.stats.get("DT",0)
@@ -432,13 +445,11 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
 
 
                             # Prepare to test the set.
-                            effective_tp = min_tp + player.stats.get("TP Bonus",0)
-                            effective_tp = 1000 if effective_tp < 1000 else 3000 if effective_tp > 3000 else effective_tp
 
                             if action_type=="weapon skill":
                                 decimals = 1
                                 nondecimals = 8
-                                metric_base, output = average_ws(player, enemy, ws_name, effective_tp, ws_type, input_metric)
+                                metric_base, output = average_ws(player, enemy, ws_name, min_tp, ws_type, input_metric)
                                 invert = output[-1]
                                 metric = metric_base**invert
                             elif action_type=="spell cast":

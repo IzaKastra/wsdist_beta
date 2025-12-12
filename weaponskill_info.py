@@ -1,7 +1,8 @@
-#
-# Author: Kastra (Asura)
-# Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
-#
+'''
+File containing available weapon skills and their properties
+    
+Author: Kastra (Asura server)
+'''
 import numpy as np
 from get_dex_crit import *
 
@@ -12,21 +13,21 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
     # wsc_bonus is the WSC bonus from Utu Grip and Crepuscular Knife. The format is wsc_bonus = [["DEX", 0.10],["CHR",0.03],] etc
     #
     #
-    player_str = player.stats["STR"]
-    player_dex = player.stats["DEX"]
-    player_vit = player.stats["VIT"]
-    player_agi = player.stats["AGI"]
-    player_int = player.stats["INT"]
-    player_mnd = player.stats["MND"]
-    player_chr = player.stats["CHR"]
+    player_str = player.stats.get("STR",0)
+    player_dex = player.stats.get("DEX",0)
+    player_vit = player.stats.get("VIT",0)
+    player_agi = player.stats.get("AGI",0)
+    player_int = player.stats.get("INT",0)
+    player_mnd = player.stats.get("MND",0)
+    player_chr = player.stats.get("CHR",0)
 
-    player_accuracy1 = player.stats["Accuracy1"]
-    player_accuracy2 = player.stats["Accuracy2"]
-    player_rangedaccuracy = player.stats["Ranged Accuracy"]
+    player_accuracy1 = player.stats.get("Accuracy1",0)
+    player_accuracy2 = player.stats.get("Accuracy2",0)
+    player_rangedaccuracy = player.stats.get("Ranged Accuracy",0)
 
-    player_attack1 = player.stats["Attack1"]
-    player_attack2 = player.stats["Attack2"]
-    player_rangedattack = player.stats["Ranged Attack"]
+    player_attack1 = player.stats.get("Attack1",0)
+    player_attack2 = player.stats.get("Attack2",0)
+    player_rangedattack = player.stats.get("Ranged Attack",0)
 
     enemy_basedef = enemy.stats["Base Defense"]
     enemy_def = enemy.stats["Defense"]
@@ -172,7 +173,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Light","Fusion"]
     elif ws_name == "Chant du Cygne":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.15, 0.25, 0.40]
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -261,7 +262,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Compression"]
     elif ws_name == "Blade: Jin":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.1, 0.25, 0.5] # Copied Evisceration values due to FTP Scaling and Cyclopedia claiming first value is +10%
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -342,7 +343,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Darkness","Fragmentation"]
     elif ws_name == "Blade: Hi":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.15, 0.2, 0.25]
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -394,7 +395,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Fragmentation"]
     elif ws_name == "Evisceration":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.1, 0.25, 0.5]
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -563,7 +564,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Light","Fragmentation"]
     elif ws_name == "Drakesbane":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.1, 0.25, 0.40]
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -980,7 +981,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Impaction"]
     elif ws_name == "Hexa Strike":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.1, 0.175, 0.25] # Middle value unknown. I just picked the half-way point to force linear scaling.
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -1075,7 +1076,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Impaction"]
     elif ws_name == "Raging Rush":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.15, 0.30, 0.50]
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -1123,7 +1124,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Light","Fusion"]
     elif ws_name == "Ukko's Fury":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.2, 0.35, 0.55] # Middle value unknown. I just picked the half-way point to force linear scaling.
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -1165,7 +1166,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Liquefaction","Scission","Impaction"]
     elif ws_name == "Rampage":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.0, 0.20, 0.40] # Middle value unknown. I just picked the half-way point to force linear scaling.
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -1284,7 +1285,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Reverberation","Transfixion"]
     elif ws_name == "Dulling Arrow":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.10, 0.20, 0.25] # I made these numbers up
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -1314,9 +1315,9 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Induration","Transfixion"]
     elif ws_name == "Empyreal Arrow":
         ws_atk_modifier = 1.0
-        player_rangedattack -= player.stats["Food Ranged Attack"]
+        player_rangedattack -= player.stats.get("Food Ranged Attack", 0)
         player_rangedattack *= (1+player.stats.get("Ranged Attack%",0) + ws_atk_modifier) / (1+player.stats.get("Ranged Attack%",0))
-        player_rangedattack += player.stats["Food Ranged Attack"]
+        player_rangedattack += player.stats.get("Food Ranged Attack", 0)
         base_ftp = [1.5, 2.5, 5.0] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False
@@ -1347,7 +1348,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Light","Distortion"]
     elif ws_name == "Jishnu's Radiance":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.15, 0.2, 0.25] # No values are known for Jishu's crits. I copied these values from Blade: Hi
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -1387,7 +1388,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Reverberation","Transfixion"]
     elif ws_name == "Sniper Shot":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.10, 0.20, 0.25] # I made these numbers up
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -1417,9 +1418,9 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Induration","Transfixion"]
     elif ws_name == "Detonator":
         ws_atk_modifier = 1.0
-        player_rangedattack -= player.stats["Food Ranged Attack"]
+        player_rangedattack -= player.stats.get("Food Ranged Attack", 0)
         player_rangedattack *= (1+player.stats.get("Ranged Attack%",0) + ws_atk_modifier) / (1+player.stats.get("Ranged Attack%",0))
-        player_rangedattack += player.stats["Food Ranged Attack"]
+        player_rangedattack += player.stats.get("Food Ranged Attack", 0)
         base_ftp = [1.5, 2.5, 5.0] 
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False
@@ -1731,7 +1732,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Light","Fusion"]
     elif ws_name == "Victory Smite":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate", 0)/100
         crit_boost = [0.10, 0.25, 0.45]
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -1743,7 +1744,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Light","Fragmentation"]
     elif ws_name == "Ascetic's Fury":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100
+        crit_rate += player.stats.get("Crit Rate",0)/100
         crit_boost = [0.20, 0.30, 0.50]
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -1762,7 +1763,7 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         sc = ["Fusion","Transfixion"]
     elif ws_name == "Stringing Pummel":
         crit_ws = True
-        crit_rate += player.stats["Crit Rate"]/100 
+        crit_rate += player.stats.get("Crit Rate",0)/100 
         crit_boost = [0.15, 0.30, 0.45] # Upper limits. Middle value was made up to force linear scaling
         crit_bonus = np.interp(tp, base_tp, crit_boost)
         crit_rate += crit_bonus
@@ -1802,8 +1803,8 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
 
         if not crit_ws:
             # Add gear and dDEX crit rate if the selected WS did not already do it.
-            crit_rate += player.stats['Crit Rate']/100
-            crit_rate += get_dex_crit(player.stats['DEX'], enemy_agi)
+            crit_rate += player.stats.get('Crit Rate',0)/100
+            crit_rate += get_dex_crit(player.stats.get('DEX',0), enemy_agi)
 
         crit_boost = [0.05, 0.10, 0.15] # Crit rate bonuses based on TP for wielding Shining One
         crit_bonus = np.interp(tp, [1000,2000,3000], crit_boost)

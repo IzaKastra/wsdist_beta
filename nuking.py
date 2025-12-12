@@ -1,7 +1,8 @@
-#
-# Author: Kastra (Asura)
-# Version date: 2023 March 06
-#
+'''
+File containing calculations for magic damage dealt.
+
+Author: Kastra (Asura server)
+'''
 from get_dint_m_v import *
 import numpy as np
 
@@ -76,139 +77,139 @@ def quickdraw(rng_dmg, ammo_dmg, element, gearset, player_matk, player_magic_dam
 
     return(damage)
 
-def nuking(spell, spelltype, tier, element, job_abilities, main_job, sub_job, gearset, player_INT, player_matk, mdmg, enemy_INT, enemy_mdb, enemy_meva, ninjutsu_damage, futae=False, burst=False, ebullience=False):
-    #
-    # Does this function even get used anymore? Commenting it out seems to do nothing and there are no matches for searches for "nuking("
-    #
-    steps = 2 # 2-step skillchain
+# def nuking(spell, spelltype, tier, element, job_abilities, main_job, sub_job, gearset, player_INT, player_matk, mdmg, enemy_INT, enemy_mdb, enemy_meva, ninjutsu_damage, futae=False, burst=False, ebullience=False):
+#     #
+#     # Does this function even get used anymore? Commenting it out seems to do nothing and there are no matches for searches for "nuking("
+#     #
+#     steps = 2 # 2-step skillchain
 
-    # print(spelltype, tier, element, gearset, player_INT, player_matk, mdmg, enemy_INT, enemy_mdb, ninjutsu_damage, futae, burst, steps)
+#     # print(spelltype, tier, element, gearset, player_INT, player_matk, mdmg, enemy_INT, enemy_mdb, ninjutsu_damage, futae, burst, steps)
 
-    # Determine Magic Accuracies
-    spelltype_skill = gearset.playerstats[f"{spelltype} Skill"] # Magic Accuracy from Ninjutsu Skill.
+#     # Determine Magic Accuracies
+#     spelltype_skill = gearset.playerstats[f"{spelltype} Skill"] # Magic Accuracy from Ninjutsu Skill.
 
-    magic_accuracy_skill = gearset.playerstats["Magic Accuracy Skill"] # Magic Accuracy from Magic Accuracy Skill. Currently includes off-hand weapon stats, but we remove this on the next line.
-    magic_accuracy_skill -= gearset.gear["sub"].get("Magic Accuracy Skill",0) # Subtract off the Magic Accuracy Skill from the off-hand slot, since it does not contribute to spell accuracy.
+#     magic_accuracy_skill = gearset.playerstats["Magic Accuracy Skill"] # Magic Accuracy from Magic Accuracy Skill. Currently includes off-hand weapon stats, but we remove this on the next line.
+#     magic_accuracy_skill -= gearset.gear["sub"].get("Magic Accuracy Skill",0) # Subtract off the Magic Accuracy Skill from the off-hand slot, since it does not contribute to spell accuracy.
 
-    dstat_macc = get_dstat_macc(player_INT, enemy_INT) # Get magic accuracy from dINT
+#     dstat_macc = get_dstat_macc(player_INT, enemy_INT) # Get magic accuracy from dINT
 
-    magic_accuracy = gearset.playerstats["Magic Accuracy"] # Read base Magic Accuracy from playerstats, including traits and gear with "Magic Accuracy"
-    magic_accuracy += magic_accuracy_skill # Add on the "Magic Accuracy Skill" stat
-    magic_accuracy += spelltype_skill # Add on the "Ninjutsu Skill" or "Elemental Magic Skill" stat depending on spell being cast
-    magic_accuracy += dstat_macc # Add on magic accuracy from dINT
+#     magic_accuracy = gearset.playerstats["Magic Accuracy"] # Read base Magic Accuracy from playerstats, including traits and gear with "Magic Accuracy"
+#     magic_accuracy += magic_accuracy_skill # Add on the "Magic Accuracy Skill" stat
+#     magic_accuracy += spelltype_skill # Add on the "Ninjutsu Skill" or "Elemental Magic Skill" stat depending on spell being cast
+#     magic_accuracy += dstat_macc # Add on magic accuracy from dINT
 
-    dINT = player_INT - enemy_INT
+#     dINT = player_INT - enemy_INT
 
-    elemental_damage_bonus = 1 + (gearset.playerstats['Elemental Bonus'] + gearset.playerstats[f'{element.capitalize()} Elemental Bonus'])/100
+#     elemental_damage_bonus = 1 + (gearset.playerstats['Elemental Bonus'] + gearset.playerstats[f'{element.capitalize()} Elemental Bonus'])/100
 
-    storms = {"Sandstorm II":"Earth","Rainstorm II":"Water","Windstorm II":"Wind","Firestorm II":"Fire","Hailstorm II":"Ice","Thunderstorm II":"Thunder","Aurorastorm II":"Light","Voidstorm II":"Dark"}
-    storm_element = storms.get(job_abilities["storm spell"],"None")
+#     storms = {"Sandstorm II":"Earth","Rainstorm II":"Water","Windstorm II":"Wind","Firestorm II":"Fire","Hailstorm II":"Ice","Thunderstorm II":"Thunder","Aurorastorm II":"Light","Voidstorm II":"Dark"}
+#     storm_element = storms.get(job_abilities["storm spell"],"None")
 
-    dayweather = 1.0
-    if gearset.gear["waist"]["Name"]=="Hachirin-no-Obi" or tier=="helix":
-      if main_job == "SCH" or storm_element.lower()==element:
-        dayweather = 1.25
-      elif sub_job == "SCH":
-        dayweather = 1.1
+#     dayweather = 1.0
+#     if gearset.gear["waist"]["Name"]=="Hachirin-no-Obi" or tier=="helix":
+#       if main_job == "SCH" or storm_element.lower()==element:
+#         dayweather = 1.25
+#       elif sub_job == "SCH":
+#         dayweather = 1.1
 
-    if main_job=="SCH" or sub_job=="SCH" or storm_element!="None":
-        magic_accuracy += 15 # +15 Magic Accuracy from Klimaform.
-
-
-    if burst: # Do burst stuff now so we can add +100 Magic Accuracy before calculating magic hit rates
-        magic_accuracy += 100 + gearset.playerstats["Magic Burst Accuracy"]
-        magic_burst_multiplier = 1.35 # Standard +35% damage for magic bursting
-        skillchain_steps_bonus = (steps-2)*0.10 # Another +10% for each step in the skillchain after 2
-        magic_burst_multiplier += skillchain_steps_bonus
+#     if main_job=="SCH" or sub_job=="SCH" or storm_element!="None":
+#         magic_accuracy += 15 # +15 Magic Accuracy from Klimaform.
 
 
-        burst_bonus1 = 40 if gearset.playerstats['Magic Burst Damage'] > 40 else gearset.playerstats['Magic Burst Damage']
-        burst_bonus2 = gearset.playerstats['Magic Burst Damage II']
-        burst_bonus3 = gearset.playerstats["Magic Burst Damage Trait"]
-        burst_bonus_multiplier = 1 + burst_bonus1/100 + burst_bonus2/100 + burst_bonus3/100
-
-        # for i,k in enumerate(gearset.gear):
-        #     print(k,gearset.gear[k]['Name2'])
-        # print(burst_bonus1, burst_bonus2, burst_bonus_multiplier)
-        # import sys; sys.exit()
-    else:
-        burst_bonus_multiplier = 1.
-        magic_burst_multiplier = 1.
+#     if burst: # Do burst stuff now so we can add +100 Magic Accuracy before calculating magic hit rates
+#         magic_accuracy += 100 + gearset.playerstats["Magic Burst Accuracy"]
+#         magic_burst_multiplier = 1.35 # Standard +35% damage for magic bursting
+#         skillchain_steps_bonus = (steps-2)*0.10 # Another +10% for each step in the skillchain after 2
+#         magic_burst_multiplier += skillchain_steps_bonus
 
 
-    magic_hit_rate = get_magic_hit_rate(magic_accuracy, enemy_meva) if enemy_meva > 0 else 1.0
-    resist_state = get_resist_state_average(magic_hit_rate)
-    # print(magic_hit_rate,spelltype_skill,magic_accuracy_skill,dstat_macc,magic_accuracy,resist_state)
-    # print(magic_accuracy, enemy_meva, magic_hit_rate, resist_state)
+#         burst_bonus1 = 40 if gearset.playerstats['Magic Burst Damage'] > 40 else gearset.playerstats['Magic Burst Damage']
+#         burst_bonus2 = gearset.playerstats['Magic Burst Damage II']
+#         burst_bonus3 = gearset.playerstats["Magic Burst Damage Trait"]
+#         burst_bonus_multiplier = 1 + burst_bonus1/100 + burst_bonus2/100 + burst_bonus3/100
+
+#         # for i,k in enumerate(gearset.gear):
+#         #     print(k,gearset.gear[k]['Name2'])
+#         # print(burst_bonus1, burst_bonus2, burst_bonus_multiplier)
+#         # import sys; sys.exit()
+#     else:
+#         burst_bonus_multiplier = 1.
+#         magic_burst_multiplier = 1.
 
 
-    klimaform_bonus = 1.0
-    ebullience_bonus = 1.0
-    futae_bonus = 1.0
-    extra_gear_bonus = 1.0 # For now, this is just Akademos +2% damage if spell element = weather
-    if spelltype == "Ninjutsu":
-        if tier == "Ichi":
-            ninjutsu_skill_potency = ((100 + (spelltype_skill-50)/2)/100 if spelltype_skill <= 250 else 2.0) if spelltype_skill > 50 else 1.0
-        elif tier == "Ni":
-            ninjutsu_skill_potency = ((100 + (spelltype_skill-126)/2)/100 if spelltype_skill <= 350 else 2.12) if spelltype_skill > 126 else 1.0
-        elif tier == "San":
-            ninjutsu_skill_potency = ((100 + (spelltype_skill-276)/2)/100 if spelltype_skill <= 500 else 2.12) if spelltype_skill > 276 else 1.0
-        else:
-            ninjutsu_skill_potency = 0 # If something breaks and tier wasn't given, then just give 0 potency (results in zero damage always).
-
-        m,v = get_mv(tier, player_INT, enemy_INT)
-        d = int(v+mdmg+dINT*m)
-
-        if futae: # Futae = False if not Ninjutsu
-            futae_bonus = 1.5 # Standard +50% damage when using futae
-            if gearset.equipped['hands'] == "Hattori Tekko +3":
-                futae_bonus += 0.28
-
-    else: # Else Elemental Magic
-        ninjutsu_skill_potency = 1.0
-
-        dINT = 0 if dINT < 0 else dINT # For now, assume that dINT has an absolute minimum of 0. I believe I estimated this to be false as observed in game, but whatever.
-        if spell != "Kaustra":
-            # Kaustra uses a special base damage formula.
-
-            m, v, window = get_mv_blm(element, tier, player_INT, enemy_INT)
-            d = int(v+mdmg + 40*ebullience +(dINT-window)*m) # Black Magic uses (dINT-window)*m. This was simply a choice of the person who collected and fit the data.
-        else:
-            player_level = 99
-            dINT = 0 if dINT < 0 else dINT
-            dINT = 300 if dINT > 300 else dINT
-            d = np.round(0.067*player_level,1)*(37 + 40*ebullience + int(0.67*dINT))
-        if ebullience:
-            ebullience_bonus = 1.2
-            if gearset.equipped["head"] == "Arbatel Bonnet +3":
-                ebullience_bonus += 0.21
+#     magic_hit_rate = get_magic_hit_rate(magic_accuracy, enemy_meva) if enemy_meva > 0 else 1.0
+#     resist_state = get_resist_state_average(magic_hit_rate)
+#     # print(magic_hit_rate,spelltype_skill,magic_accuracy_skill,dstat_macc,magic_accuracy,resist_state)
+#     # print(magic_accuracy, enemy_meva, magic_hit_rate, resist_state)
 
 
-    # These next few are outside the Elemental Magic block since they apply for "spells with element that matches day/weather", which technically applies to Ninjutsu until proven otherwise.
-    if gearset.equipped["feet"] == "Arbatel Loafers +3": # Only SCH can use these feet
-        klimaform_bonus += 0.25 # Assume full-time klimaform on SCH Main
+#     klimaform_bonus = 1.0
+#     ebullience_bonus = 1.0
+#     futae_bonus = 1.0
+#     extra_gear_bonus = 1.0 # For now, this is just Akademos +2% damage if spell element = weather
+#     if spelltype == "Ninjutsu":
+#         if tier == "Ichi":
+#             ninjutsu_skill_potency = ((100 + (spelltype_skill-50)/2)/100 if spelltype_skill <= 250 else 2.0) if spelltype_skill > 50 else 1.0
+#         elif tier == "Ni":
+#             ninjutsu_skill_potency = ((100 + (spelltype_skill-126)/2)/100 if spelltype_skill <= 350 else 2.12) if spelltype_skill > 126 else 1.0
+#         elif tier == "San":
+#             ninjutsu_skill_potency = ((100 + (spelltype_skill-276)/2)/100 if spelltype_skill <= 500 else 2.12) if spelltype_skill > 276 else 1.0
+#         else:
+#             ninjutsu_skill_potency = 0 # If something breaks and tier wasn't given, then just give 0 potency (results in zero damage always).
 
-    if gearset.equipped["main"] == "Akademos": # Technically this applies to Ninjutsu as well, so I've put it outside of the Elemental Magic section
-        extra_gear_bonus += 0.02
+#         m,v = get_mv(tier, player_INT, enemy_INT)
+#         d = int(v+mdmg+dINT*m)
 
-    d = int(d * ninjutsu_skill_potency)
-    d = int(d * (100+player_matk)/(100+enemy_mdb))
-    d *= 1 + ninjutsu_damage/100 # TODO: Replace this stat with a check for relic+3 feet to give +25% instead
-    d *= dayweather
-    d *= magic_burst_multiplier # Standard +35% damage for bursts and +10% more for each step in the skillchain after 2
-    d *= burst_bonus_multiplier # Magic Burst damage bonus from gear. BG lists this as separate from the standard MB multiplier
-    d *= elemental_damage_bonus
+#         if futae: # Futae = False if not Ninjutsu
+#             futae_bonus = 1.5 # Standard +50% damage when using futae
+#             if gearset.equipped['hands'] == "Hattori Tekko +3":
+#                 futae_bonus += 0.28
 
-    d *= (1 + 0.25 * gearset.playerstats["Magic Crit Rate II"]/100) # Magic Crit Rate II is apparently +25% damage x% of the time.
+#     else: # Else Elemental Magic
+#         ninjutsu_skill_potency = 1.0
 
-    d *= klimaform_bonus
-    d *= ebullience_bonus
-    d *= extra_gear_bonus
-    d *= futae_bonus
+#         dINT = 0 if dINT < 0 else dINT # For now, assume that dINT has an absolute minimum of 0. I believe I estimated this to be false as observed in game, but whatever.
+#         if spell != "Kaustra":
+#             # Kaustra uses a special base damage formula.
 
-    d *= resist_state
+#             m, v, window = get_mv_blm(element, tier, player_INT, enemy_INT)
+#             d = int(v+mdmg + 40*ebullience +(dINT-window)*m) # Black Magic uses (dINT-window)*m. This was simply a choice of the person who collected and fit the data.
+#         else:
+#             player_level = 99
+#             dINT = 0 if dINT < 0 else dINT
+#             dINT = 300 if dINT > 300 else dINT
+#             d = np.round(0.067*player_level,1)*(37 + 40*ebullience + int(0.67*dINT))
+#         if ebullience:
+#             ebullience_bonus = 1.2
+#             if gearset.equipped["head"] == "Arbatel Bonnet +3":
+#                 ebullience_bonus += 0.21
 
-    return(d)
+
+#     # These next few are outside the Elemental Magic block since they apply for "spells with element that matches day/weather", which technically applies to Ninjutsu until proven otherwise.
+#     if gearset.equipped["feet"] == "Arbatel Loafers +3": # Only SCH can use these feet
+#         klimaform_bonus += 0.25 # Assume full-time klimaform on SCH Main
+
+#     if gearset.equipped["main"] == "Akademos": # Technically this applies to Ninjutsu as well, so I've put it outside of the Elemental Magic section
+#         extra_gear_bonus += 0.02
+
+#     d = int(d * ninjutsu_skill_potency)
+#     d = int(d * (100+player_matk)/(100+enemy_mdb))
+#     d *= 1 + ninjutsu_damage/100 # TODO: Replace this stat with a check for relic+3 feet to give +25% instead
+#     d *= dayweather
+#     d *= magic_burst_multiplier # Standard +35% damage for bursts and +10% more for each step in the skillchain after 2
+#     d *= burst_bonus_multiplier # Magic Burst damage bonus from gear. BG lists this as separate from the standard MB multiplier
+#     d *= elemental_damage_bonus
+
+#     d *= (1 + 0.25 * gearset.playerstats["Magic Crit Rate II"]/100) # Magic Crit Rate II is apparently +25% damage x% of the time.
+
+#     d *= klimaform_bonus
+#     d *= ebullience_bonus
+#     d *= extra_gear_bonus
+#     d *= futae_bonus
+
+#     d *= resist_state
+
+#     return(d)
 
 @njit
 def get_dstat_macc(player_stat, enemy_stat):
