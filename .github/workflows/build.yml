@@ -84,6 +84,7 @@ jobs:
         zip -r ./kastra_ffxi_sim-full.zip ./gear.py
         zip -r ./kastra_ffxi_sim-full.zip ./enemies.py
         zip -r ./kastra_ffxi_sim-full.zip ./item_list.csv
+        zip -r ./kastra_ffxi_sim-full.zip ./defaults.pkl
         zip -r ./kastra_ffxi_sim-full.zip ./icons32
 
     - name: Upload Artifacts
