@@ -1,11 +1,8 @@
-#
-# Created by Kastra on Asura.
-# Feel free to /tell in game or send a PM on FFXIAH you have questions, comments, or suggestions.
-#
-# Version date: 2022 November 15
-#
-# This code takes in a gear set and a list of damage values from N simulations to output a fancy plot showing the distribution and basic player stats.
-#
+'''
+File containing code to plot a histogram of weapon skill damage values after N simulations.
+    
+Author: Kastra (Asura server)
+'''
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rc
@@ -16,10 +13,10 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 def get_image_ids(gearset):
 
-    items_file = "item_list.txt"
+    items_file = "item_list.csv"
     icons_path = "icons32/"
 
-    item_ids, item_names = np.loadtxt(items_file, unpack=True, dtype=str, delimiter=';', usecols=(0,1))
+    item_ids, item_names = np.loadtxt(items_file, unpack=True, dtype=str, delimiter=';', usecols=(0,1), skiprows=1)
     item_ids = np.array(item_ids, dtype=int)
     item_names = np.array([k.lower() for k in item_names])
 
@@ -110,8 +107,8 @@ def plot_final(damage, player, tp1, WS_name,):
             print(f"\nUnable to find image file: {icons_path}{id}.png ({item_names[a][0]})")
             print(f"Download the 32x32.png image icon for this item as {icons_path}{id}.png and try again.\n")
 
-    ax.hist(damage,bins=500,histtype='stepfilled',density=True,color='grey',alpha=0.25) # Filled-in distribution, grey
-    ax.hist(damage,bins=500,histtype='step',density=True,color='black',alpha=1.0) # Solid black outline for the filled grey distribution.
+    ax.hist(damage,bins=300,histtype='stepfilled',density=True,color='grey',alpha=0.25) # Filled-in distribution, grey
+    ax.hist(damage,bins=300,histtype='step',density=True,color='black',alpha=1.0) # Solid black outline for the filled grey distribution.
     ax.axvline(x=np.average(damage),ymin=0,ymax=1,color='black',linestyle='--',label=f'Average = {int(np.average(damage))} damage.') # Vertical line at the average damage value.
     ax.set_xlabel('Damage')
 
@@ -124,7 +121,7 @@ def plot_final(damage, player, tp1, WS_name,):
         labelleft=False,
         labelbottom=True)
 
-    ax.set_title(f"ML{player.master_level} {player.main_job.upper()}/{player.sub_job.upper()}\n{f'TP={tp1}':>15s} {'Minimum':>8s} {'Mean':>8s} {'Median':>8s} {'Maximum':>8s}\n{WS_name:>15s} {np.min(damage):>8.1f} {int(np.average(damage)):>8.1f} {int(np.median(damage)):>8.1f} {np.max(damage):>8.1f}",loc="left")
+    ax.set_title(f"ML{player.master_level} {player.main_job.upper()}/{player.sub_job.upper()}\n{f'TP={tp1}':>15s} {'Minimum':>8s} {'Mean':>8s} {'Median':>8s} {'Maximum':>8s}\n{WS_name:>15s} {np.min(damage):>8.0f} {int(np.average(damage)):>8.0f} {int(np.median(damage)):>8.0f} {np.max(damage):>8.0f}",loc="left")
     # plt.legend()
 
     savepath = "."

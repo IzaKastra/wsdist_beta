@@ -1,3 +1,11 @@
+'''
+File containing calculations for
+    damage dealt
+    tp returned
+    time per attack round
+    
+Author: Kastra (Asura server)
+'''
 import matplotlib.pyplot as plt
 import numpy as np
 from get_hit_rate import get_hit_rate
@@ -37,23 +45,23 @@ def verbose_output(phys_dmg, magic_dmg, tp_return, crit, special="other"):
     tp_return2 = f"+{tp_return:.1f}"
 
     if special == "main":
-        print(f"    {'Main-hand:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        print(f"    {'Main-hand:':<10s}  [{phys_dmg2:>7s} Phys.] [{magic_dmg2:>7s} Magic]  [{tp_return2:>6s} TP]  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "sub":
-        print(f"    {'Off-hand:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        print(f"    {'Off-hand:':<10s}  [{phys_dmg2:>7s} Phys.] [{magic_dmg2:>7s} Magic]  [{tp_return2:>6s} TP]  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "hybrid":
-        print(f"    {'Hybrid:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        print(f"    {'Hybrid:':<10s}  [{phys_dmg2:>7s} Phys.] [{magic_dmg2:>7s} Magic]  [{tp_return2:>6s} TP]  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "magic":
-        print(f"    {'Magic:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        print(f"    {'Magic Hit:':<10s}  [{phys_dmg2:>7s} Phys.] [{magic_dmg2:>7s} Magic]  [{tp_return2:>6s} TP]  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "zanshin":
-        print(f"    {'Zanshin:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        print(f"    {'Zanshin:':<10s}  [{phys_dmg2:>7s} Phys.] [{magic_dmg2:>7s} Magic]  [{tp_return2:>6s} TP]  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "daken":
-        print(f"    {'Daken:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        print(f"    {'Daken:':<10s}  [{phys_dmg2:>7s} Phys.] [{magic_dmg2:>7s} Magic]  [{tp_return2:>6s} TP]  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "kick":
-        print(f"    {'Kick:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        print(f"    {'Kick:':<10s}  [{phys_dmg2:>7s} Phys.] [{magic_dmg2:>7s} Magic]  [{tp_return2:>6s} TP]  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     elif special == "ranged":
-        print(f"    {'Ranged:':<10s}  {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        print(f"    {'Ranged Hit:':<10s}  [{phys_dmg2:>7s} Phys.] [{magic_dmg2:>7s} Magic]  [{tp_return2:>6s} TP]  " + (color_text("yellow", "Critical Hit!") if crit else ""))
     else:
-        print(f"                {phys_dmg2:>7s} Phys. {magic_dmg2:>7s} Magic.  {tp_return2:>5s} TP  " + (color_text("yellow", "Critical Hit!") if crit else ""))
+        print(f"                [{phys_dmg2:>7s} Phys.] [{magic_dmg2:>7s} Magic]  [{tp_return2:>6s} TP]  " + (color_text("yellow", "Critical Hit!") if crit else ""))
         
 
 def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, plot_dps=False, verbose=False):
@@ -118,7 +126,7 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
             tp_damage_list.append(tp_damage)
             tp_time_list.append(time)
 
-        ws_sim = average_ws(player_ws, enemy, ws_name, tp + player_ws.stats.get("TP Bonus",0), ws_type, "Damage dealt", simulation=True)
+        ws_sim = average_ws(player_ws, enemy, ws_name, tp, ws_type, "Damage dealt", simulation=True)
         avg_ws_tp.append(tp)
 
         damage += ws_sim[0]
@@ -984,17 +992,21 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
         tp_per_attack_round += get_tp(main_hits + sub_hits + kickattack_hits, (mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay), stp)  # Non-zanshin hits get normal TP. Note that H2H use half of today mdelay for each hand
         tp_per_attack_round += get_tp(zanshin_hits, (mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay), stp, player.main_job=="sam") # Zanshin hits get bonus TP if SAM is your main job and you have Ikishoten merits, which I assume you do.
         tp_per_attack_round += get_tp(daken_hits, ammo_delay, stp)
+        tp_per_attack_round = 0 if tp_per_attack_round < 0 else tp_per_attack_round
 
         # This next line's function call can probably be brought into this main code instead of being its own function/file. TODO
-        time_per_attack_round = get_delay_timing(player.stats["Delay1"], player.stats["Delay2"] if dual_wield and (player.gearset["main"]["Skill Type"] != "Hand-to-Hand") else 0, player.stats.get("Dual Wield",0)/100, player.stats.get("Martial Arts",0), player.stats.get("Magic Haste",0), player.stats.get("JA Haste",0), player.stats.get("Gear Haste",0))
+        time_per_attack_round = max(0, get_delay_timing(player.stats["Delay1"], player.stats["Delay2"] if dual_wield and (player.gearset["main"]["Skill Type"] != "Hand-to-Hand") else 0, player.stats.get("Dual Wield",0)/100, player.stats.get("Martial Arts",0), player.stats.get("Magic Haste",0), player.stats.get("JA Haste",0), player.stats.get("Gear Haste",0)))
 
         # Add the passive TP generation from Regain, occuring once every 3 seconds.
         regain_tp = player.stats.get("Dual Wield",0)*(player.gearset["main"]["Name"]=="Gokotai") + player.stats.get("Regain",0)
-        tp_per_attack_round += (time_per_attack_round/3)*(regain_tp) 
+        tp_per_attack_round += (time_per_attack_round/3)*(regain_tp)
+        
+        try:
+            attacks_per_ws = (ws_threshold - starting_tp) / tp_per_attack_round
+            time_per_ws = time_per_attack_round * attacks_per_ws # Real time (seconds) to reach your desired TP value from your starting TP value using the defined gearset and buffs.
+        except ZeroDivisionError:
+            time_per_ws = 9999
 
-        attacks_per_ws = (ws_threshold - starting_tp) / tp_per_attack_round
-
-        time_per_ws = time_per_attack_round * attacks_per_ws # Real time (seconds) to reach your desired TP value from your starting TP value using the defined gearset and buffs.
 
 
         # Damage from first main-hand hit with no bonuses (also known as the damage dealt by multi-attacks from the main-hand)
@@ -1031,7 +1043,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
             # Define a new crit rate that adds 70% only if crit_rate>0 already (only for critical hit WSs)
             striking_flourish_crit_rate = crit_rate + striking_crit_rate*(crit_rate>0) # This crit_rate>0 ensures I am not letting non-crit WSs crit.
             striking_flourish_pdif1 = get_avg_pdif_melee(attack1, main_skill_type, pdl_trait, pdl_gear, enemy_defense, striking_flourish_crit_rate)
-            striking_flourish_DA_damage = get_avg_phys_damage(main_dmg, fstr_main, wsc, striking_flourish_pdif1, ftp2, striking_flourish_crit_rate, crit_dmg, 0, ws_bonus, ws_trait)
+            striking_flourish_DA_damage = get_avg_phys_damage(main_dmg, fstr_main, 0, striking_flourish_pdif1, 1.0, striking_flourish_crit_rate, crit_dmg, 0, 0, 0, sneak_attack_bonus, trick_attack_bonus, climactic_flourish_bonus, striking_flourish_bonus, ternary_flourish_bonus)
             physical_damage += (striking_flourish_DA_damage - main_hit_damage)*hit_rate11 # Add on the difference in damage from a 2nd hit with higher crit.
 
         # Calculate the damage for off-hand hits, which receive no bonuses. No fancy correction terms are required here.
@@ -1097,7 +1109,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
     # Magic burst damage may be increased based on the enemy's resist rank to the bursted element. https://www.bg-wiki.com/ffxi/Magic_Burst
     enemy_resist_rank_burst_bonus = {"150%":1.5, "130%":1.15, "115%":0.85, "100%":0.60, "85%":0.50, "70%":0.40, "60%":0.15, "50%":0.05, "40%":0, "30%":0, "25%":0, "20%":0, "15%":0, "10%":0, "5%":0}
     enemy_resist_rank_burst_bonus_list = ["150%", "130%", "115%", "100%", "85%", "70%", "60%", "50%", "40%", "30%", "25%", "20%", "15%", "10%", "5%"]
-    resist_rank_index = enemy_resist_rank_burst_bonus_list.index(player.abilities.get("enemy_resist_rank", "100%")) # Get the player's input resist rank value and find the list position of that entry.
+    resist_rank_index = enemy_resist_rank_burst_bonus_list.index(player.abilities.get("Enemy Resist Rank", "100%")) # Get the player's input resist rank value and find the list position of that entry.
     resist_rank_index -= 1*player.abilities.get("Magic Burst",False) # Magic Bursting decreases the enemy's resist rank by 1. TODO: Rayke
     resist_rank_index = 0 if resist_rank_index < 0 else resist_rank_index # Do not go higher than 150%
     enemy_resist_rank = enemy_resist_rank_burst_bonus_list[resist_rank_index] # Update enemy resist rank
@@ -1145,7 +1157,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         return(magical_damage, [magical_damage, tp_return, 1])
 
     dINT = player.stats["INT"] - enemy.stats["INT"]
-    dMND = player.stats["MND"] - enemy.stats["MND"]
+    # dMND = player.stats["MND"] - enemy.stats["MND"]
     
     dINT = 0 if dINT < 0 else dINT # dINT can be negative, but its relation with base damage is different and untested in this range.
     
@@ -1403,7 +1415,6 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         element_magic_attack_bonus = 1 + (player.stats.get(f"{element.capitalize()} Elemental Bonus", 0)/100 + player.stats.get("Elemental Bonus",0)/100) # Archon Ring, Pixie Hairpin +1, Orpheus, and more get their own (1+matk)/(1+mdef) terms.
 
 
-
         # print("m,v",m,v)
         damage = base_damage
         # print("base",damage)
@@ -1622,7 +1633,6 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
     #     Attributes also include player.main_job, player.sub_job, player.master_level, player.main_job_level, and player.sub_job_level
     # Enemy: Class which contains the enemy's stats (enemy.stats).
     # ws_name: The name of the weapon skill being used.
-    # tp: The TP value at which to use the WS. I apply TP bonus and limit TP to 3000 before this function is called. The TP being used by this function is the effective TP. TP Bonus has already been added when calling this function.
     # ws_type: includes ["melee","ranged","magical"] and is used to separate how the physical/magical portions of the damage contribute. Hybrid WSs are considered "melee" but activate a "hybrid" flag which enables their magical damage.
     #
 
@@ -1632,15 +1642,12 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
 
     verbose_dps = player.abilities.get("Verbose DPS", False) or single
     very_verbose_dps = player.abilities.get("Very Verbose DPS", False) or single
-    tp_bonus = player.stats.get("TP Bonus",0)
-    base_tp = input_tp - tp_bonus
+    tp_bonus = player.stats.get("TP Bonus", 0)
+    base_tp  = input_tp # TP value given by the player before any gear or abilities are added.
 
-    input_tp = 3000 if input_tp > 3000 else 1000 if input_tp < 1000 else input_tp
+    tp = max(1000, min(3000, input_tp + tp_bonus)) # TP used to simulate damage dealt = tp given by player + tp bonus
 
-    tp = input_tp # TP Bonus is added when calling this function in gui_wsdist.py
-    tp = 1000 if tp < 1000 else 3000 if tp > 3000 else tp
-
-    print(f"{ws_name} at {base_tp:.1f} TP (+{tp_bonus:.0f} TP Bonus; Effective TP: {input_tp:.1f} TP)") if (verbose_dps or very_verbose_dps) and simulation else None
+    print(f"{ws_name} at {input_tp:.1f} TP (+{tp_bonus:.0f} TP Bonus; Effective TP: {tp:.1f} TP)") if (verbose_dps or very_verbose_dps) and simulation else None
 
     dual_wield = (player.gearset["sub"].get("Type",None) == "Weapon") or (player.gearset["main"]["Skill Type"] == "Hand-to-Hand")
 
@@ -1847,12 +1854,12 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
 
         else: # Run a proper damage simulation for the weapon skill
 
-            # Do not apply 1-hit bonuses to DPS simulation WSs since the simulation would apply them to all WSs
-            striking_flourish = False
-            ternary_flourish = False
-            climactic_flourish = False
-            sneak_attack = False
-            trick_attack = False
+            # Do not apply 1-hit bonuses to DPS simulation WSs unless using the "Simulate one WS" button.
+            striking_flourish = player.abilities.get("Striking Flourish",False) if single else False
+            ternary_flourish = player.abilities.get("Ternary Flourish",False) if single else False
+            climactic_flourish = player.abilities.get("Climactic Flourish",False) if single else False
+            sneak_attack = player.abilities.get("Sneak Attack",False) if single else False
+            trick_attack = player.abilities.get("Trick Attack",False) if single else False
 
             sneak_attack_bonus = (player.stats["DEX"] * (1+player.stats.get("Sneak Attack Bonus",0)/100))*sneak_attack
             trick_attack_bonus = (player.stats["AGI"] * (1+player.stats.get("Trick Attack Bonus",0)/100))*trick_attack
@@ -2270,7 +2277,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                 tp_return += tp_ph
                 verbose_output(phys_dmg_ph, 0, tp_ph, crit, "ranged") if very_verbose_dps else None
             else:
-                print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                print(f"    {'Ranged Hit':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
 
             # Additional nhits-1 ranged hits
             for i in range(nhits-1):
@@ -2283,7 +2290,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
                         tp_return += tp_ph
                         verbose_output(phys_dmg_ph, 0, tp_ph, crit, "ranged") if very_verbose_dps else None
                     else:
-                        print("                      "+color_text("red","Missed.")) if very_verbose_dps else None
+                        print(f"    {'Ranged Hit':<10s}        "+color_text("red","Missed.")) if very_verbose_dps else None
 
 
     total_damage += physical_damage
@@ -2390,7 +2397,7 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
         if verbose_dps or very_verbose_dps:
             print(f"    =       Phys. Damage: {physical_damage:>6.0f}")
             print(f"    =       Magic Damage: {magical_damage:>6.0f}")
-            print(f"    =       TP Returned:  {tp_return:>6.1f}")
+            print(f"    =        TP Returned: {tp_return:>6.1f}")
             
         return(total_damage, tp_return)
     else:
@@ -2400,81 +2407,4 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
 
 
 if __name__ == "__main__":
-    #
-    #
-    #
-    from create_player import *
-    import sys
-    from gear import *
-
-    main_job = sys.argv[1]
-    sub_job = sys.argv[2]
-    master_level = int(sys.argv[3])
-    gearset = { "main" : Heishi,
-                'sub' : Hitaki2,
-                'ranged' : Empty,
-                'ammo' : Seething_Bomblet,
-                'head' : Mochizuki_Hatsuburi,
-                'body' : Nyame_Mail30B,
-                'hands' : Nyame_Gauntlets30B,
-                'legs' : Nyame_Flanchard30B,
-                'feet' : Nyame_Sollerets30B,
-                'neck' : Fotia_Gorget,
-                'waist' : Orpheus_Sash,
-                'ear1' : Moonshade_Earring,
-                'ear2' : Lugra_Earring_Aug,
-                'ring1' : Gere_Ring,
-                'ring2' : Cornelia_ring,
-                'back' : np.random.choice([k for k in capes if "nin" in k["Jobs"] and "STR Weapon" in k["Name2"] and "(" not in k["Name2"]])}
-
-    Grape_Daifuku2 = {"Name": "Grape Daifuku +1", "Type":"Food","STR":3, "VIT":4, "Food Attack":55, "Food Ranged Attack":55, "Accuracy":85, "Ranged Accuracy":85, "Magic Attack":4}
-    buffs = {"food": {},
-             "brd": {"Attack": 0, "Ranged Accuracy":0, "Accuracy": 0, "Ranged Accuracy": 0,"STR":0,"DEX":0, "VIT":0, "AGI":0, "INT":0, "MND":0, "CHR":0,},
-             "cor": {"Attack%": 0., "Ranged Attack%":0., "Store TP": 0, "Accuracy": 0, "Magic Attack": 0, "DA":0, "Crit Rate": 0},
-             "geo": {"Attack%": 0, "Ranged Attack%": 0, "Accuracy": 0, "Ranged Accuracy":0, "STR":0,"DEX":0, "VIT":0, "AGI":0, "INT":0, "MND":0, "CHR":0,},
-             "whm": {"MDT":0,"Magic Haste": 0, "STR":0,"DEX":0, "VIT":0, "AGI":0, "INT":0, "MND":0, "CHR":0}, # WHM buffs like boost-STR.
-             }
-    abilities = {"Ebullience":False,
-                        "Aftermath":0,
-                        "Sneak Attack":False,
-                        "Trick Attack":False,
-                        "Footwork":False,
-                        "Impetus":False,
-                        "Building Flourish":False,
-                        "Blood Rage":False,
-                        "Mighty Strikes":False,
-                        "Double Shot":False,
-                        "Velocity Shot":False,
-                        "True Shot":False,
-                        "Hover Shot":False}
-
-
-    enemy = create_enemy(apex_toad)
-    tp1 = 1000
-    tp2 = 1500
-
-    ws_name = "Blade: Chi"
-    player = create_player(main_job, sub_job, master_level, gearset, buffs, abilities)
-
-    tp1 += player.stats.get("TP Bonus",0)
-    tp2 += player.stats.get("TP Bonus",0)
-
-    tp = np.average([tp1,tp2])
-    tp = 1000 if tp < 1000 else 3000 if tp > 3000 else tp
-
-    spell_name = "Ranged Attack"
-
-    x = average_ws(player, enemy, ws_name, tp, "melee", "Damage dealt")
-    # x = cast_spell(player, enemy, spell_name, "Ranged Attack")
-    # x = average_attack_round(player, enemy)
-    print()
-    print('----------------')
-    print(player.stats)
-    for k in player.gearset:
-        print(k,player.gearset[k]["Name2"])
-    print(x)
-
-    if False:
-        import cProfile
-        cProfile.run("average_ws(player, enemy, ws_name, tp, \"melee\", \"Damage dealt\")",sort="cumtime")
-
+    pass

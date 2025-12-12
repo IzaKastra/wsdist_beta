@@ -1,18 +1,20 @@
-from enemies import *
+'''
+File containing code to build a player character with gear and aggregate stats.
 
+Author: Kastra (Asura server)
+'''
+from enemies import *
 
 class create_enemy:
     #
     # Create an enemy class so that we may modify its stats more easily.
     #
-    def __init__(self,enemy):
+    def __init__(self, enemy):
         #
         #
         #
-        self.name = enemy["Name"]
-        self.location = enemy["Location"]
         self.stats = {}
-        ignore_stats = ["Name","Location"] # Ignore the strings to create a dictionary of numeric values
+        ignore_stats = ["Name", "Location"] # Ignore the strings to create a dictionary of numeric values
         for stat in enemy:
             if stat not in ignore_stats:
                 self.stats[stat] = enemy[stat]
@@ -36,15 +38,15 @@ class create_player:
         #
         #
         #
-        self.main_job = main_job
-        self.sub_job = sub_job
+        self.main_job = main_job.lower()
+        self.sub_job = sub_job.lower()
         self.gearset = gearset
         self.buffs = buffs
         self.abilities = abilities
         self.master_level = 50 if master_level > 50 else 0 if master_level < 0 else master_level
 
         self.main_job_level = 99 # Assume Lv99 main job for now, but leave room to expand to arbitrary main jobs level later.
-        self.sub_job_level = int(int(self.main_job_level/2) + self.master_level/5)
+        self.sub_job_level = self.main_job_level//2 + self.master_level//5
 
         # Create a dictionary to contain all of the stats provided to the character from their selected <main_job>, <sub_job>, traits, job points, and merits.
         self.stats = {}
@@ -106,12 +108,14 @@ class create_player:
         self.stats["Attack2"] = 8 + self.stats.get(sub_skill, 0) + int(0.5*self.stats["STR"]) + self.stats.get("Attack",0) + self.stats.get(f"sub {sub_skill}",0)
 
         # Update Ranged Attack
-        ranged_skill = self.gearset["ranged"].get("Skill Type","None") + " Skill"
-        ammo_skill = self.gearset["ammo"].get("Skill Type","None") + " Skill"
+        ranged_skill = self.gearset["ranged"].get("Skill Type", "None") + " Skill"
+        ammo_skill = self.gearset["ammo"].get("Skill Type", "None") + " Skill"
         if ammo_skill=="Throwing Skill": # For Shuriken
             self.stats["Ranged Attack"] += 8 + self.stats.get(ammo_skill,0) + self.stats.get("STR",0)
-        elif ranged_skill in ["Marksmanship Skill","Archery Skill"]:
+        elif ranged_skill in ["Marksmanship Skill", "Archery Skill"]:
             self.stats["Ranged Attack"] += 8 + self.stats.get(ranged_skill,0) + self.stats.get("STR",0)
+        else:
+            self.stats["Ranged Attack"] = 0
 
         # Additive buffs to Attack and Accuracy from things like BRD have already been added.
         # We still need to add percent-based buffs such as Chaos Roll and Berserk. These have already been conveniently summed into the "Attack%" stat.
@@ -151,11 +155,11 @@ class create_player:
 
         # Zero-out stats that don't apply for the given gearset. We have already dealt with Smite/LastResort/Hasso requiring 2-handed weapons too.
         two_handed = ["Great Sword", "Great Katana", "Great Axe", "Polearm", "Scythe", "Staff"]
-        if self.gearset["ammo"].get("Type","None")!="Shuriken":
+        if self.gearset["ammo"].get("Type","None")!="Shuriken" or self.main_job.lower() != "nin":
             self.stats["Daken"] = 0
         if self.gearset["main"].get("Skill Type","None")!="Hand-to-Hand":
             self.stats["Kick Attacks"] = 0
-            self.stats["Martial Arts"] = 0 # Technically we can fight with H2H while empty-handed, but my "Empty" gear uses "None" skill-type, which means no attack/accuracy from "Hand-to-Hand Skill" TODO-
+            self.stats["Martial Arts"] = 0
         if self.gearset["main"]["Skill Type"] not in two_handed:
             self.stats["Zanshin"] = 0
         if (self.gearset["ranged"].get("Type") not in ["Gun","Bow","Crossbow"]) and (self.gearset["ammo"].get("Type","None") not in ["Bullet","Arrow","Bolt","Shuriken"]):
@@ -225,13 +229,6 @@ class create_player:
         # ===========================================================================
         # Warrior abilities
         if "war" in jobs:
-            if self.abilities.get("Warcry",False):
-                if self.main_job=="war": # main_job WAR does not have access to this buff (TODO: delete first part of this if-statement to remove redundant code)
-                    self.stats["Attack%"] = self.stats.get("Attack%",0) + 118./1024
-                    self.stats["Attack"] = self.stats.get("Attack",0) + 60
-                    self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + 500+200 # (5/5 Savagery Merits with Relic head)
-                elif self.sub_job=="war":
-                    self.stats["Attack%"] = self.stats.get("Attack%",0) + int(((self.sub_job_level)/4+4.75))/256.
             if self.abilities.get("Berserk",False):
                 self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.25 + 0.085*(self.gearset["main"]["Name"]=="Conqueror") + (100./1024)*(self.main_job=="war") # Warrior main gets +10% more attack with berserk.
                 self.stats["Attack"] = self.stats.get("Attack",0) + 40*(self.main_job=="war")
@@ -302,7 +299,7 @@ class create_player:
                 if self.abilities.get("Divine Emblem",False):
                     self.stats["Magic Damage"] = self.stats.get("Magic Damage",0) + 40
                 if self.abilities.get("Enlight II",False):
-                    divine_skill = self.abilities.get("Enh. Skill",0)
+                    divine_skill = self.abilities.get("Enhancing Skill",0)
                     divine_skill = 0 if divine_skill < 0 else divine_skill
                     if divine_skill <=500:
                         enlight_acc = 2*((divine_skill + 85)/13) + ((divine_skill + 85)/26)
@@ -322,7 +319,7 @@ class create_player:
             if self.main_job=="drk":
                 if self.abilities.get("Endark II",False): # https://ffxiclopedia.fandom.com/wiki/Endark_II
                     endark_potency = 0.80
-                    dark_magic_skill = self.abilities.get("Enh. Skill",0)
+                    dark_magic_skill = self.abilities.get("Enhancing Skill",0)
                     self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 20
                     self.stats["Attack"] = self.stats.get("Attack",0) + (((dark_magic_skill + 20)/13 + 5)*2.5) * endark_potency + 20 # +125 attack at 600 skill
         # # ===========================================================================
@@ -417,7 +414,7 @@ class create_player:
             # We deal with Climactic, Striking, and Ternary Flourish in the main code since they are special cases that apply some stuff only to the first hit.
             if self.abilities.get("Saber Dance",False):
                 self.stats["DA"] = self.stats.get("DA",0) + 25 # Assume minimum potency Saber Dance since it decays quickly.
-            if self.abilities.get("closed_position", False):
+            if self.abilities.get("Closed Position", False):
                 self.stats["Store TP"] = self.stats.get("Store TP",0) + (3*5)*("Horos Toe Shoes +3"==self.gearset["feet"]["Name"] or "Horos Toe Shoes +4"==self.gearset["feet"]["Name"]) # DNC Relic+3 feet provide +3 Store TP for each merit into Closed Position
 
         # ===========================================================================
@@ -612,22 +609,19 @@ class create_player:
             # Empyrean Aftermath is entirely handled in the main code when calculating damage.
 
         # Add buffs accessible to all jobs from assumed party members (SMN, BLU, BST, WAR, etc)
-
-        # Add WHM Auspice checkbox here. TODO
-        if self.abilities.get("Auspice",False):
-            self.stats["Subtle Blow"] = self.stats.get("Subtle Blow",0) + 29
-
-        if self.abilities.get("Shell V",False):
-            self.stats["MDT"] = self.stats.get("MDT",0) - 29
-
         if self.abilities.get("Blood Rage",False):
             self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 20
             if self.main_job=="war":
                 self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 20
 
-        if self.abilities.get("warcry_main", False):
+        if self.abilities.get("Warcry", False):
             self.stats["Attack%"] = self.stats.get("Attack%",0) + int(99/4 + 4.75)/256
             self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + 500+200
+            if self.main_job=="war":
+                self.stats["Attack"] = self.stats.get("Attack",0) + 60
+        
+        if self.abilities.get("Warcry (sub)", False):
+            self.stats["Attack%"] = self.stats.get("Attack%",0) + int(self.sub_job_level/4 + 4.75)/256
 
         if self.abilities.get("Crimson Howl", False):
             self.stats["Attack%"] = self.stats.get("Attack%",0) + int(99/4 + 4.75)/256
@@ -635,18 +629,19 @@ class create_player:
         if self.abilities.get("Crystal Blessing", False):
             self.stats["TP Bonus"] = self.stats.get("TP Bonus",0) + 250
 
-        if self.abilities.get("ifrit_favor", False):
+        if self.abilities.get("Ifrit's Favor", False):
             self.stats["DA"] = self.stats.get("DA",0) + 25
 
-        if self.abilities.get("shiva_favor", False):
+        if self.abilities.get("Shiva's Favor", False):
             self.stats["Magic Attack"] = self.stats.get("Magic Attack",0) + 39
 
-        if self.abilities.get("ramuh_favor", False):
+        if self.abilities.get("Ramuh's Favor", False):
             self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 23
 
-
-        if self.abilities.get("haste_samba_main", False):
+        if self.abilities.get("Haste Samba", False):
             self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 10.1
+        elif self.abilities.get("Haste Samba (sub)", False):
+            self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 5.1
 
         if self.abilities.get("Nature's Meditation",False): # https://www.bg-wiki.com/ffxi/Nat._Meditation
             self.stats["Attack%"] = self.stats.get("Attack%",0) + 52./256
@@ -800,7 +795,7 @@ class create_player:
             "sch":{"STR":7, "DEX":9, "VIT":8, "AGI":9, "INT":13, "MND":9, "CHR":11,}, # TODO: These are apparently ML0 parameters (Lv49). Needs updated to ML20 (Lv53)
             "geo":{"STR":7, "DEX":10, "VIT":10, "AGI":8, "INT":13, "MND":13, "CHR":9,},
             "run":{"STR":12, "DEX":10, "VIT":9, "AGI":13, "INT":10, "MND":10, "CHR":7,},
-            "none":{"STR":0, "DEX":0, "VIT":0, "AGI":0, "INT":0, "MND":0, "CHR":0,},    
+            "none":{"STR":0, "DEX":0, "VIT":0, "AGI":0, "INT":0, "MND":0, "CHR":0,},
         }
         for stat in job_parameters[self.main_job]:
             self.stats[stat] = self.stats.get(stat,0) + job_parameters[self.main_job][stat] + subjob_parameters[self.sub_job][stat] + self.master_level 
@@ -857,6 +852,8 @@ class create_player:
         if self.main_job=="bst":
             self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 50
 
+        self.stats["Ranged Attack"] = self.stats.get("Ranged Attack", 0) + 0
+
         # ===========================================================================
         # ===========================================================================
         # Add combat skills for a level 99 <main_job>. We add merits later.
@@ -911,7 +908,7 @@ class create_player:
                             "blu":{},
                             "cor":{},
                             "pup":{},
-                            "dnc":{"Accuracy":15*self.abilities.get("closed_position", False), "Evasion":15*self.abilities.get("closed_position",False)}, # +15 Accuracy and Evasion when Closed Position is enabled. DNC Relic+3 feet handled later.
+                            "dnc":{"Accuracy":15*self.abilities.get("Closed Position", False), "Evasion":15*self.abilities.get("Closed Position",False)}, # +15 Accuracy and Evasion when Closed Position is enabled. DNC Relic+3 feet handled later.
                             "sch":{"Helix Magic Accuracy":15,"Helix Magic Attack":10},
                             "geo":{},
                             "run":{},
@@ -964,11 +961,11 @@ class create_player:
         # Add job-specific stats from spells and abilities which are assumed to be active full-time.
 
         if self.main_job == "rdm": 
-            temper2_ta = int((self.abilities.get("Enh. Skill",0)-300)/10) if int((self.abilities.get("Enh. Skill",0)-300)/10) > 0 else 0  # Temper2 based on Enhancing Magic Skill https://www.bg-wiki.com/ffxi/Temper_II
-            self.stats["TA"] = self.stats.get("TA",0) + temper2_ta*self.abilities.get("Temper II",False)
+            temper2_ta = min(40, int((self.abilities.get("Enhancing Skill",0)-300)/10) if int((self.abilities.get("Enhancing Skill",0)-300)/10) > 0 else 0)  # Temper2 based on Enhancing Magic Skill https://www.bg-wiki.com/ffxi/Temper_II
+            self.stats["TA"] = self.stats.get("TA",0) + temper2_ta*self.abilities.get("Temper II", False)
 
         if self.main_job == "run":
-            temper1_da = int((self.abilities.get("Enh. Skill",0)-300)/10) if int((self.abilities.get("Enh. Skill",0)-300)/10) > 0 else 0  # Temper1 based on Enhancing Magic Skill https://www.bg-wiki.com/ffxi/Temper
+            temper1_da = int((self.abilities.get("Enhancing Skill",0)-300)/10) if int((self.abilities.get("Enhancing Skill",0)-300)/10) > 0 else 0  # Temper1 based on Enhancing Magic Skill https://www.bg-wiki.com/ffxi/Temper
             temper1_da = 5 if temper1_da < 5 else temper1_da
             self.stats["DA"] = self.stats.get("DA",0) + temper1_da*self.abilities.get("Temper",False)
         
@@ -1005,9 +1002,6 @@ class create_player:
             self.stats["Store TP"] = self.stats.get("Store TP",0) + 10 # Kakka: Ichi
             self.stats["Subtle Blow"] = self.stats.get("Subtle Blow",0) + 10 # Myoshu: Ichi
             
-        if self.sub_job=="dnc" and self.abilities.get("Haste Samba",False):
-            self.stats["JA Haste"] = self.stats.get("JA Haste",0) + 5.1
-
 
 
 
