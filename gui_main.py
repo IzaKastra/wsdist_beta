@@ -930,6 +930,10 @@ class application(tk.Tk):
             self.quicklook_results_tp_label2.configure(text=f"{self.quicklook_tp_value.get():.1f}", anchor="e", font="courier", width=6)
 
         elif trigger=="spell":
+
+            assert spell_name != "None", "No spell selected."
+                
+
             if "ton: " in spell_name.lower():
                 spell_type = "Ninjutsu"
             elif spell_name.split()[-1].lower() == "shot":
@@ -1356,7 +1360,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2025 December 12a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile gui_wsdist.py
+        self.title("Kastra FFXI Damage Simulator  (2025 December 12a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
