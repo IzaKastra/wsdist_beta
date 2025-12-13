@@ -440,6 +440,9 @@ class application(tk.Tk):
                         self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
                     if item_name.split()[0] in empyrean_names and "+3" not in item_name:
                         self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                    for limbus_set_name in ["hope", "perfection", "revelation", "trust", "prestige", "sworn", "bravery", "intrepid", "indomitable", "justice", "magnificent", "duty", "mercy", "grace", "clemency"]:
+                        if limbus_set_name in item_name.lower() and "R30" in item_name: # Only select R0 versions of the limbus equipment (at least for now)
+                            self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
 
                 if item_slot in ["neck"]:
                     if "R20" in item_name and "+1" in item_name:
@@ -1160,7 +1163,7 @@ class application(tk.Tk):
                 if "haste" in stat.lower() or "delay reduction"==stat.lower() :
                     value = f"{value*100:.1f}%"
                 
-                elif "crit" in stat.lower() or stat.lower() in ["zanshin", "zanshin oa2", "daken", "kick attacks", "pdt", "mdt", "dt", "da", "ta", "qa", "double shot", "triple shot", "quad shot", *[f"oa{k} {j}" for j in ["main", "sub"] for k in range(2,9)]] or "pdl" in stat.lower() or "magic burst" in stat.lower() or "%" in stat.lower() or "weapon skill" in stat.lower():
+                elif "crit" in stat.lower() or stat.lower() in ["zanshin", "zanshin oa2", "daken", "kick attacks", "pdt", "mdt", "dt", "da", "ta", "qa", "double shot", "triple shot", "quad shot", *[f"oa{k} {j}" for j in ["main", "sub"] for k in range(2,9)]] or "pdl" in stat.lower() or "magic burst" in stat.lower() or "%" in stat.lower() or "weapon skill damage" in stat.lower() or "skillchain" in stat.lower():
                     value = f"{value:.0f}%"
                 
                 elif "attack" in stat.lower() or "accuracy" in stat.lower() or "evasion" in stat.lower() or "store tp"==stat.lower():
@@ -1360,7 +1363,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2025 December 12c)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2025 December 13a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
