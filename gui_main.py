@@ -106,21 +106,30 @@ class application(tk.Tk):
 
             # Build the quicklook equipment.
             for slot in self.quicklook_equipped_dict:
-                saved_item = gear_pyfile.all_gear[state[f"quicklook_{slot}_item"]]
+                try:
+                    saved_item = gear_pyfile.all_gear[state[f"quicklook_{slot}_item"]]
+                except:
+                    continue
                 self.quicklook_equipped_dict[slot]["item"] = saved_item
                 self.quicklook_equipped_dict[slot]["icon"] = self.get_equipment_icon(saved_item["Name"])
                 self.quicklook_equipped_dict[slot]["button"].config(image = self.quicklook_equipped_dict[slot]["icon"])
                 self.quicklook_equipped_dict[slot]["button tooltip"].text = self.format_tooltip_stats(saved_item)
                 self.quicklook_equipped_dict[slot]["radio_variable"].set(saved_item["Name2"])
 
-                saved_item = gear_pyfile.all_gear[state[f"tp_quicklook_{slot}_item"]]
+                try:
+                    saved_item = gear_pyfile.all_gear[state[f"tp_quicklook_{slot}_item"]]
+                except:
+                    continue
                 self.tp_quicklook_equipped_dict[slot]["item"] = saved_item
                 self.tp_quicklook_equipped_dict[slot]["icon"] = self.get_equipment_icon(saved_item["Name"])
                 self.tp_quicklook_equipped_dict[slot]["button"].config(image = self.tp_quicklook_equipped_dict[slot]["icon"])
                 self.tp_quicklook_equipped_dict[slot]["button tooltip"].text = self.format_tooltip_stats(saved_item)
                 self.tp_quicklook_equipped_dict[slot]["radio_variable"].set(saved_item["Name2"])
 
-                saved_item = gear_pyfile.all_gear[state[f"ws_quicklook_{slot}_item"]]
+                try:
+                    saved_item = gear_pyfile.all_gear[state[f"ws_quicklook_{slot}_item"]]
+                except:
+                    continue
                 self.ws_quicklook_equipped_dict[slot]["item"] = saved_item
                 self.ws_quicklook_equipped_dict[slot]["icon"] = self.get_equipment_icon(saved_item["Name"])
                 self.ws_quicklook_equipped_dict[slot]["button"].config(image = self.ws_quicklook_equipped_dict[slot]["icon"])
@@ -1363,7 +1372,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2025 December 13a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2025 December 13b)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
