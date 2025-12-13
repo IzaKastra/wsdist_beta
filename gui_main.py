@@ -88,7 +88,7 @@ class application(tk.Tk):
         '''
         with open("defaults.pkl", "rb") as f:
             self.states = pickle.load(f)
-        if True:
+        try:
             main_job = self.main_job_value.get()
 
             selection = "default" if type=="default" else main_job
@@ -138,9 +138,9 @@ class application(tk.Tk):
                 self.update_quicklook_equipment((slot, self.tp_quicklook_equipped_dict[slot]["item"]["Name2"], self.tp_quicklook_equipped_dict, "tp"))
                 self.update_quicklook_equipment((slot, self.ws_quicklook_equipped_dict[slot]["item"]["Name2"], self.ws_quicklook_equipped_dict, "ws"))
             self.quicklook("show stats quicklook")
-        # except Exception as err:
-        #     print(err)
-        #     print(f"Failed to load default values for {selection}")
+        except Exception as err:
+            print(err)
+            print(f"Failed to load default values for {selection}")
             return
 
     def format_tooltip_stats(self, item):
@@ -1360,7 +1360,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2025 December 12b)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2025 December 12c)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
