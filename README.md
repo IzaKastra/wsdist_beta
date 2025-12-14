@@ -18,9 +18,9 @@ I prefer that all issues are reported as issues on the GitHub page. I rarely che
 
 
 
-GUI preview images (out of date, but still accurate):
+GUI preview images:
 
-<img src="https://i.imgur.com/pswkepe.png" alt="Inputs tab preview" width="857" height="454">
-<img src="https://i.imgur.com/4mLpiJB.png" alt="Optimize tab preview" width="857" height="454">
-<img src="https://i.imgur.com/LTptfE4.png" alt="Player Stats tab preview" width="857" height="454">
-<img src="https://i.imgur.com/ZfuJHuA.png" alt="Simulations tab preview" width="857" height="454">
+<img src="https://i.imgur.com/XI1MpKP.png" alt="Quicklook tab preview" width="527" height="677">
+<img src="https://i.imgur.com/2ASbWhA.png" alt="Optimize tab preview" width="527" height="677">
+<img src="https://i.imgur.com/ti7dczS.png" alt="Simulations tab preview" width="527" height="677">
+<img src="https://i.imgur.com/NbXwpWf.png" alt="Player Stats tab preview" width="527" height="677">
