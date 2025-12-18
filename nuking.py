@@ -9,22 +9,12 @@ import numpy as np
 def get_enspell_damage(enhancing_magic_skill, enspell_damage_percent, enspell_damage):
     '''
     Calculate EnSpell damage based on Enhancing Magic Skill and EnSpell enhancing equipment.
-    https://www.bg-wiki.com/ffxi/Category:Enspell
+    Using values obtained from personal data collection for the range 500-650 enhancing skill.
     '''
-    if enhancing_magic_skill > 500:
-        damage = int( 3*(enhancing_magic_skill+50)/25)
-
-    elif enhancing_magic_skill >= 400:
-        damage = int( (enhancing_magic_skill+20)/8 )
-
-    elif enhancing_magic_skill > 150:
-        damage = int( (enhancing_magic_skill/20) + 5)
-
-    elif enhancing_magic_skill > 0:
-        damage = int( (enhancing_magic_skill**0.5) - 1)
-
+    if enhancing_magic_skill < 600:
+        damage = int((enhancing_magic_skill - 223)/7.70) + 29
     else:
-        damage = 0
+        damage = int((enhancing_magic_skill - 202.5)/8.05) + 29
 
     damage += enspell_damage
     damage *= (1 + enspell_damage_percent/100)
