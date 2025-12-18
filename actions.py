@@ -309,7 +309,7 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
     zanshin_hit_rate = get_hit_rate(accuracy1+34, enemy_evasion, 0.95)
     zanshin_oa2 = player.stats.get("Zanshin OA2",0)/100
 
-    enhancing_magic_skill = player.abilities.get("Enh. Skill",0)
+    enhancing_magic_skill = player.abilities.get("Enhancing Skill",0)
     enspell_active = player.abilities.get("EnSpell",False) or player.abilities.get("Endark II", False) or player.abilities.get("Enlight II", False)
     if player.abilities.get("EnSpell",False):
         enspell_damage_percent_main = player.stats.get("EnSpell Damage% main",0) + player.stats.get("EnSpell Damage%",0)
@@ -1142,7 +1142,7 @@ def cast_spell(player, enemy, spell_name, spell_type, input_metric):
         stp = player.stats.get("Store TP",0)/100
         tp_return = get_tp(1, mdelay/2 if (main_skill_type == "Hand-to-Hand") else mdelay, stp)
 
-        enhancing_magic_skill = player.abilities.get("Enh. Skill",0)
+        enhancing_magic_skill = player.abilities.get("Enhancing Skill",0)
         enspell_damage_percent_main = player.stats.get("EnSpell Damage% main",0) + player.stats.get("EnSpell Damage%",0)
         enspell_damage_main = player.stats.get("EnSpell Damage main",0) + player.stats.get("EnSpell Damage",0)
         magic_crit_rate2 = player.stats.get("Magic Crit Rate II",0)/100
