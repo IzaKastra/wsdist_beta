@@ -190,11 +190,6 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
     # ending_tp = TP threshold (use WS after this TP value is reached)
     #
     
-    # Dispatch to optimized Monte Carlo simulation for Time to WS
-    if simulation and input_metric == "Time to WS":
-        from optimized_simulation import simulate_time_to_ws
-        return simulate_time_to_ws(player, enemy, starting_tp, ws_threshold)
-    
     dual_wield = (player.gearset["sub"].get("Type",None) == "Weapon") or (player.gearset["main"]["Skill Type"] == "Hand-to-Hand")
 
     verbose_dps = player.abilities.get("Verbose DPS", False)
@@ -317,6 +312,8 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
 
     enhancing_magic_skill = player.abilities.get("Enhancing Skill",0)
     enspell_active = player.abilities.get("EnSpell",False) or player.abilities.get("Endark II", False) or player.abilities.get("Enlight II", False)
+    main_enspell_damage = 0  # Default value when no enspell active
+    sub_enspell_damage = 0   # Default value when no enspell active
     if player.abilities.get("EnSpell",False):
         enspell_damage_percent_main = player.stats.get("EnSpell Damage% main",0) + player.stats.get("EnSpell Damage%",0)
         enspell_damage_percent_sub = player.stats.get("EnSpell Damage% sub",0) + player.stats.get("EnSpell Damage%",0)
@@ -404,6 +401,121 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
     main_ta_proc = False # Used to keep track of DA/TA procs for "DA DMG%" and "TA DMG%" stats (see Sakpata's Helm)
     sub_da_proc = False # Used to keep track of DA/TA procs for "DA DMG%" and "TA DMG%" stats (see Sakpata's Helm)
     sub_ta_proc = False # Used to keep track of DA/TA procs for "DA DMG%" and "TA DMG%" stats (see Sakpata's Helm)
+
+    # ===================
+    # OPTIMIZED SIMULATION PATH for "Time to WS"
+    # Uses JIT-compiled kernel with all pre-computed values from above
+    # Returns in the same format as simulation=False:
+    #   (time_to_ws, [damage, tp_per_attack_round, time_per_attack_round, invert], magical_damage)
+    # ===================
+    if simulation and input_metric == "Time to WS":
+        from optimized_simulation import simulate_time_to_ws, get_skill_type_id, get_ranged_skill_type_id
+        
+        # Convert skill types to numeric IDs for JIT
+        main_skill_id = get_skill_type_id(main_skill_type)
+        sub_skill_id = get_skill_type_id(sub_skill_type) if sub_skill_type else 0
+        ammo_skill_id = get_ranged_skill_type_id(ammo_skill_type)
+        
+        # Compute weapon special proc rates and multipliers from existing variables
+        # Relic weapons
+        if player.gearset["main"]["Name"] in relic_weapons30:
+            relic_proc_rate = 0.13
+            relic_bonus_mult = 2.0  # 3x damage = 1.0 + 2.0
+        elif player.gearset["main"]["Name"] in relic_weapons25:
+            relic_proc_rate = 0.16
+            relic_bonus_mult = 1.5  # 2.5x damage
+        elif player.gearset["main"]["Name"] in relic_weapons20:
+            relic_proc_rate = 0.20
+            relic_bonus_mult = 1.0  # 2x damage
+        else:
+            relic_proc_rate = 0.0
+            relic_bonus_mult = 0.0
+        
+        # Prime weapons
+        if player.gearset["main"]["Name2"] in prime_weapons3:
+            prime_proc_rate = 0.3
+            prime_bonus_mult = 2.0  # 3x damage
+        elif player.gearset["main"]["Name2"] in prime_weapons2:
+            prime_proc_rate = 0.3
+            prime_bonus_mult = 1.0  # 2x damage
+        else:
+            prime_proc_rate = 0.0
+            prime_bonus_mult = 0.0
+        
+        # Empyrean aftermath
+        if player.gearset["main"]["Name"] in empyrean_weapons and aftermath > 0:
+            empyrean_proc_rate = empyrean_am[aftermath - 1]
+            empyrean_bonus_mult = 2.0  # 3x damage
+        else:
+            empyrean_proc_rate = 0.0
+            empyrean_bonus_mult = 0.0
+        
+        # Dragon Fangs kick bonus
+        if player.gearset["main"]["Name2"] == "Dragon Fangs":
+            dragon_fangs_proc_rate = dragon_fangs_kick_damage_bonus_proc_rate
+        else:
+            dragon_fangs_proc_rate = 0.0
+        
+        # Zanshin attack (attack1 + Zanshin Attack bonus)
+        zanshin_attack = attack1 + player.stats.get("Zanshin Attack", 0)
+        
+        # Flags
+        two_handed_skills = ["Great Sword", "Great Katana", "Great Axe", "Polearm", "Scythe", "Staff"]
+        is_h2h = main_skill_type == "Hand-to-Hand"
+        is_two_handed = main_skill_type in two_handed_skills
+        is_sam_main = player.main_job.lower() == "sam"
+        
+        # Calculate time per attack round
+        time_per_attack_round = max(0, get_delay_timing(
+            player.stats["Delay1"], 
+            player.stats["Delay2"] if dual_wield and (player.gearset["main"]["Skill Type"] != "Hand-to-Hand") else 0, 
+            player.stats.get("Dual Wield", 0) / 100, 
+            player.stats.get("Martial Arts", 0), 
+            player.stats.get("Magic Haste", 0), 
+            player.stats.get("JA Haste", 0), 
+            player.stats.get("Gear Haste", 0)
+        ))
+        
+        # Calculate regain TP per attack round
+        regain_tp = player.stats.get("Dual Wield", 0) * (player.gearset["main"]["Name"] == "Gokotai") + player.stats.get("Regain", 0)
+        regain_tp_per_round = (time_per_attack_round / 3) * regain_tp
+        
+        # Number of Monte Carlo rounds (can be tuned for speed vs accuracy)
+        n_rounds = 1000
+        
+        # Call the Monte Carlo simulation
+        result = simulate_time_to_ws(
+            n_rounds,
+            float(time_per_attack_round),
+            float(starting_tp),
+            float(ws_threshold),
+            float(regain_tp_per_round),
+            # Kernel parameters
+            float(main_dmg), float(sub_dmg), float(kick_dmg), float(ammo_dmg),
+            float(fstr_main), float(fstr_sub), float(fstr_kick), float(fstr_ammo),
+            float(attack1), float(attack2), float(ranged_attack), float(zanshin_attack),
+            main_skill_id, sub_skill_id, ammo_skill_id,
+            float(pdl_trait), float(pdl_gear),
+            float(hit_rate11), float(hit_rate12), float(hit_rate21), float(hit_rate22),
+            float(hit_rate_ranged), float(zanshin_hit_rate),
+            float(crit_rate), float(crit_dmg),
+            float(qa), float(ta), float(da),
+            float(oa8_main), float(oa7_main), float(oa6_main), float(oa5_main), float(oa4_main), float(oa3_main), float(oa2_main),
+            float(oa8_sub), float(oa7_sub), float(oa6_sub), float(oa5_sub), float(oa4_sub), float(oa3_sub), float(oa2_sub),
+            float(kickattacks), float(daken), float(zanshin), float(zanhasso), float(zanshin_oa2),
+            float(mdelay), float(ammo_delay), float(stp),
+            float(main_enspell_damage), float(sub_enspell_damage), enspell_active,
+            float(enemy_defense),
+            float(da_dmg), float(ta_dmg),
+            float(relic_proc_rate), float(relic_bonus_mult),
+            float(prime_proc_rate), float(prime_bonus_mult),
+            float(empyrean_proc_rate), float(empyrean_bonus_mult),
+            float(dragon_fangs_proc_rate),
+            dual_wield, is_h2h, is_two_handed, is_sam_main
+        )
+        
+        # Returns: (time_to_ws, [damage, tp_per_attack_round, time_per_attack_round, invert], magical_damage)
+        return result
 
     if simulation:
 
