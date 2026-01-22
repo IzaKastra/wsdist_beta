@@ -6,7 +6,7 @@ File containing calculations for
     
 Author: Kastra (Asura server)
 '''
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import numpy as np
 from get_hit_rate import get_hit_rate
 from weaponskill_info import weaponskill_info
@@ -156,14 +156,14 @@ def run_simulation(player_tp, player_ws, enemy, ws_threshold, ws_name, ws_type, 
     phys_dmg_list = np.array(phys_dmg_list)
     magic_dmg_list = np.array(magic_dmg_list)
 
-    if plot_dps:
-        plt.plot(time_list, damage_list/time_list,label=f"Total={damage/time:7.1f}")
-        plt.plot(tp_time_list, tp_damage_list/tp_time_list,label=f"TP={tp_damage/time:7.1f} ({tp_damage/damage*100:5.1f}%)")
-        plt.plot(ws_time_list, ws_damage_list/ws_time_list,label=f"WS={ws_damage/time:7.1f} ({ws_damage/damage*100:5.1f}%)")
-        plt.xlabel("Time (s)")
-        plt.ylabel("DPS")
-        plt.legend()
-        plt.show()
+    # if plot_dps:
+    #     plt.plot(time_list, damage_list/time_list,label=f"Total={damage/time:7.1f}")
+    #     plt.plot(tp_time_list, tp_damage_list/tp_time_list,label=f"TP={tp_damage/time:7.1f} ({tp_damage/damage*100:5.1f}%)")
+    #     plt.plot(ws_time_list, ws_damage_list/ws_time_list,label=f"WS={ws_damage/time:7.1f} ({ws_damage/damage*100:5.1f}%)")
+    #     plt.xlabel("Time (s)")
+    #     plt.ylabel("DPS")
+    #     plt.legend()
+    #     plt.show()
 
     print()
     print(f"""
@@ -189,6 +189,12 @@ def average_attack_round(player, enemy, starting_tp, ws_threshold, input_metric,
     # starting_tp = starting TP value.
     # ending_tp = TP threshold (use WS after this TP value is reached)
     #
+    
+    # Dispatch to optimized Monte Carlo simulation for Time to WS
+    if simulation and input_metric == "Time to WS":
+        from optimized_simulation import simulate_time_to_ws
+        return simulate_time_to_ws(player, enemy, starting_tp, ws_threshold)
+    
     dual_wield = (player.gearset["sub"].get("Type",None) == "Weapon") or (player.gearset["main"]["Skill Type"] == "Hand-to-Hand")
 
     verbose_dps = player.abilities.get("Verbose DPS", False)
