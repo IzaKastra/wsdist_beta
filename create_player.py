@@ -406,11 +406,6 @@ class create_player:
                 self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 40
                 self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.25
                 self.stats["Weapon Skill Damage"] = self.stats.get("Weapon Skill Damage",0) + self.stats.get("Building Flourish WSD",0)
-            if self.abilities.get("Climactic Flourish",False):
-                self.stats["Crit Rate"] = self.stats.get("Crit Rate",0) + 10
-                self.stats["Accuracy"] = self.stats.get("Accuracy",0) + 40
-                self.stats["Attack%"] = self.stats.get("Attack%",0) + 0.25
-                self.stats["Weapon Skill Damage"] = self.stats.get("Weapon Skill Damage",0) + 20
             # We deal with Climactic, Striking, and Ternary Flourish in the main code since they are special cases that apply some stuff only to the first hit.
             if self.abilities.get("Saber Dance",False):
                 self.stats["DA"] = self.stats.get("DA",0) + 25 # Assume minimum potency Saber Dance since it decays quickly.
