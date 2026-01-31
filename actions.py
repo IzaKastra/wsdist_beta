@@ -1622,7 +1622,7 @@ def real_ws(player, enemy, ws_name, tp, ws_type, input_metric):
     pass
 
 
-def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulation=False, single=False):
+def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulation=False, single=False, verbose=False):
     #
     # Calculate average weapon skill damage.
     #
@@ -1640,8 +1640,8 @@ def average_ws(player, enemy, ws_name, input_tp, ws_type, input_metric, simulati
     # ===========================================================================
     # Read in the weapon skill information, including the updated player stats (such as Accuracy, Attack, and Crit Rate) from TP scaling.
 
-    verbose_dps = player.abilities.get("Verbose DPS", False) or single
-    very_verbose_dps = player.abilities.get("Very Verbose DPS", False) or single
+    verbose_dps = player.abilities.get("Verbose DPS", False) or verbose
+    very_verbose_dps = player.abilities.get("Very Verbose DPS", False) or verbose
     tp_bonus = player.stats.get("TP Bonus", 0)
     base_tp  = input_tp # TP value given by the player before any gear or abilities are added.
 

@@ -927,7 +927,7 @@ class application(tk.Tk):
 
             print()
             print()
-            actions_pyfile.average_ws(player, enemy, ws_name, tp_entry_value, ws_type, "Damage dealt", simulation=True, single=True)
+            actions_pyfile.average_ws(player, enemy, ws_name, tp_entry_value, ws_type, "Damage dealt", simulation=True, single=True, verbose=True)
             print()
             print()
             return
@@ -1031,8 +1031,7 @@ class application(tk.Tk):
             damage_list = []
             tp_list = []
             for k in range(20000): # Sample 20,000 WSs with a fixed TP value
-                
-                outputs = actions_pyfile.average_ws(ws_player, enemy, ws_name, tp_entry_value, ws_type, "Damage dealt", simulation=True)
+                outputs = actions_pyfile.average_ws(ws_player, enemy, ws_name, tp_entry_value, ws_type, "Damage dealt", simulation=True, single=True, verbose=False)
                 damage_list.append(outputs[0])
                 tp_list.append(outputs[1])
 
