@@ -1225,8 +1225,10 @@ Tahaka_Mantle = {"Name":"Takaha Mantle", "Accuracy":15, "Attack":15, "STR":5, "S
 Null_Shawl = {"Name":"Null Shawl", "Accuracy":50, "Ranged Accuracy":50, "Magic Accuracy":50, "Evasion":50, "Magic Evasion":50, "DA":7, "Store TP":7, "Jobs":all_jobs}
 Murky_Mantle30 = {"Name":"Murky Mantle", "Name2":"Murky Mantle R30", "Magic Damage":33+25, "Magic Accuracy":25, "INT":15, "Jobs":all_jobs}
 Alabaster_Mantle30 = {"Name":"Alabaster Mantle", "Name2":"Alabaster Mantle R30", "Weapon Skill Damage":11, "Accuracy":0+25, "Attack":0+25, "Ranged Accuracy":0+25, "Ranged Attack":0+25, "STR":0+15, "DEX":0+15, "Jobs":all_jobs}
+Sacro_Mantle = {"Name":"Sacro Mantle", "DEX":25, "AGI":25, "Accuracy":20, "Attack":20, "Ranged Accuracy":20, "Ranged Attack":20, "Magic Accuracy":20, "Weapon Skill Damage":6, "Skillchain Bonus":8, "Jobs":["mnk", "thf", "bst", "nin", "pup", "dnc"]}
 capes.append(Tahaka_Mantle)
 capes.append(Null_Shawl)
+capes.append(Sacro_Mantle)
 capes.append(Alabaster_Mantle30)
 capes.append(Murky_Mantle30)
 capes.append(Empty)
