@@ -1357,7 +1357,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2026 February 18a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2026 February 19a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
