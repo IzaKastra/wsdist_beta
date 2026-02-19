@@ -2,12 +2,12 @@
 File containing code to build the GUI
 
     TODO:
-        Virtualize the checkboxes and radio buttons for gear selections.
         Finish Automaton Tab (merge with quicklook frame?)
         Add tooltips throughout.
     
 Author: Kastra (Asura server)
 '''
+
 import numpy as np
 import os, sys
 sys.path.append(os.path.dirname(sys.executable))
@@ -31,9 +31,10 @@ import actions as actions_pyfile
 import buffs as buffs_pyfile
 import wsdist as wsdist_pyfile
 import fancy_plot as fancy_plot_pyfile
-from lumo_scrollablelabelframe import ScrollableLabelFrame
+from lumo_scrollablelabelframe import ScrollableLabelFrame # TODO: Replace with ChatGPT's virtual_frames
 from gpt_manage_defaults import *
 
+from virtual_frames import VirtualCheckboxFrame, VirtualRadioFrame
 
 class application(tk.Tk):
 
@@ -143,9 +144,9 @@ class application(tk.Tk):
             for input in [f"set {k}" for k in ["dia", "haste", "boost", "storm", "Indi-", "Geo-", "Entrust-", "food"]+[f"Song{i+1}" for i in range(4)]+[f"Roll{i+1}" for i in range(4)]]:
                 self.update_buffs(input)
             for slot in self.equipment_button_positions:
-                self.update_quicklook_equipment((slot, self.quicklook_equipped_dict[slot]["item"]["Name2"], self.quicklook_equipped_dict, "quicklook"))
-                self.update_quicklook_equipment((slot, self.tp_quicklook_equipped_dict[slot]["item"]["Name2"], self.tp_quicklook_equipped_dict, "tp"))
-                self.update_quicklook_equipment((slot, self.ws_quicklook_equipped_dict[slot]["item"]["Name2"], self.ws_quicklook_equipped_dict, "ws"))
+                self.update_quicklook_equipment((slot, self.quicklook_equipped_dict[slot]["item"]["Name2"], "quicklook"))
+                self.update_quicklook_equipment((slot, self.tp_quicklook_equipped_dict[slot]["item"]["Name2"], "tp"))
+                self.update_quicklook_equipment((slot, self.ws_quicklook_equipped_dict[slot]["item"]["Name2"], "ws"))
             self.quicklook("show stats quicklook")
         except Exception as err:
             print(err)
@@ -288,26 +289,21 @@ class application(tk.Tk):
             new_subjob_options = [k for k in sorted(self.jobs_dict) if k != self.main_job_value.get()] + ["None"]
             self.sub_job_selection_combobox.config(values=new_subjob_options)
 
-            # Update the quicklook radio button options and optimize checkbox options
-            for radio_button_name in self.quicklook_radio_buttons:
-                self.quicklook_radio_buttons[radio_button_name].pack_forget()
-                self.tp_quicklook_radio_buttons[radio_button_name].pack_forget()
-                self.ws_quicklook_radio_buttons[radio_button_name].pack_forget()
-                self.optimize_checkboxes[radio_button_name]["boolvar"].set(value=False)
-                self.optimize_checkboxes[radio_button_name]["checkbox"].pack_forget()
-                
-                item_name = self.quicklook_radio_buttons[radio_button_name].cget("text")
-                item_slot = radio_button_name[:-len(item_name)]
-                item = gear_pyfile.all_gear[item_name]
+            # Update the virtual scrollframes to show radiobuttons and checkbuttons for items equippable by the selected job.
+            for slot in self.all_equipment_dict:
+                if slot == "sub":
+                    allowed_subtypes = ["Shield", "Grip", "None"]
+                    if dual_wield:
+                        allowed_subtypes += ["Weapon"]
+                    filtered_equipment_list = sorted([k["Name2" if "Name2" in k else "Name"] for k in self.all_equipment_dict["sub"] if (main_job_shorthand in k["Jobs"]) and (k["Type"] in allowed_subtypes)])
+                else:
+                    filtered_equipment_list = sorted([k["Name2" if "Name2" in k else "Name"] for k in self.all_equipment_dict[slot] if main_job_shorthand.lower() in k["Jobs"]])
+                self.quicklook_scrollframes[slot].set_visible_data(filtered_equipment_list)
+                self.tp_quicklook_scrollframes[slot].set_visible_data(filtered_equipment_list)
+                self.ws_quicklook_scrollframes[slot].set_visible_data(filtered_equipment_list)
+                self.optimize_scrollframes[slot].set_visible_data(filtered_equipment_list)
+                self.optimize_scrollframes[slot].deselect("all")
 
-                if main_job_shorthand in item["Jobs"]:
-                    if item_slot == "sub" and (item.get("trigger", "None") == "Weapon" and not dual_wield):
-                        continue
-
-                    self.quicklook_radio_buttons[radio_button_name].pack(anchor="w", pady=0)
-                    self.tp_quicklook_radio_buttons[radio_button_name].pack(anchor="w", pady=0)
-                    self.ws_quicklook_radio_buttons[radio_button_name].pack(anchor="w", pady=0)
-                    self.optimize_checkboxes[radio_button_name]["checkbox"].pack(anchor="w", pady=0)
 
             # Red Mage uses Boost-STAT instead of Gain-STAT. Update the corresponding buff drop-down menu and selection here.
             old_boost_stat = "None" if self.boost_value.get()=="None" else self.boost_value.get().split("-")[-1]
@@ -341,27 +337,20 @@ class application(tk.Tk):
             
         elif trigger=="sub":
             # Hide weapons in off-hand slot unless new main+sub combo allows dual wielding.
-            new_off_hand_equipment_list = sorted(["sub"+k["Name2" if "Name2" in k else "Name"] for k in self.all_equipment_dict["sub"] if main_job_shorthand in k["Jobs"]])
-            for radio_button_name in new_off_hand_equipment_list:
+            allowed_subtypes = ["Shield", "Grip", "None"]
+            if dual_wield:
+                allowed_subtypes += ["Weapon"]
+            else:
+                restricted_items = [k["Name2" if "Name2" in k else "Name"] for k in self.all_equipment_dict["sub"] if (main_job_shorthand in k["Jobs"]) and (k["Type"] == "Weapon")]
+            new_off_hand_equipment_list = sorted([k["Name2" if "Name2" in k else "Name"] for k in self.all_equipment_dict["sub"] if (main_job_shorthand in k["Jobs"]) and (k["Type"] in allowed_subtypes)])
+            
 
-                self.quicklook_radio_buttons[radio_button_name].pack_forget()
-                self.tp_quicklook_radio_buttons[radio_button_name].pack_forget()
-                self.ws_quicklook_radio_buttons[radio_button_name].pack_forget()
-                self.optimize_checkboxes[radio_button_name]["boolvar"].set(value=False)
-                self.optimize_checkboxes[radio_button_name]["checkbox"].pack_forget()
-
-                item_name = self.quicklook_radio_buttons[radio_button_name].cget("text")
-                item_slot = radio_button_name[:-len(item_name)]
-                item = gear_pyfile.all_gear[item_name]
-
-                if main_job_shorthand in item["Jobs"]:
-                    if item_slot == "sub" and (item.get("trigger", "None") == "Weapon" and not dual_wield):
-                        continue
-
-                    self.quicklook_radio_buttons[radio_button_name].pack(anchor="w", pady=0)
-                    self.tp_quicklook_radio_buttons[radio_button_name].pack(anchor="w", pady=0)
-                    self.ws_quicklook_radio_buttons[radio_button_name].pack(anchor="w", pady=0)
-                    self.optimize_checkboxes[radio_button_name]["checkbox"].pack(anchor="w", pady=0)
+            self.quicklook_scrollframes["sub"].set_visible_data(new_off_hand_equipment_list)
+            self.tp_quicklook_scrollframes["sub"].set_visible_data(new_off_hand_equipment_list)
+            self.ws_quicklook_scrollframes["sub"].set_visible_data(new_off_hand_equipment_list)
+            self.optimize_scrollframes["sub"].set_visible_data(new_off_hand_equipment_list)
+            if not dual_wield:
+                self.optimize_scrollframes["sub"].deselect(restricted_items)
 
             # Unequip off-hand weapon if not able to dual-wield.
             if not dual_wield and self.quicklook_equipped_dict["sub"]["item"]["Type"]=="Weapon":
@@ -372,7 +361,7 @@ class application(tk.Tk):
                 self.quicklook_equipped_dict["sub"]["button tooltip"].text = self.format_tooltip_stats(new_sub_item)
                 self.quicklook_equipped_dict["sub"]["radio_variable"].set("Empty")
 
-        # Hiqde abilities not accessible to the selected main/sub/ML combo.
+        # Hide abilities not accessible to the selected main/sub/ML combo.
         main_job = self.jobs_dict[self.main_job_value.get()]
         sub_job = self.jobs_dict[self.sub_job_value.get()] if self.sub_job_value.get() != "None" else "None"
         for ability_name in self.all_special_toggles_dict:
@@ -398,84 +387,76 @@ class application(tk.Tk):
         relic_names = ["Pedagogy", "Hesychast", "Vitiation", "Mochizuki", "Fallen", "Horos", "Pitre", "Luhlaza", "Plunderer", "Bagua", "Archmage", "Piety", "Agoge", "Caballarius", "Wakido", "Ankusa", "Bihu", "Glyphic", "Lanun", "Arcadian", "Pteroslaver", "Futhark"]
         af_names = ["Academic", "Anchorite", "Atrophy", "Hachiya", "Ignominy", "Maxixi", "Foire", "Assimilator", "Pillager", "Geomancy", "Spaekona", "Theophany", "Pummeler", "Reverence", "Sakonji", "Totemic", "Brioso", "Convoker", "Laksamana", "Orion", "Vishap", "Runeist"]
 
-        for checkbox_name in self.optimize_checkboxes:
+        for slot in self.quicklook_equipped_dict:
 
-            item_name = self.optimize_checkboxes[checkbox_name]["checkbox"].cget("text")
-            item_slot = checkbox_name[:-len(item_name)]
-            item = gear_pyfile.all_gear[item_name]
-            
-            if self.jobs_dict[self.main_job_value.get()] not in item["Jobs"]: # Skip items that are not useable by selected main job
-                continue
+            # Deselect everything, then select items in the slot(s) that are usable by the job input
+            if ((self.visible_optimize_frame_slot == slot) and (event == "select all slot")) or event == "select all":
+                self.optimize_scrollframes[slot].deselect("all")
+                self.optimize_scrollframes[slot].select("visible")
 
-            # if not self.optimize_checkboxes[checkbox_name]["checkbox"].winfo_ismapped(): # Skip items that are not mapped to the GUI
-            #     continue
+            elif (self.visible_optimize_frame_slot == slot) and (event == "unselect all slot"):
+                self.optimize_scrollframes[slot].deselect("all")
 
-            # Unselect everything in the visible list.
-            if item_slot == self.visible_optimize_frame_slot:
-                self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
-
-            # Select everything if using a "select all" button.
-            if (event == "select all visible" and item_slot == self.visible_optimize_frame_slot) or (event == "select all"):
-                self.optimize_checkboxes[checkbox_name]["boolvar"].set(True)
-
-                # Unselect specific items based on filters.
+            # Unselect specific items based on filters.
+            # Unfortunately, we need the item dictionaries to extract Odyssey rank information.
+            for item_name in self.optimize_scrollframes[slot].visible_data:
                 item = gear_pyfile.all_gear[item_name]
                 if str(item.get("Rank", self.ody_rank_value.get())) != self.ody_rank_value.get():
-                    self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                    self.optimize_scrollframes[slot].deselect(item_name)
 
                 if "nyame" in item_name.lower():
                     if "B" != item_name[-1]:
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
                     elif self.ody_rank_value.get()=="30" and self.nyame25_checkbox_value.get():
                         if "30B" in item_name:
-                            self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                            self.optimize_scrollframes[slot].deselect(item_name)
                         elif "25B" in item_name:
-                            self.optimize_checkboxes[checkbox_name]["boolvar"].set(True)
+                            self.optimize_scrollframes[slot].select(item_name)
 
-                if item_slot in ["main", "sub", "ranged"]:
+                if slot in ["main", "sub", "ranged"]:
                     if item_name.split()[0] in self.rema_weapons and "R15" not in item_name:
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
                     if item_name.split()[-1] == "V":
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
                     if "kraken" in item_name.lower():
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
 
-                if item_slot in ["ammo"]:
+                if slot in ["ammo"]:
                     if "Hoxne" in item_name or "Antitail" in item_name:
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
 
-                if item_slot in ["head", "body", "hands", "legs", "feet"]:
+                if slot in ["head", "body", "hands", "legs", "feet"]:
                     if item_name.split()[0] in relic_names+af_names and "+4" not in item_name:
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
                     if item_name.split()[0] in empyrean_names and "+3" not in item_name:
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
                     for limbus_set_name in ["hope", "perfection", "revelation", "trust", "prestige", "sworn", "bravery", "intrepid", "indomitable", "justice", "magnificent", "duty", "mercy", "grace", "clemency"]:
                         if limbus_set_name in item_name.lower() and "R30" in item_name: # Only select R0 versions of the limbus equipment (at least for now)
-                            self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                            self.optimize_scrollframes[slot].deselect(item_name)
 
-                if item_slot in ["neck"]:
+                if slot in ["neck"]:
                     if "R20" in item_name and "+1" in item_name:
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
 
-                if item_slot in ["ear1", "ear2"]:
+                if slot in ["ear1", "ear2"]:
                     if item_name.split()[0] in empyrean_names and "+2" in item_name:
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
                     if "Hoxne" in item_name and "MR05" not in item_name:
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
                     if "Balder" in item_name:
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
                     if "(night)" in item_name.lower():
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
 
-                if item_slot in ["ring1", "ring2"]:
+                if slot in ["ring1", "ring2"]:
                     if item_name.lower() in tvr_ring_names and item_name.lower() != self.tvr_selection_value.get().lower() + " ring":
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
 
                     if item_name.lower() in soa_ring_names and item_name.lower() != self.soa_selection_value.get().lower() + " ring +1":
-                        self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                        self.optimize_scrollframes[slot].deselect(item_name)
 
                 if "Murky" in item_name or "Alabaster" in item_name:
-                    self.optimize_checkboxes[checkbox_name]["boolvar"].set(False)
+                    self.optimize_scrollframes[slot].deselect(item_name)
 
     def equip_best_set(self):
         '''
@@ -561,7 +542,15 @@ class application(tk.Tk):
         equipped_items_dict: The equipment dictionary to be modified by the selection
         source:              A way to track which part of the code called this function to avoid TP/WS sets affecting quicklook tab.
         '''
-        slot, new_item_name, equipped_items_dict, source = selection
+        slot, new_item_name, source = selection
+
+        if source == "quicklook":
+            equipped_items_dict = self.quicklook_equipped_dict
+        elif source == "tp":
+            equipped_items_dict = self.tp_quicklook_equipped_dict
+        elif source == "ws":
+            equipped_items_dict = self.ws_quicklook_equipped_dict
+
         new_item = gear_pyfile.all_gear[new_item_name] # New item (dictionary of stats)
         old_item = equipped_items_dict[slot]["item"]   # Old item (dictionary of stats)
 
@@ -977,14 +966,11 @@ class application(tk.Tk):
 
         elif "optimize" in trigger:
 
-            check_gear_dict = {slot:[] for slot in self.quicklook_equipped_dict}
-            for checkbox_name in self.optimize_checkboxes:
-                if self.optimize_checkboxes[checkbox_name]["boolvar"].get():
-                    item_name = self.optimize_checkboxes[checkbox_name]["checkbox"].cget("text")
-                    item_slot = checkbox_name[:-len(item_name)]
-                    item_dict = gear_pyfile.all_gear[item_name]
-                    check_gear_dict[item_slot].append(item_dict)
-
+            # Build the list of equipment to check based on the checkbox selections in each slot.
+            # check_gear_dict is a dictionary containing lists of full gear.py item dictionaries
+            
+            check_gear_dict = {slot:[gear_pyfile.all_gear[item_name] for item_name in self.optimize_scrollframes[slot].get_selected()] for slot in self.quicklook_equipped_dict}
+        
             assert any([len(check_gear_dict[k])>1 for k in check_gear_dict]), "At least two items must be selected in at least one slot to find the best set."
 
             if "ws" in trigger:
@@ -1372,7 +1358,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2025 December 18a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2026 February 18a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
@@ -2049,22 +2035,16 @@ class application(tk.Tk):
         self.quicklook_results_tp_label2 = ttk.Label(quicklook_results_frame, text=f"{self.quicklook_tp_value.get():.1f}", anchor="e", font="courier", width=6)
         self.quicklook_results_tp_label2.grid(row=1, column=1)
 
+
         quicklook_subframe_right = ttk.Frame(quicklook_frame, height=200, width=410) # Right-hand side of the quicklook subframe. Holds the radio button frames.
         quicklook_subframe_right.grid(row=0, column=1, sticky="news")
         quicklook_subframe_right.rowconfigure(0, weight=1)
         quicklook_subframe_right.columnconfigure(0, weight=1)
 
         self.quicklook_scrollframes = {}
-        self.quicklook_radio_buttons = {}
         for slot in self.all_equipment_dict:
-            self.quicklook_scrollframes[slot] = ScrollableLabelFrame(quicklook_subframe_right, text=f"  Select {slot.capitalize()}  ", labelanchor="nw")
             equipment_list = sorted([k["Name2" if "Name2" in k else "Name"] for k in self.all_equipment_dict[slot]])
-
-            for i, equipment_name in enumerate(equipment_list):
-                self.quicklook_radio_buttons[slot+equipment_name] = ttk.Radiobutton(self.quicklook_scrollframes[slot].interior, text=equipment_name, value=equipment_name,
-                                                                                    variable=self.quicklook_equipped_dict[slot]["radio_variable"],
-                                                                                    command=lambda event=(slot, equipment_name, self.quicklook_equipped_dict, "quicklook"),: self.update_quicklook_equipment(event))
-            
+            self.quicklook_scrollframes[slot] = VirtualRadioFrame(quicklook_subframe_right, text=f"  Select {slot.capitalize()}  ", labelanchor="nw", equipment_slot=slot, selection_type="quicklook", command=self.update_quicklook_equipment, master_data=equipment_list, N=16)
             self.quicklook_scrollframes[slot].place(relx=0, rely=0, relwidth=1.0, relheight=1.0)
 
 
@@ -2121,7 +2101,7 @@ class application(tk.Tk):
         buttons_grid_frame2.grid_propagate(True)
         buttons_grid_frame2.grid(row=1, column=0, sticky="n")
         
-        select_all_visible_button = tk.Button(buttons_grid_frame2, text="Select all", image=self.pixel_image, compound=tk.CENTER, width=100, height=30, command=lambda: self.select_gear_opt("select all visible"))
+        select_all_visible_button = tk.Button(buttons_grid_frame2, text="Select all", image=self.pixel_image, compound=tk.CENTER, width=100, height=30, command=lambda: self.select_gear_opt("select all slot"))
         select_all_visible_button_tip = Hovertip(select_all_visible_button,"Select all items in the currently displayed list.", hover_delay=500)
         select_all_visible_button.grid(row=0, column=0, padx=1, pady=1)
 
@@ -2129,7 +2109,7 @@ class application(tk.Tk):
         select_all_button_tip = Hovertip(select_all_button,"Select all items in all equipment lists.", hover_delay=500)
         select_all_button.grid(row=1, column=0, padx=1, pady=1)
 
-        unselect_all_visible_button = tk.Button(buttons_grid_frame2, text="Unselect all", image=self.pixel_image, compound=tk.CENTER, width=100, height=30, command=lambda: self.select_gear_opt("unselect all visible"))
+        unselect_all_visible_button = tk.Button(buttons_grid_frame2, text="Unselect all", image=self.pixel_image, compound=tk.CENTER, width=100, height=30, command=lambda: self.select_gear_opt("unselect all slot"))
         unselect_all_visible_button_tip = Hovertip(unselect_all_visible_button, "Unselect all items in the currently displayed list.", hover_delay=500)
         unselect_all_visible_button.grid(row=0, column=1, padx=1, pady=1)
 
@@ -2184,22 +2164,18 @@ class application(tk.Tk):
           Build the 16 scrollframes of gear checkboxes
         ===============================================
         '''
-
         opt_scrollframe_relative_frame = ttk.Frame(optimize_frame_top, height=300, width=370)
         opt_scrollframe_relative_frame.grid(row=0, column=1, sticky="news")
 
         self.optimize_scrollframes = {}
-        self.optimize_checkboxes = {}
         for slot in self.all_equipment_dict:
-            self.optimize_scrollframes[slot] = ScrollableLabelFrame(opt_scrollframe_relative_frame, text=f"  Select {slot.capitalize()}  ", labelanchor="nw")
-            equipment_list = sorted([k["Name2" if "Name2" in k else "Name"] for k in self.all_equipment_dict[slot]]) # This includes EVERYTHING since this line of code initializes the full GUI and is run once. This gets filtered dynamically later.
-
-            for i, equipment_name in enumerate(equipment_list):
-                self.optimize_checkboxes[slot+equipment_name] = {}
-                self.optimize_checkboxes[slot+equipment_name]["boolvar"] = tk.BooleanVar(value=False)
-                self.optimize_checkboxes[slot+equipment_name]["checkbox"] = ttk.Checkbutton(self.optimize_scrollframes[slot].interior, text=equipment_name, variable=self.optimize_checkboxes[slot+equipment_name]["boolvar"])
-                self.optimize_checkboxes[slot+equipment_name]["checkbox"].pack(anchor="w", pady=0)
-            
+            equipment_list = sorted([k["Name2" if "Name2" in k else "Name"] for k in self.all_equipment_dict[slot]])
+            self.optimize_scrollframes[slot] = VirtualCheckboxFrame(opt_scrollframe_relative_frame,
+                                                                    text=f"  Select {slot.capitalize()}  ",
+                                                                    labelanchor="nw",
+                                                                    master_data=equipment_list,
+                                                                    N=22,
+                                                                    )
             self.optimize_scrollframes[slot].place(relx=0, rely=0, relwidth=1.0, relheight=1.0)
 
         '''
@@ -2376,16 +2352,9 @@ class application(tk.Tk):
         simulations_tp_radio_frame.grid(row=0, column=1, sticky="e")
 
         self.tp_quicklook_scrollframes = {}
-        self.tp_quicklook_radio_buttons = {}
         for slot in self.all_equipment_dict:
-            self.tp_quicklook_scrollframes[slot] = ScrollableLabelFrame(simulations_tp_radio_frame, text=f"  Select {slot.capitalize()}  ", labelanchor="nw")
             equipment_list = sorted([k["Name2" if "Name2" in k else "Name"] for k in self.all_equipment_dict[slot]])
-
-            for i, equipment_name in enumerate(equipment_list):
-                self.tp_quicklook_radio_buttons[slot+equipment_name] = ttk.Radiobutton(self.tp_quicklook_scrollframes[slot].interior, text=equipment_name, value=equipment_name,
-                                                                                       variable=self.tp_quicklook_equipped_dict[slot]["radio_variable"],
-                                                                                       command=lambda event=(slot, equipment_name, self.tp_quicklook_equipped_dict, "tp"): self.update_quicklook_equipment(event))
-            
+            self.tp_quicklook_scrollframes[slot] = VirtualRadioFrame(simulations_tp_radio_frame, text=f"  Select {slot.capitalize()}  ", labelanchor="nw", equipment_slot=slot, selection_type="tp", command=self.update_quicklook_equipment, master_data=equipment_list, N=13)
             self.tp_quicklook_scrollframes[slot].place(relx=0, rely=0, relwidth=1.0, relheight=1.0)
 
 
@@ -2431,16 +2400,9 @@ class application(tk.Tk):
         simulations_ws_radio_frame.grid(row=0, column=1, sticky="e")
 
         self.ws_quicklook_scrollframes = {}
-        self.ws_quicklook_radio_buttons = {}
         for slot in self.all_equipment_dict:
-            self.ws_quicklook_scrollframes[slot] = ScrollableLabelFrame(simulations_ws_radio_frame, text=f"  Select {slot.capitalize()}  ", labelanchor="nw")
             equipment_list = sorted([k["Name2" if "Name2" in k else "Name"] for k in self.all_equipment_dict[slot]])
-
-            for i, equipment_name in enumerate(equipment_list):
-                self.ws_quicklook_radio_buttons[slot+equipment_name] = ttk.Radiobutton(self.ws_quicklook_scrollframes[slot].interior, text=equipment_name, value=equipment_name,
-                                                                                       variable=self.ws_quicklook_equipped_dict[slot]["radio_variable"],
-                                                                                       command=lambda event=(slot, equipment_name, self.ws_quicklook_equipped_dict, "ws"): self.update_quicklook_equipment(event))
-            
+            self.ws_quicklook_scrollframes[slot] = VirtualRadioFrame(simulations_ws_radio_frame, text=f"  Select {slot.capitalize()}  ", labelanchor="nw", equipment_slot=slot, selection_type="ws", command=self.update_quicklook_equipment, master_data=equipment_list, N=13)
             self.ws_quicklook_scrollframes[slot].place(relx=0, rely=0, relwidth=1.0, relheight=1.0)
 
 
