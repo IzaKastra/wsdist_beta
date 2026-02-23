@@ -12,7 +12,6 @@ Author: Kastra (Asura server)
 '''
 from create_player import *
 import numpy as np
-import numpy as np
 from actions import *
 import sys
 from datetime import datetime # For timestamping new sets to put on BG Wiki
@@ -217,35 +216,31 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                     }
 
 
+    # Rather than start with an empty slot, randomly build a set from the selected gear so we likely start with some accuracy+ and avoid getting stuck.
+    # Do not adjust slots that are not being checked.
+    for slot in starting_gearset:
+
+        # Unequip gear you can't wear if it's already equipped, even if the slot is "frozen"
+        if main_job.lower() not in starting_gearset[slot]["Jobs"]:
+            starting_gearset[slot] = Empty
+
+        frozen_slot = (len(check_gear[slot]) == 0)
+        if not frozen_slot:
+            starting_gearset[slot] = np.random.choice(check_gear[slot])
+
     best_set =  starting_gearset.copy()
 
-    for slot in starting_gearset:
-        
-        # Unequip gear you can't wear if it's already equipped.
-        if main_job.lower() not in starting_gearset[slot]["Jobs"]:
-            best_set[slot] = Empty
 
-        # If only one item is selected through the checkbox for a slot, then equip that item (so you do not start with an empty slot)
-        if len(check_gear[slot])==1:
-            best_set[slot] = check_gear[slot][0]
+    # If testing a melee WS, only check instruments in the "ranged" slot.
+    # This does not apply to RNG or COR who might want savage blade sets to test gun/bow options
+    if ws_type=="melee" and main_job not in ["rng", "cor"]:
+        check_gear["ranged"] = [k for k in check_gear["ranged"] if k["Type"]=="Instrument"]
 
-        # Unequip all gear in slots to be tested.
-        elif len(check_gear[slot])>1:
-            if slot in ["main", "sub"]: # Do not unequip weapons when initializing sets.
-                best_set[slot] = np.random.choice(check_gear[slot]) # Randomly select one of the weapons to start with, rather than unequipping them and losing Dual Wield status.
-            else:
-                best_set[slot] = Empty
 
-        # If testing a melee WS, do not find the best ranged weapon unless it is an instrument. This does not apply to RNG or COR who might want savage blade sets to test gun/bow options
-        if ws_type=="melee" and main_job not in ["rng","cor"]:
-            check_gear["ranged"] = [k for k in check_gear["ranged"] if k["Type"]=="Instrument"]
- 
     # Define JSE earrings now. We'll use them later to prevent Balder's Earring+1 and a JSE+2 being equipped at the same time since we ignore right_ear requirement for testing.
     jse_ears1 = [k + " Earring +1" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulker's", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
     jse_ears2 = [k + " Earring +2" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulker's", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
     jse_ears = jse_ears1+jse_ears2
-
-    Best_Gearset = starting_gearset.copy()
 
     pdt = 200 # How much PDT the set has
     mdt = 200

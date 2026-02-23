@@ -603,6 +603,8 @@ class application(tk.Tk):
                 equipped_items_dict["sub"]["button"].config(image = equipped_items_dict["sub"]["icon"])
                 equipped_items_dict["sub"]["button tooltip"].text = self.format_tooltip_stats(new_sub_item)
                 equipped_items_dict["sub"]["radio_variable"].set("Empty")
+                scrollframe["sub"].set_selected("Empty")
+
 
             if source=="quicklook":
                 self.wpn_type_main = equipped_items_dict["main"]["item"]["Skill Type"]
@@ -619,6 +621,7 @@ class application(tk.Tk):
                 equipped_items_dict["main"]["button"].config(image = equipped_items_dict["main"]["icon"])
                 equipped_items_dict["main"]["button tooltip"].text = self.format_tooltip_stats(new_main_item)
                 equipped_items_dict["main"]["radio_variable"].set("Empty")
+                scrollframe["main"].set_selected("Empty")
 
         ranged_item_type = equipped_items_dict["ranged"]["item"]["Type"]
         ammo_item_type = equipped_items_dict["ammo"]["item"]["Type"]
@@ -630,6 +633,7 @@ class application(tk.Tk):
                 equipped_items_dict["ammo"]["button"].config(image = equipped_items_dict["ammo"]["icon"])
                 equipped_items_dict["ammo"]["button tooltip"].text = self.format_tooltip_stats(new_ammo_item)
                 equipped_items_dict["ammo"]["radio_variable"].set("Empty")
+                scrollframe["ammo"].set_selected("Empty")
 
             if source=="quicklook":
                 self.wpn_type_ranged = equipped_items_dict["ranged"]["item"]["Skill Type"]
@@ -647,6 +651,7 @@ class application(tk.Tk):
                 equipped_items_dict["ranged"]["button"].config(image = equipped_items_dict["ranged"]["icon"])
                 equipped_items_dict["ranged"]["button tooltip"].text = self.format_tooltip_stats(new_ammo_item)
                 equipped_items_dict["ranged"]["radio_variable"].set("Empty")
+                scrollframe["ranged"].set_selected("Empty")
 
         # Swap the rings if selecting ring1/ring2 to be the item in ring2/ring1 slot.
         if ((slot == "ring1" and (new_item == ring2_item_before)) or (slot == "ring2" and (new_item == ring1_item_before))) and (new_item["Name"] != "Empty"):
@@ -655,12 +660,14 @@ class application(tk.Tk):
             equipped_items_dict["ring1"]["button"].config(image = equipped_items_dict["ring1"]["icon"])
             equipped_items_dict["ring1"]["button tooltip"].text = self.format_tooltip_stats(ring2_item_before)
             equipped_items_dict["ring1"]["radio_variable"].set(ring2_item_before["Name2"])
+            scrollframe["ring1"].set_selected(ring2_item_before["Name2"])
 
             equipped_items_dict["ring2"]["item"] = ring1_item_before
             equipped_items_dict["ring2"]["icon"] = self.get_equipment_icon(ring1_item_before["Name"])
             equipped_items_dict["ring2"]["button"].config(image = equipped_items_dict["ring2"]["icon"])
             equipped_items_dict["ring2"]["button tooltip"].text = self.format_tooltip_stats(ring1_item_before)
             equipped_items_dict["ring2"]["radio_variable"].set(ring1_item_before["Name2"])
+            scrollframe["ring2"].set_selected(ring1_item_before["Name2"])
 
         # Swap the earrings if selecting ear1/ear2 to be the item in ear2/ear1 slot.
         if ((slot == "ear1" and (new_item == ear2_item_before)) or (slot == "ear2" and (new_item == ear1_item_before))) and (new_item["Name"] != "Empty"):
@@ -669,12 +676,14 @@ class application(tk.Tk):
             equipped_items_dict["ear1"]["button"].config(image = equipped_items_dict["ear1"]["icon"])
             equipped_items_dict["ear1"]["button tooltip"].text = self.format_tooltip_stats(ear2_item_before)
             equipped_items_dict["ear1"]["radio_variable"].set(ear2_item_before["Name2"])
+            scrollframe["ear1"].set_selected(ear2_item_before["Name2"])
 
             equipped_items_dict["ear2"]["item"] = ear1_item_before
             equipped_items_dict["ear2"]["icon"] = self.get_equipment_icon(ear1_item_before["Name"])
             equipped_items_dict["ear2"]["button"].config(image = equipped_items_dict["ear2"]["icon"])
             equipped_items_dict["ear2"]["button tooltip"].text = self.format_tooltip_stats(ear1_item_before)
             equipped_items_dict["ear2"]["radio_variable"].set(ear1_item_before["Name2"])
+            scrollframe["ear2"].set_selected(ear1_item_before["Name2"])
 
         # Can't equip a cloak with a hat
         if slot == "body":
@@ -684,6 +693,7 @@ class application(tk.Tk):
                 equipped_items_dict["head"]["button"].config(image = equipped_items_dict["head"]["icon"])
                 equipped_items_dict["head"]["button tooltip"].text = self.format_tooltip_stats(gear_pyfile.all_gear["Empty"])
                 equipped_items_dict["head"]["radio_variable"].set("Empty")
+                scrollframe["head"].set_selected("Empty")
 
         if slot == "head":
             if ("cloak" in equipped_items_dict["body"]["item"]["Name"].lower()):
@@ -692,6 +702,7 @@ class application(tk.Tk):
                 equipped_items_dict["body"]["button"].config(image = equipped_items_dict["body"]["icon"])
                 equipped_items_dict["body"]["button tooltip"].text = self.format_tooltip_stats(gear_pyfile.all_gear["Empty"])
                 equipped_items_dict["body"]["radio_variable"].set("Empty")
+                scrollframe["body"].set_selected("Empty")
 
         # Update the radio button selections based on the newly equipped gear.
         scrollframe[slot].set_selected(new_item_name)
@@ -1388,7 +1399,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2026 February 23b)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2026 February 23c)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
