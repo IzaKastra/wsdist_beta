@@ -389,28 +389,36 @@ class application(tk.Tk):
 
         for slot in self.quicklook_equipped_dict:
 
-            # Deselect everything, then select items in the slot(s) that are usable by the job input
-            if ((self.visible_optimize_frame_slot == slot) and (event == "select all slot")) or event == "select all":
-                self.optimize_scrollframes[slot].deselect("all")
+            # Only consider the selected slot when using slot-specific buttons.
+            if event in ["select all slot", "unselect all slot"] and self.visible_optimize_frame_slot != slot:
+                continue
+
+            # Start by removing all selections.
+            self.optimize_scrollframes[slot].deselect("all")
+
+            # Enable all selections if using "select all" buttons.
+            if event in ["select all slot", "select all"]:
                 self.optimize_scrollframes[slot].select("visible")
 
-            elif (self.visible_optimize_frame_slot == slot) and (event == "unselect all slot"):
-                self.optimize_scrollframes[slot].deselect("all")
 
-            # Unselect specific items based on filters.
-            # Unfortunately, we need the item dictionaries to extract Odyssey rank information.
+            # Adjust specific item selections based on filters.
             for item_name in self.optimize_scrollframes[slot].visible_data:
+
+                # Create the full-stats item dictionary for reference
                 item = gear_pyfile.all_gear[item_name]
+
+                # Deselect if the item's Odyssey rank does not match your selected Odyssey Rank.
                 if str(item.get("Rank", self.ody_rank_value.get())) != self.ody_rank_value.get():
                     self.optimize_scrollframes[slot].deselect(item_name)
 
+                # Swap Nyame R30B for R25B if specific checkbox is enabled. Deselect Nyame Paths "not B"
                 if "nyame" in item_name.lower():
                     if "B" != item_name[-1]:
                         self.optimize_scrollframes[slot].deselect(item_name)
                     elif self.ody_rank_value.get()=="30" and self.nyame25_checkbox_value.get():
                         if "30B" in item_name:
                             self.optimize_scrollframes[slot].deselect(item_name)
-                        elif "25B" in item_name:
+                        elif "25B" in item_name and event in ["select all", "select all slot"]:
                             self.optimize_scrollframes[slot].select(item_name)
 
                 if slot in ["main", "sub", "ranged"]:
@@ -470,7 +478,12 @@ class application(tk.Tk):
             self.quicklook_equipped_dict[slot]["button tooltip"].text = self.format_tooltip_stats(self.quicklook_equipped_dict[slot]["item"])
             self.quicklook_equipped_dict[slot]["radio_variable"].set(self.quicklook_equipped_dict[slot]["item"]["Name2"])
 
+            best_item_name = self.best_player.gearset[slot]["Name2"]
+            self.quicklook_scrollframes[slot].set_selected(best_item_name)
+
             self.notebook.select("0")
+
+
 
     def copy_gearset_dict(self, event):
         '''
@@ -481,27 +494,34 @@ class application(tk.Tk):
             source_dict = self.quicklook_equipped_dict
             destination_dict = self.tp_quicklook_equipped_dict
             destination_tab = "2"
+            destination_scrollframe = self.tp_quicklook_scrollframes
         elif event=="quicklook to ws":
             source_dict = self.quicklook_equipped_dict
             destination_dict = self.ws_quicklook_equipped_dict
             destination_tab = "2"
+            destination_scrollframe = self.ws_quicklook_scrollframes
         elif event=="tp to quicklook":
             source_dict = self.tp_quicklook_equipped_dict
             destination_dict = self.quicklook_equipped_dict
+            destination_scrollframe = self.quicklook_scrollframes
             destination_tab = "0"
-
         elif event=="ws to quicklook":
             source_dict = self.ws_quicklook_equipped_dict
             destination_dict = self.quicklook_equipped_dict
+            destination_scrollframe = self.quicklook_scrollframes
             destination_tab = "0"
 
 
-        for slot in self.quicklook_equipped_dict:
+        for slot in destination_dict:
             destination_dict[slot]["item"] = source_dict[slot]["item"]
             destination_dict[slot]["icon"] = self.get_equipment_icon(destination_dict[slot]["item"]["Name"])
             destination_dict[slot]["button"].config(image = destination_dict[slot]["icon"])
             destination_dict[slot]["button tooltip"].text = self.format_tooltip_stats(destination_dict[slot]["item"])
-            destination_dict[slot]["radio_variable"].set(destination_dict[slot]["item"]["Name2"])
+            destination_dict[slot]["radio_variable"].set(destination_dict[slot]["item"]["Name2"]) # TODO: Is "radio_variable" used anywhere essential after virtualization?
+
+            source_item_name = source_dict[slot]["item"]["Name2"]
+            destination_scrollframe[slot].set_selected(source_item_name)
+
 
         self.notebook.select(destination_tab)
 
@@ -546,10 +566,13 @@ class application(tk.Tk):
 
         if source == "quicklook":
             equipped_items_dict = self.quicklook_equipped_dict
+            scrollframe = self.quicklook_scrollframes
         elif source == "tp":
             equipped_items_dict = self.tp_quicklook_equipped_dict
+            scrollframe = self.tp_quicklook_scrollframes
         elif source == "ws":
             equipped_items_dict = self.ws_quicklook_equipped_dict
+            scrollframe = self.ws_quicklook_scrollframes
 
         new_item = gear_pyfile.all_gear[new_item_name] # New item (dictionary of stats)
         old_item = equipped_items_dict[slot]["item"]   # Old item (dictionary of stats)
@@ -670,6 +693,8 @@ class application(tk.Tk):
                 equipped_items_dict["body"]["button tooltip"].text = self.format_tooltip_stats(gear_pyfile.all_gear["Empty"])
                 equipped_items_dict["body"]["radio_variable"].set("Empty")
 
+        # Update the radio button selections based on the newly equipped gear.
+        scrollframe[slot].set_selected(new_item_name)
 
 
     def update_buffs(self, event):
@@ -970,7 +995,13 @@ class application(tk.Tk):
             # check_gear_dict is a dictionary containing lists of full gear.py item dictionaries
             
             check_gear_dict = {slot:[gear_pyfile.all_gear[item_name] for item_name in self.optimize_scrollframes[slot].get_selected()] for slot in self.quicklook_equipped_dict}
-        
+
+            # Print what is being considered in each slot.
+            if False:
+                for slot in check_gear_dict:
+                    for item in check_gear_dict[slot]:
+                        print(slot, item["Name2"])
+
             assert any([len(check_gear_dict[k])>1 for k in check_gear_dict]), "At least two items must be selected in at least one slot to find the best set."
 
             if "ws" in trigger:
@@ -1357,7 +1388,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2026 February 19a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2026 February 23a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
