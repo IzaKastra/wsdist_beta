@@ -635,7 +635,7 @@ class application(tk.Tk):
                 self.wpn_type_ranged = equipped_items_dict["ranged"]["item"]["Skill Type"]
                 self.ws_selection_combobox.config(values=self.ws_dict[self.wpn_type_main] + (self.ws_dict[self.wpn_type_ranged] if self.wpn_type_ranged not in ["None", "Instrument"] else []))
 
-                if old_item["Skill Type"] != new_item["Skill Type"]:
+                if (old_item["Skill Type"] != new_item["Skill Type"]) and (new_item["Skill Type"] not in ["Instrument"]):
                     if self.ws_selection_value.get() not in self.ws_dict[self.wpn_type_main] + self.ws_dict[self.wpn_type_ranged]:
                         self.ws_selection_value.set(self.ws_dict[self.wpn_type_main][0])
 
@@ -1388,7 +1388,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2026 February 23a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2026 February 23b)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
