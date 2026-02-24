@@ -1196,7 +1196,12 @@ class application(tk.Tk):
             for stat in self.stats_dict:
 
                 value = player.stats.get(stat, 0)
-                if "haste" in stat.lower() or "delay reduction"==stat.lower() :
+                if "haste" in stat.lower() or "delay reduction"==stat.lower():
+                    if stat.lower() in ["gear haste", "ja haste"]:
+                        value = 256./1024 if value > 256./1024 else value
+                    elif stat.lower() == "magic haste":
+                        value = 448./1024 if value > 448./1024 else value
+
                     value = f"{value*100:.1f}%"
                 
                 elif "crit" in stat.lower() or stat.lower() in ["zanshin", "zanshin oa2", "daken", "kick attacks", "pdt", "mdt", "dt", "da", "ta", "qa", "double shot", "triple shot", "quad shot", *[f"oa{k} {j}" for j in ["main", "sub"] for k in range(2,9)]] or "pdl" in stat.lower() or "magic burst" in stat.lower() or "%" in stat.lower() or "weapon skill damage" in stat.lower() or "skillchain" in stat.lower():
@@ -1399,7 +1404,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2026 February 23c)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2026 February 24a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
