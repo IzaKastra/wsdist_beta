@@ -2,6 +2,7 @@
 File containing a list of enemies and their relevant stats
 Enemy information taken from https://w.atwiki.jp/bartlett3/pages/327.html
 
+https://www.ffxiah.com/forum/topic/58150/arebati-stats/1/#3727529 # Needs evasion
 
 Author: Kastra (Asura server)
 '''
@@ -20,8 +21,8 @@ enemies = [
     {"Name":"Ozma", "Level":999, "Defense":9999, "Evasion":9999, "VIT":999, "AGI":999, "MND":999, "INT":999, "CHR":999, "Magic Evasion":0, "Magic Defense":0, "Magic DT%":0, "Location":"Chocobo's Air Garden"},
     {"Name":"Octorok", "Level":999, "Defense":1, "Evasion":1, "VIT":1, "AGI":1, "MND":1, "INT":1, "CHR":1, "Magic Evasion":0, "Magic Defense":0, "Magic DT%":0, "Location":"Hyrule"},
     {"Name":"BG Wiki sets", "Level":999, "Defense":1500, "Evasion":1350, "VIT":340, "AGI":340, "MND":280, "INT":280, "CHR":280, "Magic Evasion":0, "Magic Defense":0, "Magic DT%":0, "Location":""},
+    # {"Name":"Arebati V25", "Level":150, "Defense":2695, "Evasion":1, "VIT":430, "AGI":415, "MND":365, "INT":420, "CHR":380, "Magic Evasion":0, "Magic Defense":0, "Magic DT%":-100, "Location":"Odyssey Gaol"},
     ]
-
 
 # Check that all necessary stats are included in all enemies
 missing_stat = False
