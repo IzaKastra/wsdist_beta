@@ -1774,10 +1774,10 @@ def weaponskill_info(ws_name, tp, player, enemy, wsc_bonus, dual_wield):
         nhits = 6-1
         sc = ["Gravitation","Liquefaction"]
     elif ws_name == "Maru Kala":
-        base_ftp =  [3.0, 7.5, 12.0] # https://www.ffxiah.com/forum/topic/55614/mnk-h2h-choices/6/#3697176
+        base_ftp =  [3.0, 7.0, 11.5] # https://github.com/IzaKastra/wsdist_beta/issues/22
         ftp = np.interp(tp, base_tp, base_ftp)
         ftp_rep = False 
-        wsc = 0.6*(player_str + player_dex)
+        wsc = 0.4*(player_str + player_dex)
         nhits = 2
         sc = ["Detonation","Compression","Distortion"]
     elif ws_name == "Dragon Blow": 
