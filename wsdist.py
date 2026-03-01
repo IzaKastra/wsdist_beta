@@ -215,6 +215,11 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
                     "Maru Kala":"Varga Purnikawa",
                     }
 
+    # If testing a melee WS, only check instruments in the "ranged" slot.
+    # This does not apply to RNG or COR who might want savage blade sets to test gun/bow options
+    if ws_type=="melee" and main_job not in ["rng", "cor"]:
+        check_gear["ranged"] = [k for k in check_gear["ranged"] if k["Type"] not in ["Crossbow", "Gun", "Bow"]]
+        check_gear["ammo"] = [k for k in check_gear["ammo"] if k["Type"] not in ["Bolt", "Bullet", "Arrow"] and "antitail" not in k["Name2"]]
 
     # Rather than start with an empty slot, randomly build a set from the selected gear so we likely start with some accuracy+ and avoid getting stuck.
     # Do not adjust slots that are not being checked.
@@ -229,13 +234,6 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
             starting_gearset[slot] = np.random.choice(check_gear[slot])
 
     best_set =  starting_gearset.copy()
-
-
-    # If testing a melee WS, only check instruments in the "ranged" slot.
-    # This does not apply to RNG or COR who might want savage blade sets to test gun/bow options
-    if ws_type=="melee" and main_job not in ["rng", "cor"]:
-        check_gear["ranged"] = [k for k in check_gear["ranged"] if k["Type"]=="Instrument"]
-
 
     # Define JSE earrings now. We'll use them later to prevent Balder's Earring+1 and a JSE+2 being equipped at the same time since we ignore right_ear requirement for testing.
     jse_ears1 = [k + " Earring +1" for k in ["Hattori", "Heathen's", "Lethargy", "Ebers", "Wicce", "Peltast's", "Boii", "Bhikku", "Skulker's", "Chevalier's", "Nukumi", "Fili", "Amini", "Kasuga", "Beckoner's", "Hashishin", "Chasseur's", "Karagoz", "Maculele", "Arbatel", "Azimuth", "Erilaz"]]
