@@ -232,6 +232,13 @@ def build_set(main_job, sub_job, master_level, buffs, abilities, enemy, ws_name,
         frozen_slot = (len(check_gear[slot]) == 0)
         if not frozen_slot:
             starting_gearset[slot] = np.random.choice(check_gear[slot])
+            
+            # Avoid wearing two rare items in initial gearset to prevent "unphysical" sets.
+            if slot == "ring2" and (starting_gearset["ring1"]["Name2"] == starting_gearset["ring2"]["Name2"]):
+                starting_gearset["ring2"] = Empty
+            if slot == "ear2" and (starting_gearset["ear1"]["Name2"] == starting_gearset["ear2"]["Name2"]):
+                starting_gearset["ear2"] = Empty
+
 
     best_set =  starting_gearset.copy()
 
