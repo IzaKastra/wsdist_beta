@@ -479,7 +479,7 @@ class application(tk.Tk):
                 if slot in ["ear1", "ear2"]:
                     if item_name.split()[0] in empyrean_names and "+2" in item_name:
                         self.optimize_scrollframes[slot].deselect(item_name)
-                    if "Hoxne" in item_name and "MR05" not in item_name:
+                    if "Hoxne" in item_name and self.mastery_rank_value.get().lower() not in item_name.lower():
                         self.optimize_scrollframes[slot].deselect(item_name)
                     if "Balder" in item_name:
                         self.optimize_scrollframes[slot].deselect(item_name)
@@ -1434,7 +1434,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2026 March 15a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2026 March 15b)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
@@ -2199,12 +2199,13 @@ class application(tk.Tk):
         ===============================================
         '''
 
-        select_conditionals_frame = ttk.Frame(optimize_frame_topleft, width=400, height=100)
+        select_conditionals_frame = ttk.Frame(optimize_frame_topleft, width=400, height=125)
         select_conditionals_frame.grid_propagate(False) # Take the dimensions of the stuff inside (it holds only the 4x4 buttons grid.)
         select_conditionals_frame.grid(row=2, column=0, sticky="n")
         select_conditionals_frame.columnconfigure((0, 1, 2), weight=1)
 
         self.ody_rank_value = tk.StringVar(value="30")
+        self.mastery_rank_value = tk.StringVar(value="MR07")
         self.tvr_selection_value = tk.StringVar(value="Lehko Habhoka's")
         self.soa_selection_value = tk.StringVar(value="Weatherspoon")
         self.nyame25_checkbox_value = tk.BooleanVar(value=True)
@@ -2212,6 +2213,7 @@ class application(tk.Tk):
         self.tvr_rings = ["Cornelia's", "Ephramad's", "Fickblix's", "Gurebu-Ogurebu's", "Lehko Habhoka's", "Medada's", "Ragelise's", "None"]
         self.soa_rings = ["Weatherspoon", "Karieyh", "Vocane", "None"]
         ody_selections = ["30", "25", "20", "15", "0", "None"]
+        mastery_rank_selections = ["MR10", "MR09", "MR08", "MR07", "MR06", "MR05"]
 
         ody_rank_label = ttk.Label(select_conditionals_frame, text="Odyssey Rank:", width=20, anchor="w")
         ody_rank_label.grid(row=0, column=0, sticky="w", pady=2)
@@ -2231,9 +2233,16 @@ class application(tk.Tk):
         tvr_ring_label_tip = Hovertip(self.tvr_ring_combobox, "Only select this TVR ring when using the Select buttons.", hover_delay=500)
         self.tvr_ring_combobox.grid(row=2, column=1, sticky="e", pady=2)
 
+        mastery_rank_label = ttk.Label(select_conditionals_frame, text="Mastery Rank:", width=20, anchor="w")
+        mastery_rank_label.grid(row=3, column=0, sticky="w", pady=2)
+        self.mastery_rank_combobox = ttk.Combobox(select_conditionals_frame, values=mastery_rank_selections, textvariable=self.mastery_rank_value, state="readonly", width=18, name="defaults_mastery_rank_combobox")
+        mastery_rank_label_tip = Hovertip(self.mastery_rank_combobox, "Only select the Hoxne Earring with this mastery rank when using the Select buttons.", hover_delay=500)
+        self.mastery_rank_combobox.grid(row=3, column=1, sticky="e", pady=2)
+
         self.nyame25_checkbox = ttk.Checkbutton(select_conditionals_frame, text="Max R25 Nyame?", variable=self.nyame25_checkbox_value, name="defaults_nyame25_checkbox")
         nyame25_label_tip = Hovertip(self.nyame25_checkbox, "Select R25B Nyame when Odyssey Rank selection is 30.", hover_delay=500)
-        self.nyame25_checkbox.grid(row=3, column=1, sticky="e", pady=2)
+        self.nyame25_checkbox.grid(row=4, column=1, sticky="e", pady=2)
+
 
         '''
         ===============================================
