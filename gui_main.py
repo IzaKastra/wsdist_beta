@@ -387,6 +387,28 @@ class application(tk.Tk):
         relic_names = ["Pedagogy", "Hesychast", "Vitiation", "Mochizuki", "Fallen", "Horos", "Pitre", "Luhlaza", "Plunderer", "Bagua", "Archmage", "Piety", "Agoge", "Caballarius", "Wakido", "Ankusa", "Bihu", "Glyphic", "Lanun", "Arcadian", "Pteroslaver", "Futhark"]
         af_names = ["Academic", "Anchorite", "Atrophy", "Hachiya", "Ignominy", "Maxixi", "Foire", "Assimilator", "Pillager", "Geomancy", "Spaekona", "Theophany", "Pummeler", "Reverence", "Sakonji", "Totemic", "Brioso", "Convoker", "Laksamana", "Orion", "Vishap", "Runeist"]
 
+
+        input_items_full = [] # Full item names
+        if event == "select all file":
+            # Select items from a "//gs export all" file. Items must be in the item_list.csv file.
+            # TODO: Redo the item_list.csv file to include NQ items. item_list.csv currently only includes items in the gear.py file.
+            # TODO: Re-add NQ item icons.
+            filename = filedialog.askopenfilename(title='Select file', initialdir='./')
+
+            if len(filename) > 0:
+                with open(filename, "r") as ifile:
+                    for line in ifile:
+                        try:
+                            item_name_abbreviated = line.split('"')[1]
+                            item_index = np.flatnonzero(np.char.lower(self.item_id_dict["name2"]) == item_name_abbreviated.lower())
+                            if len(item_index) > 0:
+                                input_items_full.append(str(self.item_id_dict["name"][item_index[0]]))
+                            else:
+                                continue
+                        except Exception as err:
+                            # print(f"Failed to include item   {line}\n{err}")
+                            continue
+
         for slot in self.quicklook_equipped_dict:
 
             # Only consider the selected slot when using slot-specific buttons.
@@ -400,12 +422,18 @@ class application(tk.Tk):
             if event in ["select all slot", "select all"]:
                 self.optimize_scrollframes[slot].select("visible")
 
-
             # Adjust specific item selections based on filters.
             for item_name in self.optimize_scrollframes[slot].visible_data:
 
                 # Create the full-stats item dictionary for reference
                 item = gear_pyfile.all_gear[item_name]
+
+                if event == "select all file":                        
+                    if (item["Name"].lower() in input_items_full): # Select direct matches first
+                        self.optimize_scrollframes[slot].select(item_name)
+                    elif (item["Name"].lower().split(" +")[0] in input_items_full): # Only select close match if direct match not found.
+                        self.optimize_scrollframes[slot].select(item_name)
+
 
                 # Deselect if the item's Odyssey rank does not match your selected Odyssey Rank.
                 if str(item.get("Rank", self.ody_rank_value.get())) != self.ody_rank_value.get():
@@ -434,17 +462,19 @@ class application(tk.Tk):
                         self.optimize_scrollframes[slot].deselect(item_name)
 
                 if slot in ["head", "body", "hands", "legs", "feet"]:
-                    if item_name.split()[0] in relic_names+af_names and "+4" not in item_name:
-                        self.optimize_scrollframes[slot].deselect(item_name)
-                    if item_name.split()[0] in empyrean_names and "+3" not in item_name:
-                        self.optimize_scrollframes[slot].deselect(item_name)
+                    if event != "select all file":
+                        if item_name.split()[0] in relic_names+af_names and "+4" not in item_name:
+                            self.optimize_scrollframes[slot].deselect(item_name)
+                        if item_name.split()[0] in empyrean_names and "+3" not in item_name:
+                            self.optimize_scrollframes[slot].deselect(item_name)
                     for limbus_set_name in ["hope", "perfection", "revelation", "trust", "prestige", "sworn", "bravery", "intrepid", "indomitable", "justice", "magnificent", "duty", "mercy", "grace", "clemency"]:
                         if limbus_set_name in item_name.lower() and "R30" in item_name: # Only select R0 versions of the limbus equipment (at least for now)
                             self.optimize_scrollframes[slot].deselect(item_name)
 
                 if slot in ["neck"]:
-                    if "R20" in item_name and "+1" in item_name:
-                        self.optimize_scrollframes[slot].deselect(item_name)
+                    if event != "select all file":
+                        if "R20" in item_name and "+1" in item_name:
+                            self.optimize_scrollframes[slot].deselect(item_name)
 
                 if slot in ["ear1", "ear2"]:
                     if item_name.split()[0] in empyrean_names and "+2" in item_name:
@@ -1404,7 +1434,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2026 March 02a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2026 March 15a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
@@ -2159,7 +2189,7 @@ class application(tk.Tk):
         unselect_all_visible_button_tip = Hovertip(unselect_all_visible_button, "Unselect all items in the currently displayed list.", hover_delay=500)
         unselect_all_visible_button.grid(row=0, column=1, padx=1, pady=1)
 
-        select_all_file_button = tk.Button(buttons_grid_frame2, text="Select all File", image=self.pixel_image, compound=tk.CENTER, width=100, height=30, command=lambda: self.select_gear_opt("select all file"), state="disabled")
+        select_all_file_button = tk.Button(buttons_grid_frame2, text="Select all File", image=self.pixel_image, compound=tk.CENTER, width=100, height=30, command=lambda: self.select_gear_opt("select all file"))
         select_all_file_button_tip = Hovertip(select_all_file_button,"Select all items in all equipment lists if the item appears in an input file.\nInput file must use format from Windower command \"//gs export all\"", hover_delay=500)
         select_all_file_button.grid(row=1, column=1, padx=1, pady=1)
 
