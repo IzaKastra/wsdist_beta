@@ -30,7 +30,7 @@ def format_bgwiki(ws_name, tp, player, best_metric):
     #
     # Prints to the terminal the player gearset in BG Wiki format, ignoring augments.
     #
-    buffs = "Mid"
+    buffs = "High"
 
 
     # Certain items have shortened names on BG Wiki. Use the item_list.txt file to find and replace these names for BG Wiki.
@@ -115,23 +115,23 @@ def format_bgwiki(ws_name, tp, player, best_metric):
             Equipment Set
             |CaptionTop = {buffs} buff
             |CaptionBottom = {best_metric:.0f} damage
-            |Main = {hardcode_gearset["main"]} (Level 119 III)
-            |Sub = {hardcode_gearset["sub"]}
-            |Range = {hardcode_gearset["ranged"]}
-            |Ammo = {hardcode_gearset["ammo"]}
-            |Head = {hardcode_gearset["head"]}
-            |Neck = {hardcode_gearset["neck"]}
-            |Ear1 = {hardcode_gearset["ear1"]}
-            |Ear2 = {hardcode_gearset["ear2"]}
-            |Body = {hardcode_gearset["body"]}
-            |Hands = {hardcode_gearset["hands"]}
-            |Ring1 = {hardcode_gearset["ring1"]}
-            |Ring2 = {hardcode_gearset["ring2"]}
-            |Back = {hardcode_gearset["back"]}
+            |Main = {' '.join(k.capitalize() for k in hardcode_gearset["main"].split())} (Level 119 III)
+            |Sub = {' '.join(k.capitalize() for k in hardcode_gearset["sub"].split())}
+            |Range = {' '.join(k.capitalize() for k in hardcode_gearset["ranged"].split())}
+            |Ammo = {' '.join(k.capitalize() for k in hardcode_gearset["ammo"].split())}
+            |Head = {' '.join(k.capitalize() for k in hardcode_gearset["head"].split())}
+            |Neck = {' '.join(k.capitalize() for k in hardcode_gearset["neck"].split())}
+            |Ear1 = {' '.join(k.capitalize() for k in hardcode_gearset["ear1"].split())}
+            |Ear2 = {' '.join(k.capitalize() for k in hardcode_gearset["ear2"].split())}
+            |Body = {' '.join(k.capitalize() for k in hardcode_gearset["body"].split())}
+            |Hands = {' '.join(k.capitalize() for k in hardcode_gearset["hands"].split())}
+            |Ring1 = {' '.join(k.capitalize() for k in hardcode_gearset["ring1"].split())}
+            |Ring2 = {' '.join(k.capitalize() for k in hardcode_gearset["ring2"].split())}
+            |Back = {' '.join(k.capitalize() for k in hardcode_gearset["back"].split())}
             |BackAug = {", ".join(backaugs)}
-            |Waist = {hardcode_gearset["waist"]}
-            |Legs = {hardcode_gearset["legs"]}
-            |Feet = {hardcode_gearset["feet"]}
+            |Waist = {' '.join(k.capitalize() for k in hardcode_gearset["waist"].split())}
+            |Legs = {' '.join(k.capitalize() for k in hardcode_gearset["legs"].split())}
+            |Feet = {' '.join(k.capitalize() for k in hardcode_gearset["feet"].split())}
             |List = Y
             |Background =
         {'}'}{'}'}
