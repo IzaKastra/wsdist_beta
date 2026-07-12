@@ -388,15 +388,52 @@ class application(tk.Tk):
         af_names = ["Academic", "Anchorite", "Atrophy", "Hachiya", "Ignominy", "Maxixi", "Foire", "Assimilator", "Pillager", "Geomancy", "Spaekona", "Theophany", "Pummeler", "Reverence", "Sakonji", "Totemic", "Brioso", "Convoker", "Laksamana", "Orion", "Vishap", "Runeist"]
 
 
+        if event == "export to file":
+            output_filename = filedialog.asksaveasfilename(defaultextension=".txt", initialdir="./", filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")])
+            if not output_filename:
+                return
+
+            with open(output_filename, "w") as ofile:
+                for slot in self.optimize_scrollframes:
+                    for item_name in self.optimize_scrollframes[slot].get_selected():
+                        ofile.write(f'{slot}="{item_name}"\n')
+            return
+
+        elif event == "import from file":
+            # Select items from an imported file.
+            # Selects by matching text within double quotes to items in the items_list.csv file
+            # TODO: Merge logic with the original version that used formatting from //gs export
+
+            input_filename = filedialog.askopenfilename(title='Select file to import', initialdir='./')
+    
+            if not input_filename:
+                return
+            else:
+                items_to_reselect = {slot:[] for slot in self.optimize_scrollframes}
+                with open(input_filename, "r") as ifile:
+                    for line in ifile:
+                        item_name = line.split('"')[1]
+                        slot = line.split("=")[0].replace("left_ear", "ear1") \
+                                                 .replace("right_ear", "ear2") \
+                                                 .replace("left_ring", "ring1") \
+                                                 .replace("right_ring", "ring2")
+                        items_to_reselect[slot].append(item_name)
+                for slot in self.quicklook_equipped_dict:
+                    self.optimize_scrollframes[slot].deselect("all")
+                    if len(items_to_reselect[slot]) > 0:
+                        self.optimize_scrollframes[slot].select(items_to_reselect[slot])
+                return
+
+
         input_items_full = [] # Full item names
         if event == "select all file":
             # Select items from a "//gs export all" file. Items must be in the item_list.csv file.
-            # TODO: Redo the item_list.csv file to include NQ items. item_list.csv currently only includes items in the gear.py file.
-            # TODO: Re-add NQ item icons.
-            filename = filedialog.askopenfilename(title='Select file', initialdir='./')
+            input_filename = filedialog.askopenfilename(title='Select file to import', initialdir='./')
 
-            if len(filename) > 0:
-                with open(filename, "r") as ifile:
+            if not input_filename:
+                return
+            else:
+                with open(input_filename, "r") as ifile:
                     for line in ifile:
                         try:
                             item_name_abbreviated = line.split('"')[1]
@@ -1436,7 +1473,7 @@ class application(tk.Tk):
         mystyle = ttk.Style()
         mystyle.theme_use('vista') # 'winnative', 'clam', 'alt', 'default', 'classic', 'vista', 'xpnative'
 
-        self.title("Kastra FFXI Damage Simulator  (2026 May 21a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
+        self.title("Kastra FFXI Damage Simulator  (2026 July 12a)") # pyinstaller --exclude-module gear --exclude-module enemies --clean --onefile --icon=icons32/23937.ico gui_main.py
         self.geometry("700x850")
         self.resizable(False, False)
         self.app_icon = tk.PhotoImage(file="icons32/23937.png") # hat
@@ -2134,7 +2171,7 @@ class application(tk.Tk):
         optimize_tab.rowconfigure(0, weight=1)
         optimize_tab.columnconfigure(0, weight=1)
 
-        optimize_frame_top = ttk.Frame(optimize_tab, width=630, height=480)
+        optimize_frame_top = ttk.Frame(optimize_tab, width=630, height=500)
         optimize_frame_top.grid(row=0, column=0, sticky="new", columnspan=2)
         optimize_frame_top.grid_propagate(False)
         optimize_frame_top.rowconfigure(0, weight=1)
@@ -2191,9 +2228,17 @@ class application(tk.Tk):
         unselect_all_visible_button_tip = Hovertip(unselect_all_visible_button, "Unselect all items in the currently displayed list.", hover_delay=500)
         unselect_all_visible_button.grid(row=0, column=1, padx=1, pady=1)
 
-        select_all_file_button = tk.Button(buttons_grid_frame2, text="Select all File", image=self.pixel_image, compound=tk.CENTER, width=100, height=30, command=lambda: self.select_gear_opt("select all file"))
-        select_all_file_button_tip = Hovertip(select_all_file_button,"Select all items in all equipment lists if the item appears in an input file.\nInput file must use format from Windower command \"//gs export all\"", hover_delay=500)
-        select_all_file_button.grid(row=1, column=1, padx=1, pady=1)
+        unselect_all_button = tk.Button(buttons_grid_frame2, text="Select all File", image=self.pixel_image, compound=tk.CENTER, width=100, height=30, command=lambda: self.select_gear_opt("select all file"))
+        unselect_all_button_tip = Hovertip(unselect_all_visible_button, "Selects all items in an input file that uses the '//gs export' format.", hover_delay=500)
+        unselect_all_button.grid(row=1, column=1, padx=1, pady=1)
+
+        import_file_button = tk.Button(buttons_grid_frame2, text="Import selections", image=self.pixel_image, compound=tk.CENTER, width=100, height=30, command=lambda: self.select_gear_opt("import from file"))
+        import_file_button_tip = Hovertip(import_file_button,"Select all items in all equipment lists that are found in an input file.\nRequires exact match naming with the checkbox labels.", hover_delay=500)
+        import_file_button.grid(row=2, column=0, padx=1, pady=1)
+
+        export_file_button = tk.Button(buttons_grid_frame2, text="Export selections", image=self.pixel_image, compound=tk.CENTER, width=100, height=30, command=lambda: self.select_gear_opt("export to file"))
+        export_file_button_tip = Hovertip(export_file_button,"Export selected items to a new text file.\nUsed to create files for importing later.", hover_delay=500)
+        export_file_button.grid(row=2, column=1, padx=1, pady=1)
 
         '''
         ===============================================
@@ -2261,7 +2306,7 @@ class application(tk.Tk):
                                                                     text=f"  Select {slot.capitalize()}  ",
                                                                     labelanchor="nw",
                                                                     master_data=equipment_list,
-                                                                    N=22,
+                                                                    N=23,
                                                                     )
             self.optimize_scrollframes[slot].place(relx=0, rely=0, relwidth=1.0, relheight=1.0)
 
